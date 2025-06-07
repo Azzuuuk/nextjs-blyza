@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Pursuit - Game Show Edition!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Luckiest+Guy&family=Quicksand:wght@300..700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles from 5 Second Frenzy (adapted for Password Pursuit) */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #FF8833; /* Blyza Orange */
+            --primary-rgb: 255,136,51;
+            --secondary: #CB7AE1; /* Blyza Purple */
+            --light: #F2F2F2;
+            --success: #00BFA6; /* Blyza Keppel */
+            --success-rgb: 0,191,166;
+            --danger: #ff4b2b;
+            --danger-rgb: 255,75,43;
+            --dark: #1a1c20;
+            --darker: #0f1012;
+            --info: #4ECDC4;
+            --gold: #FFD700; /* Game show gold */
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px; /* Adjusted from 40px in PP to match 5SF */
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Brand Logo Styles */
+        .brand-logo {
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        .brand-logo-prominent {
+            display: block;
+            margin: 0 auto 20px;
+            max-height: 80px;
+        }
+
+        h1 { /* Main Game Title */
+            font-family: "Luckiest Guy", cursive;
+            font-size: 3rem;
+            margin-bottom: 25px;
+            color: var(--gold);
+            text-shadow:
+                0 2px 0px #000,
+                0 4px 6px rgba(0, 0, 0, 0.5),
+                0 0 30px var(--primary);
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+        h2 { /* Screen titles like "Enter Team Names" */
+            font-family: "Bungee", cursive;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--primary); /* Use primary or gold */
+            text-shadow: 0 1px 2px #000;
+        }
+         h3 { /* General subheadings, less prominent than h2 - PP uses this for "Enter Team Names" */
+            font-family: "Bungee", cursive;
+            font-size: 1.8rem; /* Matched to h2 from 5SF */
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-shadow: 0 1px 2px #000;
+         }
+
+        /* Screen Styles */
+        .screen { display: none; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .active-screen, .active { display: block; }
+
+        /* Instructions Section - 5SF Style */
+        .instructions {
+            font-family: "Quicksand", sans-serif;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            margin: 30px 0;
+            line-height: 1.8;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+        .instructions p {
+            font-size: 1.1rem; margin-bottom: 15px; color: var(--light);
+        }
+        .instructions p strong:first-child { /* For "How to play:" */
+             font-family: "Bungee", cursive; font-size: 1.2em; display:block; margin-bottom: 10px;
+        }
+        .instructions p strong { color: var(--primary); }
+        .instructions a { color: var(--secondary); text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; transition: color 0.3s ease; }
+        .instructions a:hover { color: var(--primary); text-decoration: underline; }
+
+        /* Team Setup - 5SF Style adapted for PP structure */
+        .team-inputs-container { /* PP specific container, styled like 5SF .team-inputs */
+            margin: 30px 0; background: rgba(255,255,255,0.05); padding: 30px;
+            border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .team-inputs { /* PP grid container, no direct 5SF equivalent for this inner grid */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .team-input { margin-bottom: 20px; } /* From 5SF */
+        .team-input label {
+            display: block; margin-bottom: 10px; font-weight: 600;
+            color: var(--light); font-size: 1.1rem; font-family: "Bungee", cursive;
+            text-align: left; /* PP specific */
+        }
+        .team-input input {
+            width: 100%; max-width: 350px; /* Wider input from 5SF */
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem;
+            background: rgba(255,255,255,0.05); color: var(--light);
+            transition: all 0.3s ease; font-family: 'Quicksand', sans-serif;
+        }
+        .team-input input:focus {
+            outline: none; border-color: var(--secondary);
+            box-shadow: 0 0 10px rgba(203,122,225,0.2);
+            background: rgba(255, 255, 255, 0.1); /* Added from PP for consistency */
+        }
+
+        /* Game Screen Elements - 5SF Style */
+        .team-display {
+            display: flex; justify-content: space-around; gap: 20px;
+            margin: 30px 0; flex-wrap: wrap;
+        }
+        .team-card {
+            background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px;
+            border: 2px solid var(--gold); transition: all 0.3s ease;
+            min-width: 200px; text-align: center; flex: 1; max-width: 300px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+        }
+        .team-card.active-turn { /* Highlight active team */
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(var(--primary-rgb),0.3), 0 0 10px var(--gold),
+                        inset 0 0 10px rgba(var(--primary-rgb),0.1);
+            transform: scale(1.05); background: rgba(var(--primary-rgb),0.1);
+        }
+        .team-name { /* Team name on card */
+            font-family: "Bungee", cursive; font-weight: normal; font-size: 1.4rem;
+            margin-bottom: 10px; color: var(--primary); text-shadow: 0 1px 1px #000;
+        }
+        .team-score { /* Score on card */
+            font-family: "Orbitron", sans-serif; font-size: 2.5rem;
+            color: var(--light); text-shadow: 0 0 8px var(--gold);
+        }
+
+        /* Password Display (styled like 5SF Question Display) */
+        .password-display {
+            font-size: 1.8em; margin: 30px auto; min-height: 100px; max-width: 90%; /* Max-width from 5SF */
+            display: flex; flex-direction: column; /* Allow span to be under */ align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.3); padding: 25px; border-radius: 15px;
+            line-height: 1.4; color: var(--light); font-weight: 600;
+            border: 2px solid var(--gold); box-shadow: 0 0 15px var(--gold);
+            font-family: "Quicksand", sans-serif;
+            text-transform: uppercase; letter-spacing: 2px; /* PP Specific */
+        }
+         .password-display span { /* For "(Captains only...)" text */
+            font-style: italic; color: rgba(242,242,242,0.6); font-size: 0.7em; /* Adjusted from 5SF */
+            font-family: "Bungee", cursive;
+            display: block; margin-top: 8px; text-transform: none; letter-spacing: normal; /* PP Specific */
+         }
+
+        /* Captain Display Area (New styling for PP) */
+        .captain-display {
+            font-family: "Quicksand", sans-serif;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 20px; /* Reduced padding */
+            border-radius: 15px; /* Consistent radius */
+            margin: 20px auto; /* Adjusted margin */
+            line-height: 1.6;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Softer shadow */
+            text-align: center;
+            font-size: 1.1rem; /* Adjusted size */
+            color: var(--secondary); /* Using secondary color */
+            font-weight: 600;
+            max-width: 80%;
+        }
+
+        .button-controls-area { /* Generic container for button groups like in 5SF */
+             margin-top: 25px; display: flex; flex-direction: column;
+             align-items: center; gap: 15px;
+        }
+        .guess-buttons { /* PP specific, acts like 5SF result-buttons-container */
+            display: flex; justify-content: center; gap: 20px;
+            flex-wrap: wrap; width: 100%;
+        }
+
+
+        /* Buttons - 5SF Style */
+        button {
+            background: linear-gradient(135deg, var(--primary) 0%, #ff7711 100%);
+            color: var(--light); border: 2px solid var(--darker); padding: 15px 25px;
+            font-size: 1rem; border-radius: 50px; cursor: pointer;
+            font-weight: normal; transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3), inset 0 -2px 5px rgba(0,0,0,0.2);
+            margin: 10px 5px; font-family: "Bungee", cursive; text-shadow: 1px 1px 2px #000;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            min-width: 180px; flex-shrink: 0;
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--primary);
+            background: linear-gradient(135deg, #ff7711 0%, var(--primary) 100%);
+        }
+        button:active:not(:disabled) { transform: translateY(-1px) scale(1.02); }
+        button:disabled {
+            background: rgba(255,255,255,0.1); cursor:not-allowed; opacity:0.6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); transform:none; border-color: rgba(0,0,0,0.5);
+        }
+        .btn-primary {}
+        .btn-success { background: linear-gradient(135deg, var(--success) 0%, #00a890 100%); }
+        .btn-success:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--success); }
+        .btn-danger { background: linear-gradient(135deg, var(--danger) 0%, #ff416c 100%); }
+        .btn-danger:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--danger); }
+        .btn-secondary { background: linear-gradient(135deg, var(--secondary) 0%, #b85cd6 100%); }
+        .btn-secondary:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--secondary); }
+        .btn-info { background: linear-gradient(135deg, var(--info) 0%, #3eb7af 100%); }
+        .btn-info:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--info); }
+        .guess-btn { /* Specific to PP, ensure it gets full 5SF button styling */
+             min-width: 220px; /* Adjusted from PP's 280px */
+        }
+
+
+        /* Win Screen - 5SF Style */
+        .win-message-text, .win-message { /* .win-message is PP's ID, treat as .win-message-text */
+            font-size: 3rem; margin: 30px 0; color: var(--gold);
+            text-shadow: 0 3px 0px #000, 0 0 20px var(--primary);
+            font-family: "Luckiest Guy", cursive;
+        }
+        .winner-trophy-icon, .winner-trophy { /* .winner-trophy is PP's ID */
+            font-size: 6rem; margin: 20px 0 30px 0;
+            animation: bounce 1.5s infinite ease-in-out; color: var(--gold);
+            text-shadow: 0 0 20px var(--gold), 0 0 30px var(--primary);
+        }
+        @keyframes bounce { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-35px) scale(1.1);} }
+
+        /* Game Over Buttons & Treat Yourself - 5SF Style */
+        .game-over-buttons-container { display: flex; justify-content: center; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+        .game-over-button-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; }
+        .treat-yourself-callout { margin-bottom: 8px; background-color: var(--gold); color: var(--darker); padding: 8px 15px; border-radius: 20px; font-family: "Bungee",cursive; font-size:0.9rem; white-space:nowrap; box-shadow:0 2px 10px rgba(255,215,0,0.5); display:none; align-items:center; gap:8px; z-index:10;}
+        .treat-yourself-callout i { font-size: 1.2em; animation: bounceArrow 1s infinite; }
+        @keyframes bounceArrow { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
+
+
+        /* Feedback Pop-up (styled like 5SF Time Up Pop-up but adaptable) */
+        .feedback-popup {
+            position: fixed; top: 50%; left: 50%;
+            color: white; padding: 30px 50px; border-radius: 20px; font-size: 2.8rem;
+            font-family: "Luckiest Guy", cursive; text-align: center; z-index: 2000;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+            opacity: 0; transform: translate(-50%,-50%) scale(0.7);
+            border: 3px solid var(--gold);
+            /* Animation for showing/hiding */
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            display: none; /* Initially hidden, JS will control */
+        }
+        .feedback-popup.show {
+            display: block; /* Or flex/grid if needed for content */
+            opacity: 1;
+            transform: translate(-50%,-50%) scale(1.1); /* Initial pop */
+            animation: feedbackPopAnim 1.5s forwards; /* Use keyframes for full sequence */
+        }
+        @keyframes feedbackPopAnim { /* Combines pop and fade out */
+            0%   { opacity: 0; transform: translate(-50%,-50%) scale(0.7); }
+            20%  { opacity: 1; transform: translate(-50%,-50%) scale(1.1); } /* Pop in */
+            80%  { opacity: 1; transform: translate(-50%,-50%) scale(1.1); } /* Hold */
+            100% { opacity: 0; transform: translate(-50%,-50%) scale(0.7); } /* Fade out */
+        }
+        .feedback-popup.point-scored { /* Custom class for Password Pursuit */
+            background-color: rgba(var(--success-rgb), 0.97);
+            border-color: var(--gold); /* Keep gold border for game show feel */
+            text-shadow: 0 0 10px var(--success);
+        }
+
+
+        /* Settings Icon, Modal, Confetti - 5SF Style */
+        .icon-btn { position:absolute; background:rgba(0,0,0,0.3); color:var(--light); border:1px solid var(--gold); border-radius:50%; width:40px; height:40px; font-size:1.1rem; cursor:pointer; transition:all .3s ease; display:flex; justify-content:center; align-items:center; z-index:100; padding:0; margin:0; box-shadow:none; text-shadow:none; }
+        .icon-btn#settings-btn { top:15px; right:15px; } /* Adjusted from PP's 20px */
+        .icon-btn:hover { background:rgba(0,0,0,0.5); transform:scale(1.1) rotate(15deg); box-shadow:0 0 10px var(--gold); }
+        .icon-btn i { margin:0; }
+        .modal { position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(8px); display:none; justify-content:center; align-items:center; }
+        .modal-content { background-color:var(--darker); margin:auto; padding:30px; border:2px solid var(--gold); border-radius:15px; width:80%; max-width:450px; box-shadow:0 10px 30px rgba(0,0,0,0.6),0 0 20px var(--primary); position:relative; color:var(--light); }
+        .modal-content h2 { font-family:"Bungee",cursive; color:var(--primary); text-align:center; margin-bottom:25px; font-size:1.8rem; }
+        .setting-item { margin-bottom:20px; display:flex; flex-direction:column; }
+        .setting-item label { margin-bottom:8px; font-weight:600; font-size:0.9rem;}
+        input[type=range] { -webkit-appearance:none; width:100%; background:transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; height:20px; width:20px; border-radius:50%; background:var(--primary); cursor:pointer; margin-top:-7px; box-shadow:0 0 8px var(--primary); }
+        input[type=range]::-moz-range-thumb { height:20px; width:20px; border-radius:50%; background:var(--primary); cursor:pointer; border:none; box-shadow:0 0 8px var(--primary); }
+        input[type=range]::-webkit-slider-runnable-track { width:100%; height:6px; cursor:pointer; background:rgba(255,255,255,0.2); border-radius:3px; border:1px solid rgba(0,0,0,0.2); }
+        input[type=range]::-moz-range-track { width:100%; height:6px; cursor:pointer; background:rgba(255,255,255,0.2); border-radius:3px; border:1px solid rgba(0,0,0,0.2); }
+        .close-modal-btn { color:#aaa; position:absolute; top:15px; right:20px; font-size:28px; font-weight:bold; cursor:pointer; }
+        .close-modal-btn:hover, .close-modal-btn:focus { color:var(--light); text-decoration:none; }
+        .confetti-piece { position:fixed; width:10px; height:20px; background-color:var(--primary); opacity:0; animation-timing-function:linear; animation-fill-mode:forwards; pointer-events:none; z-index:3000; }
+        @keyframes fallAndFade { 0%{transform:translateY(-20vh) rotate(0deg); opacity:1;} 100%{transform:translateY(120vh) rotate(720deg); opacity:0;} }
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-container { padding: 20px; }
+            h1 { font-size: 2.5rem; }
+            h2, h3 { font-size: 1.6rem; } /* Applied to h3 as well */
+            .team-display { flex-direction: column; align-items: center; gap: 15px; }
+            .team-card { min-width: 80%; max-width: 90%; }
+            .password-display { font-size: 1.5em; padding: 20px; max-width: 95%;}
+            .captain-display { font-size: 1rem; padding: 12px; max-width: 90%;}
+            .guess-buttons { gap: 10px; } /* inherits .button-controls-area column direction on small screens if needed */
+            .guess-buttons button { width: 80%; max-width: 300px; }
+            button { padding: 12px 22px; font-size: 0.9rem; min-width: 160px; }
+            .win-message-text, .win-message { font-size: 2.2rem; }
+            .winner-trophy-icon, .winner-trophy { font-size: 5rem; }
+            .modal-content { padding: 20px; }
+            .game-over-buttons-container { flex-direction: column; align-items: center;}
+            .game-over-buttons-container .game-over-button-wrapper { width: 90%; margin: 5px auto;}
+            .game-over-buttons-container .game-over-button-wrapper button { width: 100%;}
+            .feedback-popup { font-size: 2.2rem; padding: 25px 40px; width: 80%;}
+        }
+         @media (max-width: 480px) {
+              h1 { font-size: 2rem; }
+              h2, h3 { font-size: 1.4rem; } /* Applied to h3 as well */
+              .game-container { padding: 15px; }
+              .team-input input { max-width: 90%; padding: 12px 18px; font-size: 1rem;}
+              .password-display { font-size: 1.3em; }
+               .password-display span { font-size: 0.6em; }
+              .guess-buttons button { width: calc(90% - 10px); margin: 5px; } /* Allow side-by-side for guess buttons if desired */
+              .icon-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1rem; }
+              .feedback-popup { font-size: 1.8rem; padding: 20px 30px;}
+              .instructions { padding: 15px;}
+              .instructions p { font-size: 0.9rem;}
+         }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <img id="corner-logo-static" class="brand-logo" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="position: absolute; top: 20px; left: 20px; max-height: 40px; opacity: 0.7; display: none;">
+        <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active-screen">
+            <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
+            <h1>Password Pursuit</h1>
+            <div class="instructions">
+                <p><strong>HOW TO PLAY:</strong></p> <!-- Changed to match 5SF structure -->
+                <p>Two teams compete to guess the password. Each round, new captains (one from each team) are shown the secret password. Teams then take turns giving one-word clues to help their own teammates guess the password. The first team whose member correctly guesses the password wins the point for that round. Be careful not to give clues that are too obvious or break the one-word rule!</p>
+                <p>First team to reach <strong>5 points</strong> wins the game!</p> <!-- Using 5SF strong style -->
+            <a href="https://www.youtube.com/watch?v=9OJgA_XvIHc" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-youtube"></i> Watch a video tutorial on rules
+            </a>
+            </div>
+            <button id="start-btn" class="btn-primary">
+                <i class="fas fa-users"></i> Setup Teams
+            </button>
+        </div>
+
+        <!-- Team Setup Screen -->
+        <div id="team-screen" class="screen">
+            <h3>Enter Team Names</h3> <!-- Styled like 5SF h2 via CSS -->
+            <div class="team-inputs-container">
+                <div class="team-inputs" id="team-inputs-grid">
+                    <div class="team-input">
+                        <label for="team1-name">Team 1 Name:</label>
+                        <input type="text" id="team1-name" placeholder="Team 1">
+                    </div>
+                    <div class="team-input">
+                        <label for="team2-name">Team 2 Name:</label>
+                        <input type="text" id="team2-name" placeholder="Team 2">
+                    </div>
+                </div>
+            </div>
+            <button id="begin-game-btn" class="btn-primary">
+                <i class="fas fa-play"></i> Begin Game
+            </button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div class="team-display">
+                <div class="team-card" id="team1-card">
+                    <div class="team-name" id="team1-name-display">Team 1</div>
+                    <div class="team-score" id="team1-score">0</div>
+                </div>
+                <div class="team-card" id="team2-card">
+                    <div class="team-name" id="team2-name-display">Team 2</div>
+                    <div class="team-score" id="team2-score">0</div>
+                </div>
+            </div>
+
+            <div class="captain-display" id="captain-display">
+                Captains, remember the password! Give clues privately!
+            </div>
+
+            <div class="password-display" id="password-display">
+                PASSWORD <span>(Captains only! Don't let your team see!)</span>
+            </div>
+            
+            <div class="button-controls-area"> <!-- Added wrapper from 5SF -->
+                <div class="guess-buttons">
+                    <button class="btn-success guess-btn" id="team1-guess"> <!-- Changed to btn-success for "guessed it" -->
+                        <i class="fas fa-check-circle"></i> <span id="team1-guess-btn-name">Team 1</span> Guessed It!
+                    </button>
+                    <button class="btn-success guess-btn" id="team2-guess"> <!-- Changed to btn-success -->
+                        <i class="fas fa-check-circle"></i> <span id="team2-guess-btn-name">Team 2</span> Guessed It!
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Win Screen -->
+        <div id="win-screen" class="screen">
+            <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
+            <h1>Game Over!</h1>
+            <div class="win-message" id="win-message">Team Wins!</div> <!-- Styled like .win-message-text -->
+            <div class="winner-trophy">🏆</div> <!-- Styled like .winner-trophy-icon -->
+            
+            <div class="game-over-buttons-container">
+                <div class="game-over-button-wrapper">
+                    <button id="play-again-btn" class="btn-success">
+                        <i class="fas fa-redo"></i> Play Again
+                    </button>
+                </div>
+                <div class="game-over-button-wrapper">
+                     <button id="main-menu-btn" class="btn-secondary">
+                        <i class="fas fa-home"></i> Main Menu
+                    </button>
+                </div>
+                <div class="game-over-button-wrapper" id="store-button-wrapper">
+                     <!-- "Treat Yourself" callout will be inserted here by JS -->
+                     <button id="visit-store-btn" class="btn-info">
+                        <i class="fas fa-store"></i> Visit Store
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal (matches 5SF) -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal-btn" class="close-modal-btn">×</span>
+            <h2>Settings</h2>
+            <div class="setting-item">
+                <label for="bgm-volume-slider">Background Music Volume:</label>
+                <input type="range" id="bgm-volume-slider" min="0" max="1" step="0.01" value="0.2"> <!-- Default to 0.2 like 5SF -->
+            </div>
+            <div class="setting-item">
+                <label for="sfx-toggle-btn">Sound Effects:</label>
+                <button id="sfx-toggle-btn" class="btn-secondary">SFX: ON</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Pop-up (Styled like 5SF Time Up Pop-up) -->
+    <div id="feedback-popup" class="feedback-popup"> <!-- display:none is handled by .show and animation -->
+        <span id="feedback-message-text-el"></span>
+    </div>
+
+    <!-- Audio elements (using 5SF sources where appropriate or placeholders) -->
+    <audio id="background-game-music" loop src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3"></audio>
+    <audio id="start-game-sound" src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3"></audio>
+    <audio id="interaction-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
+    <audio id="point-scored-sound" src="https://static.wixstatic.com/mp3/9ce3e5_76691a6fefcd4536aa403ada111e886a.mp3"></audio> <!-- Was pass-sound in 5SF -->
+    <audio id="confetti-sound" src="https://static.wixstatic.com/mp3/9ce3e5_5d7fcfc389734cf7994f5d37de621e3d.mp3"></audio>
+
+
+    <script>
+        const gameConfig = { // From 5SF, adapted for PP
+            sfxEnabled: true,
+            musicVolume: 0.2, // Default from 5SF
+            winningScore: 5,
+            // timerDuration: 5, // Not used in PP
+        };
+
+        const passwords = [
+            "Anchor", "Balloon", "Camera","Dragon", "Eclipse", "Fountain" , "Hurricane", "Island",  "Jungle", "Lighthouse", "Orchestra", "Pyramid", "Rainbow", "Satellite", "Tornado", "Volcano", "Waterfall", "Xylophone", "Gladiator", "Internet", "Jackpot", "Magician", "Quicksand", "Scorpion", "Whisper", "Treasure" , "Doppelganger", "Nostalgia", "Millennium", "Illusion", "Javelin", "Vintage", "Blueprint", "Fridge", "Charity", "Energy", "Community", "Anxiety", "Imagination", "Bonfire","Dolphin", "Feather", "Garlic", "Kettle", "Marble", "Needle", "Parade", "Sunflower", "Trumpet", "Uniform", "Village", "Envelope", "Pancake", "Glitter", "Basket", "Campfire", "Doorbell", "Candle", "Puzzle", "Barrel", "Summer", "Pirate", "Garden", "Teapot", "Monitor", "Shadow", "Thunder", "Market", "Window", "Picnic", "Poster", "Towel", "Ladder", "Magnet", "Rapper"
+        ];
+
+        const gameState = {
+            teams: [
+                { name: "Team 1", score: 0 },
+                { name: "Team 2", score: 0 }
+            ],
+            currentPassword: "",
+            // winningScore: 5, // Moved to gameConfig
+            roundNumber: 0,
+        };
+
+        // DOM elements
+        const screens = {
+            start: document.getElementById("start-screen"),
+            team: document.getElementById("team-screen"), // PP's team setup screen ID
+            game: document.getElementById("game-screen"),
+            win: document.getElementById("win-screen")
+        };
+        const cornerLogoEl = document.getElementById('corner-logo-static'); // From 5SF
+
+        const startBtn = document.getElementById("start-btn");
+        const team1NameInputEl = document.getElementById("team1-name"); // Renamed for clarity
+        const team2NameInputEl = document.getElementById("team2-name"); // Renamed for clarity
+        const beginGameBtn = document.getElementById("begin-game-btn");
+        const playAgainBtn = document.getElementById("play-again-btn");
+        const team1GuessBtn = document.getElementById("team1-guess");
+        const team2GuessBtn = document.getElementById("team2-guess");
+        const mainMenuBtn = document.getElementById("main-menu-btn");
+        const captainDisplayEl = document.getElementById("captain-display");
+        const passwordDisplayEl = document.getElementById("password-display");
+        const team1NameDisplayEl = document.getElementById("team1-name-display");
+        const team2NameDisplayEl = document.getElementById("team2-name-display");
+        const team1ScoreEl = document.getElementById("team1-score");
+        const team2ScoreEl = document.getElementById("team2-score");
+        const team1CardEl = document.getElementById("team1-card");
+        const team2CardEl = document.getElementById("team2-card");
+        const winMessageEl = document.getElementById("win-message");
+        const storeButtonWrapperEl = document.getElementById("store-button-wrapper"); // From 5SF
+        let treatYourselfElement = null; // From 5SF
+        const visitStoreBtn = document.getElementById("visit-store-btn");
+        
+
+        // Audio and Settings Elements (from 5SF)
+        const backgroundMusicAudioEl = document.getElementById('background-game-music');
+        const startGameSoundAudioEl = document.getElementById('start-game-sound');
+        const interactionSoundAudioEl = document.getElementById('interaction-sound');
+        const pointScoredSoundAudioEl = document.getElementById('point-scored-sound');
+        const confettiSoundAudioEl = document.getElementById('confetti-sound');
+        
+        const settingsBtnEl = document.getElementById('settings-btn');
+        const settingsModalEl = document.getElementById('settings-modal');
+        const closeModalBtnEl = document.getElementById('close-modal-btn');
+        const bgmVolumeSliderEl = document.getElementById('bgm-volume-slider');
+        const sfxToggleBtnEl = document.getElementById('sfx-toggle-btn');
+        
+        const feedbackPopupEl = document.getElementById('feedback-popup'); // Renamed for consistency
+        const feedbackMessageTextEl = document.getElementById('feedback-message-text-el');
+        let feedbackTimeout;
+
+        // --- Sound Functions (from 5SF) ---
+        function playSound(audioElement) { if (gameConfig.sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.volume = 0.7; audioElement.play().catch(e => console.error("SFX error:", e));}}
+        function playSoundWithCallback(audioElement, callback, ...args) { if (gameConfig.sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.volume = 0.7; let cbEx = false; const exCb = () => { if (!cbEx) { cbEx = true; audioElement.removeEventListener('ended', exCb); if(typeof soundTimeoutId!=='undefined' && soundTimeoutId) clearTimeout(soundTimeoutId); if(callback) callback(...args); }}; audioElement.addEventListener('ended', exCb); const sDur = (audioElement.duration&&isFinite(audioElement.duration))?audioElement.duration*1000:500; const soundTimeoutId=setTimeout(exCb,sDur+200); audioElement.play().catch(e=>{console.error("SFX error:",e);exCb();});} else {if(callback)callback(...args);}}
+        function initBackgroundMusic() { backgroundMusicAudioEl.volume = gameConfig.musicVolume; backgroundMusicAudioEl.play().catch(e => console.log("BGM autoplay failed.", e)); }
+
+
+        // --- Event listeners ---
+        startBtn.addEventListener("click", () => { playSound(interactionSoundAudioEl); showTeamSetupScreen(); });
+        beginGameBtn.addEventListener("click", () => {
+             if(backgroundMusicAudioEl.paused) initBackgroundMusic();
+             playSoundWithCallback(startGameSoundAudioEl, startGame);
+        });
+        playAgainBtn.addEventListener("click", () => { playSoundWithCallback(startGameSoundAudioEl, resetGame); });
+        team1GuessBtn.addEventListener("click", () => { playSound(interactionSoundAudioEl); handleGuess(0); }); // Sound played here, not in handleGuess directly
+        team2GuessBtn.addEventListener("click", () => { playSound(interactionSoundAudioEl); handleGuess(1); });
+        mainMenuBtn.addEventListener("click", () => { playSound(interactionSoundAudioEl); goToMainMenu(); });
+        visitStoreBtn.addEventListener("click", () => { playSound(interactionSoundAudioEl); visitStore(); });
+
+
+        // --- Settings Modal Logic (from 5SF) ---
+        settingsBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'flex'; });
+        closeModalBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; });
+        window.addEventListener('click', (event) => { if (event.target === settingsModalEl) { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; } });
+        bgmVolumeSliderEl.addEventListener('input', (e) => { gameConfig.musicVolume = parseFloat(e.target.value); backgroundMusicAudioEl.volume = gameConfig.musicVolume; });
+        sfxToggleBtnEl.addEventListener('click', () => {
+            playSound(interactionSoundAudioEl);
+            gameConfig.sfxEnabled = !gameConfig.sfxEnabled;
+            sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
+            sfxToggleBtnEl.classList.toggle('btn-success', gameConfig.sfxEnabled);
+            sfxToggleBtnEl.classList.toggle('btn-danger', !gameConfig.sfxEnabled);
+        });
+        
+        // --- Feedback Popup (adapted from 5SF time-up and PP feedback) ---
+        function showFeedbackMessage(message, type = '', duration = 1500) { // Duration matches 5SF animation
+            feedbackMessageTextEl.textContent = message;
+            feedbackPopupEl.className = 'feedback-popup'; // Reset classes
+            if (type) feedbackPopupEl.classList.add(type);
+            
+            feedbackPopupEl.classList.add('show'); // Triggers CSS animation
+            
+            clearTimeout(feedbackTimeout);
+            feedbackTimeout = setTimeout(() => {
+                feedbackPopupEl.classList.remove('show'); // Animation will hide it
+                // CSS animation handles display:none implicitly at the end
+            }, duration);
+        }
+
+        // --- Functions ---
+        function switchScreen(screenId) {
+            Object.values(screens).forEach(screen => screen.classList.remove('active-screen', 'active'));
+            screens[screenId].classList.add('active-screen', 'active');
+            cornerLogoEl.style.display = (screenId !== 'start') ? 'block' : 'none'; // From 5SF
+             if (treatYourselfElement) { // From 5SF
+                treatYourselfElement.style.display = (screenId === 'win') ? 'flex' : 'none';
+            }
+        }
+
+        function showTeamSetupScreen() {
+            switchScreen("team");
+        }
+         function goToMainMenu() {
+             if (treatYourselfElement) treatYourselfElement.style.display = 'none'; // From 5SF
+             if(backgroundMusicAudioEl.paused) initBackgroundMusic();
+             switchScreen('start');
+         }
+
+        function startGame() {
+            gameState.teams[0].name = team1NameInputEl.value.trim() || "Team 1";
+            gameState.teams[1].name = team2NameInputEl.value.trim() || "Team 2";
+
+            if (gameState.teams[0].name.length > 15 || gameState.teams[1].name.length > 15) { // From 5SF
+                alert("Team names too long (max 15 chars)!"); return;
+            }
+            if (gameState.teams[0].name === gameState.teams[1].name && gameState.teams[0].name !== "Team 1" && gameState.teams[0].name !== "") { // From 5SF
+                alert("Team names must be different if customized!"); return;
+            }
+
+            gameState.teams[0].score = 0;
+            gameState.teams[1].score = 0;
+            gameState.roundNumber = 0;
+            
+            startNewRound();
+            switchScreen("game");
+        }
+
+        function startNewRound() {
+            gameState.roundNumber++;
+            gameState.currentPassword = passwords[Math.floor(Math.random() * passwords.length)];
+
+            passwordDisplayEl.innerHTML = `${gameState.currentPassword} <span>(Captains only! Don't let team see!)</span>`;
+            
+            captainDisplayEl.textContent = `Captains for Round ${gameState.roundNumber}: ${gameState.teams[0].name} & ${gameState.teams[1].name}. Good luck!`;
+
+            updateTeamDisplays();
+
+            document.getElementById("team1-guess-btn-name").textContent = gameState.teams[0].name;
+            document.getElementById("team2-guess-btn-name").textContent = gameState.teams[1].name;
+        }
+
+        function updateTeamDisplays() {
+            team1NameDisplayEl.textContent = gameState.teams[0].name;
+            team2NameDisplayEl.textContent = gameState.teams[1].name;
+            team1ScoreEl.textContent = gameState.teams[0].score;
+            team2ScoreEl.textContent = gameState.teams[1].score;
+
+            // Active turn for clue giving (optional, PP didn't strictly enforce visual turn for clues)
+            // For now, no active turn highlight during clue giving phase as per original PP
+            team1CardEl.classList.remove("active-turn");
+            team2CardEl.classList.remove("active-turn");
+        }
+
+        function handleGuess(guessingTeamIndex) {
+            playSound(pointScoredSoundAudioEl); // Play sound for point scored
+            gameState.teams[guessingTeamIndex].score++;
+            showFeedbackMessage(`${gameState.teams[guessingTeamIndex].name} Guessed It!`, 'point-scored');
+
+            updateTeamDisplays(); // Update scores before checking win condition
+
+            if (gameState.teams[0].score >= gameConfig.winningScore || gameState.teams[1].score >= gameConfig.winningScore) {
+                showWinScreen();
+            } else {
+                startNewRound();
+            }
+        }
+
+        function showWinScreen() {
+            playSound(confettiSoundAudioEl); // From 5SF
+            const winner = gameState.teams[0].score >= gameConfig.winningScore ? gameState.teams[0].name : gameState.teams[1].name;
+            winMessageEl.textContent = `${winner} Wins!`;
+            
+            if (!treatYourselfElement) { // From 5SF
+                treatYourselfElement = document.createElement('div');
+                treatYourselfElement.className = 'treat-yourself-callout';
+                treatYourselfElement.innerHTML = `<span>Treat Yourself!</span> <i class="fas fa-arrow-down"></i>`;
+                storeButtonWrapperEl.insertBefore(treatYourselfElement, visitStoreBtn);
+            }
+            switchScreen("win"); // Will also show treatYourselfElement due to logic in switchScreen
+            triggerConfetti(); // From 5SF
+        }
+
+        function resetGame() {
+            // team1NameInputEl.value = gameState.teams[0].name; // Keep names for easy restart
+            // team2NameInputEl.value = gameState.teams[1].name;
+            if (treatYourselfElement) treatYourselfElement.style.display = 'none'; // From 5SF
+            if(backgroundMusicAudioEl.paused) initBackgroundMusic();
+            switchScreen("team"); // Go to team setup
+        }
+
+        function visitStore() {
+            window.open('https://www.blyza.com', '_blank');
+        }
+
+        // Confetti function from 5 Second Frenzy
+        function triggerConfetti() {
+            const confettiCount = 100;
+            const colors = ['var(--primary)', 'var(--secondary)', 'var(--success)', 'var(--gold)', 'var(--info)'];
+            // Remove old confetti if any (good practice, though 5SF removes by timeout)
+            document.querySelectorAll('.confetti-piece').forEach(el => el.remove());
+
+            for (let i = 0; i < confettiCount; i++) {
+                const piece = document.createElement('div');
+                piece.classList.add('confetti-piece');
+                piece.style.left = Math.random() * 100 + 'vw';
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                const animDur = Math.random() * 3 + 2; // Between 2 and 5 seconds
+                piece.style.animationName = 'fallAndFade';
+                piece.style.animationDuration = animDur + 's';
+                piece.style.animationDelay = Math.random() * 1 + 's'; // Stagger start times
+                document.body.appendChild(piece);
+                setTimeout(() => piece.remove(), (animDur + parseFloat(piece.style.animationDelay || 0)) * 1000 + 500); // Remove after animation + delay
+            }
+        }
+
+
+        // Initialize game on load (from 5SF)
+        document.addEventListener('DOMContentLoaded', () => {
+            sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
+            sfxToggleBtnEl.classList.toggle('btn-success',gameConfig.sfxEnabled);
+            sfxToggleBtnEl.classList.toggle('btn-danger',!gameConfig.sfxEnabled);
+            bgmVolumeSliderEl.value = gameConfig.musicVolume;
+            initBackgroundMusic();
+            switchScreen('start');
+        });
+    </script>
+</body>
+</html>

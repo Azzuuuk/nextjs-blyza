@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moji Mania - Game Show Edition!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Luckiest+Guy&family=Quicksand:wght@300..700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles from the Game Show Template */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #FF8833; --secondary: #CB7AE1; --light: #F2F2F2;
+            --success: #00BFA6; --danger: #ff4b2b; --dark: #1a1c20;
+            --darker: #0f1012; --info: #4ECDC4;
+            --gold: #FFD700; --stage-bg: #2c3e50;
+            --curtain-color: #c0392b; --spotlight-color: rgba(255, 223, 0, 0.6);
+            --primary-rgb: 255, 136, 51; --success-rgb: 0, 191, 166;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+            color: var(--light); min-height: 100vh; display: flex;
+            justify-content: center; align-items: center; padding: 20px;
+            line-height: 1.6; overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 900px; width: 100%;
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px);
+            border-radius: 24px; padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
+            text-align: center; position: relative; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .brand-logo { object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+        .brand-logo-prominent { display: block; margin: 0 auto 20px; max-height: 80px; }
+        #corner-logo-static {
+            position: absolute; top: 20px; left: 20px; max-height: 40px;
+            opacity: 0.7; display: none; z-index: 100;
+        }
+
+        h1 {
+            font-family: "Luckiest Guy", cursive; font-size: 3rem; margin-bottom: 25px;
+            color: var(--gold);
+            text-shadow: 0 2px 0px #000, 0 4px 6px rgba(0,0,0,0.5), 0 0 30px var(--primary);
+            letter-spacing: 1px; margin-top: 10px;
+        }
+        h3, .screen-title {
+            font-family: "Bungee", cursive; font-size: 1.8rem; margin-bottom: 20px;
+            color: var(--primary); text-shadow: 0 1px 2px #000;
+        }
+
+        .screen { display: none; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .active { display: block; }
+
+        .instructions {
+            font-family: "Quicksand", sans-serif; background: rgba(255,255,255,0.05);
+            padding: 30px; border-radius: 20px; margin: 30px 0; line-height: 1.8;
+            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            text-align: left;
+        }
+        .instructions p:first-of-type strong {
+             font-family: "Bungee", cursive; font-size: 1.2em; display:block; margin-bottom: 10px;
+             color: var(--light);
+        }
+        .instructions p { font-size: 1.1rem; margin-bottom: 15px; color: var(--light); }
+        .instructions ul { list-style-type: none; padding-left: 0; }
+        .instructions li { margin-bottom: 10px; display: flex; align-items: flex-start; font-size: 1rem; }
+        .instructions i { margin-right: 10px; font-size: 1.2em; color: var(--primary); width: 20px; text-align: center; margin-top: 2px; }
+        .instructions strong { color: var(--primary); }
+
+        .game-mode-selection { display: flex; justify-content: center; gap: 20px; margin: 30px 0; flex-wrap: wrap; }
+        .mode-option {
+            background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; cursor: pointer;
+            transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.1);
+            flex: 1; min-width: 200px; max-width: 280px;
+        }
+        .mode-option:hover { transform: translateY(-5px) scale(1.03); background: rgba(255,255,255,0.08); box-shadow: 0 8px 15px rgba(0,0,0,0.2), 0 0 10px var(--secondary); border-color: var(--secondary); }
+        .mode-option.selected { border-color: var(--primary); background: rgba(var(--primary-rgb),0.1); box-shadow: 0 0 15px rgba(var(--primary-rgb),0.2), inset 0 0 8px rgba(var(--primary-rgb),0.1); transform: scale(1.01); }
+        .mode-option i { font-size: 2rem; margin-bottom: 10px; color: var(--primary); }
+        .mode-option h3 { font-size: 1.3rem; margin-bottom: 8px; color: var(--light); font-family: "Bungee", cursive; }
+        .mode-option p { color: rgba(242,242,242,0.7); font-size: 0.9rem; }
+
+        .team-inputs-container { margin: 30px 0; background: rgba(255,255,255,0.05); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        #team-names-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .team-input { display: flex; gap: 10px; align-items: center; }
+        .team-input input.team-name-input {
+            width: 100%; padding: 15px 20px; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem;
+            background: rgba(255,255,255,0.05); color: var(--light);
+            transition: all 0.3s ease; font-family: 'Quicksand', sans-serif;
+            flex-grow: 1;
+        }
+        .team-input input.team-name-input:focus { outline: none; border-color: var(--secondary); box-shadow: 0 0 10px rgba(203,122,225,0.2); }
+        .remove-team-btn {
+            background: var(--danger); color: var(--light); border: none; border-radius: 50%; width: 35px; height: 35px;
+            font-size: 1rem; padding: 0; margin: 0; min-width: 35px; display: flex; align-items: center; justify-content: center;
+            box-shadow: none;
+        }
+        .remove-team-btn:hover:not(:disabled) { transform: scale(1.1); box-shadow: none; background: #e0432a; }
+        #add-team-btn { min-width: 150px; }
+        
+        .game-info {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 20px; margin-bottom: 10px; background: rgba(0,0,0,0.2);
+            border-radius: 10px; border: 1px solid var(--gold);
+            font-family: "Orbitron", sans-serif; font-size: 1rem; color: var(--gold);
+            text-shadow: 0 0 5px var(--primary);
+        }
+        .category-display { font-family: "Bungee", cursive; font-size: 1.2rem; color: var(--secondary); margin-bottom: 15px; }
+
+        .place-display-stage {
+            background: var(--stage-bg); padding: 20px; border-radius: 20px;
+            margin-bottom: 25px; border: 3px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
+        }
+        .stage-curtains {
+            position: absolute; top: 0; width: 50%; height: 100%; background-color: var(--curtain-color);
+            background-image: linear-gradient(rgba(0,0,0,0.2) 50%, transparent 50%), linear-gradient(90deg, rgba(0,0,0,0.2) 50%, transparent 50%);
+            background-size: 50px 50px; box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+            transition: transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 5;
+        }
+        .stage-curtains.left { left: 0; border-right: 3px solid #a52a20; }
+        .stage-curtains.right { right: 0; border-left: 3px solid #a52a20; }
+        .stage-curtains.open.left { transform: translateX(-100%); }
+        .stage-curtains.open.right { transform: translateX(100%); }
+
+        .place-tv-screen {
+            background: #111; border: 10px solid #333; border-radius: 15px;
+            padding: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.7), inset 0 0 10px rgba(0,0,0,0.5);
+            position: relative; z-index: 1; min-height: 200px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .place-tv-screen h3 { font-family: "Luckiest Guy", cursive; color: var(--gold); font-size: 1.6rem; margin-bottom: 15px; text-shadow: 0 2px 3px #000; }
+        .emoji-display { font-size: 4rem; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .emoji-card { transition: transform 0.3s ease; display: inline-block; text-shadow: 0 3px 8px rgba(0,0,0,0.4); opacity: 0; }
+        .emoji-card.visible { animation: popIn 0.5s forwards ease-out; }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        .guess-input-area { margin: 25px 0; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        #player-guess-input {
+            width: 100%; max-width: 450px; padding: 15px 25px; border-radius: 50px;
+            border: 2px solid var(--darker); font-size: 1.2rem;
+            background: rgba(255,255,255,0.05); color: var(--light);
+            font-family: 'Quicksand', sans-serif; text-align: center;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s ease;
+        }
+        #player-guess-input:focus { outline: none; border-color: var(--secondary); box-shadow: inset 0 2px 5px rgba(0,0,0,0.2), 0 0 10px var(--secondary); }
+        .action-buttons-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .answer-reveal-display {
+            font-size: 1.8rem; color: var(--success); margin: 20px 0;
+            font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.4), 0 0 10px var(--success);
+            font-family: "Orbitron", sans-serif;
+        }
+        
+        .final-score-display { display: grid; gap: 20px; margin: 30px 0; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+        .score-card {
+            background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; border: 2px solid var(--gold);
+            transition: all 0.3s ease; box-shadow: 0 5px 10px rgba(0,0,0,0.3); text-align: center;
+        }
+        .score-card .team-name-score { font-family: "Bungee", cursive; font-size: 1.3rem; margin-bottom: 8px; color: var(--primary); }
+        .score-card .score-value-display { font-family: "Orbitron", sans-serif; font-size: 2.2rem; color: var(--light); text-shadow: 0 0 8px var(--gold); }
+        .score-card.winner-glow {
+            animation: winnerGlow 1.5s infinite alternate; border-color: var(--success);
+            box-shadow: 0 0 20px rgba(var(--success-rgb),0.3), 0 0 10px var(--gold), inset 0 0 10px rgba(var(--success-rgb),0.1);
+            background: rgba(var(--success-rgb),0.1);
+        }
+        @keyframes winnerGlow { from { box-shadow: 0 0 20px rgba(var(--success-rgb),0.3), 0 0 10px var(--gold); } to { box-shadow: 0 0 35px rgba(var(--success-rgb),0.6), 0 0 20px var(--gold); } }
+        
+        .win-message {
+            font-size: 3rem; margin: 30px 0; color: var(--gold);
+            text-shadow: 0 3px 0px #000, 0 0 20px var(--primary);
+            font-family: "Luckiest Guy", cursive;
+        }
+        .winner-trophy {
+            font-size: 6rem; margin: 20px 0 30px 0;
+            animation: bounce 1.5s infinite ease-in-out; color: var(--gold);
+            text-shadow: 0 0 20px var(--gold), 0 0 30px var(--primary);
+        }
+        @keyframes bounce { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-35px) scale(1.1);} }
+        #winner-subtext { font-family: "Quicksand", sans-serif; font-size: 1.1rem; color: rgba(242,242,242,0.8); margin-bottom: 20px; }
+
+        button {
+            background: linear-gradient(135deg, var(--primary) 0%, #ff7711 100%);
+            color: var(--light); border: 2px solid var(--darker); padding: 15px 25px;
+            font-size: 1rem; border-radius: 50px; cursor: pointer;
+            font-weight: normal; transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3), inset 0 -2px 5px rgba(0,0,0,0.2);
+            margin: 10px 5px; font-family: "Bungee", cursive; text-shadow: 1px 1px 2px #000;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            min-width: 180px; flex-shrink: 0;
+        }
+        button:hover:not(:disabled) { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--primary); background: linear-gradient(135deg, #ff7711 0%, var(--primary) 100%); }
+        button:active:not(:disabled) { transform: translateY(-1px) scale(1.02); }
+        button:disabled { background: rgba(255,255,255,0.1); cursor:not-allowed; opacity:0.6; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transform:none; border-color: rgba(0,0,0,0.5); }
+        .btn-success { background: linear-gradient(135deg, var(--success) 0%, #00a890 100%); }
+        .btn-success:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--success); }
+        .btn-danger { background: linear-gradient(135deg, var(--danger) 0%, #ff416c 100%); }
+        .btn-danger:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--danger); }
+        .btn-secondary { background: linear-gradient(135deg, var(--secondary) 0%, #b85cd6 100%); }
+        .btn-secondary:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--secondary); }
+        .btn-info { background: linear-gradient(135deg, var(--info) 0%, #3eb7af 100%); }
+        .btn-info:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--info); }
+        .game-over-buttons-container { display: flex; justify-content: center; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+        .game-over-button-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; }
+        .treat-yourself-callout { margin-bottom: 8px; background-color: var(--gold); color: var(--darker); padding: 8px 15px; border-radius: 20px; font-family: "Bungee",cursive; font-size:0.9rem; white-space:nowrap; box-shadow:0 2px 10px rgba(255,215,0,0.5); display:none; align-items:center; gap:8px; z-index:10;}
+        .treat-yourself-callout i { font-size: 1.2em; animation: bounceArrow 1s infinite; }
+        @keyframes bounceArrow { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
+
+        .icon-btn { position:absolute; background:rgba(0,0,0,0.3); color:var(--light); border:1px solid var(--gold); border-radius:50%; width:40px; height:40px; font-size:1.1rem; cursor:pointer; transition:all .3s ease; display:flex; justify-content:center; align-items:center; z-index:100; padding:0; margin:0; box-shadow:none; text-shadow:none; }
+        .icon-btn#settings-btn { top:15px; right:15px; }
+        .icon-btn:hover { background:rgba(0,0,0,0.5); transform:scale(1.1) rotate(15deg); box-shadow:0 0 10px var(--gold); }
+        .icon-btn i { margin:0; }
+        .modal { position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(8px); display:none; justify-content:center; align-items:center; }
+        .modal-content { background-color:var(--darker); margin:auto; padding:30px; border:2px solid var(--gold); border-radius:15px; width:80%; max-width:450px; box-shadow:0 10px 30px rgba(0,0,0,0.6),0 0 20px var(--primary); position:relative; color:var(--light); }
+        .modal-content h2 { font-family:"Bungee",cursive; color:var(--primary); text-align:center; margin-bottom:25px; font-size:1.8rem; }
+        .setting-item { margin-bottom:20px; display:flex; flex-direction:column; }
+        .setting-item label { margin-bottom:8px; font-weight:600; font-size:0.9rem;}
+        input[type=range] { -webkit-appearance:none; width:100%; background:transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; height:20px; width:20px; border-radius:50%; background:var(--primary); cursor:pointer; margin-top:-7px; box-shadow:0 0 8px var(--primary); }
+        input[type=range]::-moz-range-thumb { height:20px; width:20px; border-radius:50%; background:var(--primary); cursor:pointer; border:none; box-shadow:0 0 8px var(--primary); }
+        input[type=range]::-webkit-slider-runnable-track { width:100%; height:6px; cursor:pointer; background:rgba(255,255,255,0.2); border-radius:3px; border:1px solid rgba(0,0,0,0.2); }
+        input[type=range]::-moz-range-track { width:100%; height:6px; cursor:pointer; background:rgba(255,255,255,0.2); border-radius:3px; border:1px solid rgba(0,0,0,0.2); }
+        .close-modal-btn { color:#aaa; position:absolute; top:15px; right:20px; font-size:28px; font-weight:bold; cursor:pointer; }
+        .close-modal-btn:hover, .close-modal-btn:focus { color:var(--light); text-decoration:none; }
+
+        .feedback-popup {
+            position: fixed; top: 50%; left: 50%; color: white; padding: 30px 50px;
+            border-radius: 20px; font-size: 2.8rem; font-family: "Luckiest Guy", cursive;
+            text-align: center; z-index: 2000; box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+            opacity: 0; transform: translate(-50%,-50%) scale(0.7); border: 3px solid var(--gold);
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out; display: none;
+        }
+        .feedback-popup.show { display: block; opacity: 1; transform: translate(-50%,-50%) scale(1); animation: feedbackPopAnimWITW 1.5s forwards; }
+        @keyframes feedbackPopAnimWITW { 0% { opacity: 0; transform: translate(-50%,-50%) scale(0.7); } 20% { opacity: 1; transform: translate(-50%,-50%) scale(1); } 80% { opacity: 1; transform: translate(-50%,-50%) scale(1); } 100% { opacity: 0; transform: translate(-50%,-50%) scale(0.7); } }
+        .feedback-popup.correct-feedback { background-color: rgba(var(--success-rgb),0.97); text-shadow: 0 0 10px var(--success); }
+        .feedback-popup.incorrect-feedback { background-color: rgba(255,75,43,0.97); text-shadow: 0 0 10px var(--danger); }
+        .feedback-popup.info-feedback { background-color: rgba(78,205,196,0.97); text-shadow: 0 0 10px var(--info); }
+
+        .confetti-piece { position:fixed; width:10px; height:20px; background-color:var(--primary); opacity:0; animation-timing-function:linear; animation-fill-mode:forwards; pointer-events:none; z-index:3000; }
+        @keyframes fallAndFade { 0%{transform:translateY(-20vh) rotate(0deg); opacity:1;} 100%{transform:translateY(120vh) rotate(720deg); opacity:0;} }
+
+        @media (max-width: 768px) {
+            .game-container { padding: 20px; }
+            h1 { font-size: 2.5rem; } h3, .screen-title { font-size: 1.6rem; }
+            .emoji-display { font-size: 3rem; }
+            .final-score-display { flex-direction: column; align-items: center; gap: 15px; }
+            .score-card { min-width: 80%; max-width: 90%; }
+            .win-message { font-size: 2.2rem; }
+            .winner-trophy { font-size: 5rem; }
+            .modal-content { padding: 20px; }
+            .game-over-buttons-container { flex-direction: column; align-items: center;}
+            .game-over-buttons-container .game-over-button-wrapper { width: 90%; margin: 5px auto; }
+            .game-over-buttons-container .game-over-button-wrapper button { width: 100%; }
+            .feedback-popup { font-size: 2.2rem; padding: 25px 40px; width: 80%;}
+            .place-display-stage::before, .place-display-stage::after { display: none; }
+        }
+         @media (max-width: 480px) {
+            h1 { font-size: 2rem; } h3, .screen-title { font-size: 1.4rem; }
+            .game-container { padding: 15px; }
+            .emoji-display { font-size: 2.5rem; gap: 10px; }
+            .icon-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1rem; }
+            .feedback-popup { font-size: 1.8rem; padding: 20px 30px;}
+            .game-info { font-size: 0.9rem; flex-direction: column; gap: 10px;}
+         }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <img id="corner-logo-static" class="brand-logo" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
+        <button id="settings-btn" class="icon-btn" aria-label="Open Settings"> <i class="fas fa-cog"></i> </button>
+
+        <div id="start-screen" class="screen active">
+            <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
+            <h1>Moji Mania</h1>
+            <div class="instructions">
+                <p><strong>HOW TO PLAY:</strong></p>
+                <ul>
+                    <li><i class="fas fa-lightbulb"></i> Decode the emojis to guess the secret word or phrase!</li>
+                    <li><i class="fas fa-user"></i> **Single Player:** Complete 5 rounds and see how many you can get right.</li>
+                    <li><i class="fas fa-users"></i> **Multiplayer:** Up to 4 teams. First to <strong>5 points</strong> wins!</li>
+                </ul>
+            </div>
+            <div class="game-mode-selection">
+                <div class="mode-option selected" data-mode="single"> <i class="fas fa-user"></i> <h3>Single Player</h3> <p>5 rounds</p> </div>
+                <div class="mode-option" data-mode="multi"> <i class="fas fa-users"></i> <h3>Multiplayer</h3> <p>With friends</p> </div>
+            </div>
+            <div id="team-inputs-container" style="display:none;">
+                <h3 class="screen-title">Enter Team Names</h3>
+                <div id="team-names-grid" class="team-names-grid">
+                    <div class="team-input"> <input type="text" class="team-name-input" placeholder="Team 1 Name"> <button class="remove-team-btn" disabled><i class="fas fa-times"></i></button> </div>
+                    <div class="team-input"> <input type="text" class="team-name-input" placeholder="Team 2 Name"> <button class="remove-team-btn" disabled><i class="fas fa-times"></i></button> </div>
+                </div>
+                <button id="add-team-btn" class="btn-secondary"> <i class="fas fa-plus-circle"></i> Add Team </button>
+            </div>
+            <button id="start-game-btn" class="btn-primary"> Start Game <i class="fas fa-play"></i> </button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div id="game-info-bar" class="game-info"></div>
+            <div id="category-display" class="category-display"></div>
+            <div class="place-display-stage">
+                <div class="stage-curtains left"></div><div class="stage-curtains right"></div>
+                <div class="place-tv-screen">
+                    <h3>What's the Moji?</h3>
+                    <div id="emoji-display" class="emoji-display"></div>
+                </div>
+            </div>
+            <div id="answer-reveal-display" class="answer-reveal-display" style="display: none;"></div>
+            <div class="guess-input-area">
+                <input type="text" id="player-guess-input" placeholder="Type your guess here...">
+            </div>
+            <div class="action-buttons-container">
+                <button id="submit-guess-btn" class="btn-success"><i class="fas fa-paper-plane"></i> Submit Guess</button>
+                <button id="action-btn" class="btn-primary" style="display: none;"><i class="fas fa-arrow-right"></i> Next Round</button>
+            </div>
+        </div>
+
+        <div id="game-over-screen" class="screen">
+            <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
+            <h1>Game Over!</h1>
+            <div class="win-message" id="win-message-final-text">Team Wins!</div>
+            <div class="winner-trophy">🏆</div>
+            <div id="winner-subtext"></div>
+            <div id="final-scores-display" class="final-score-display"></div>
+            <div class="game-over-buttons-container">
+                 <div class="game-over-button-wrapper">
+                    <button id="play-again-btn" class="btn-success"><i class="fas fa-redo"></i> Play Again</button>
+                 </div>
+                 <div class="game-over-button-wrapper">
+                    <button id="main-menu-btn" class="btn-secondary"><i class="fas fa-home"></i> Main Menu</button>
+                 </div>
+                 <div class="game-over-button-wrapper" id="store-button-wrapper">
+                    <button id="visit-store-btn" class="btn-info"><i class="fas fa-store"></i> Visit Store</button>
+                 </div>
+            </div>
+        </div>
+        
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <span id="close-modal-btn" class="close-modal-btn">×</span>
+                <h2>Settings</h2>
+                <div class="setting-item"> <label for="bgm-volume-slider">Background Music Volume:</label> <input type="range" id="bgm-volume-slider" min="0" max="1" step="0.01" value="0.2"> </div>
+                <div class="setting-item"> <label for="sfx-toggle-btn">Sound Effects:</label> <button id="sfx-toggle-btn" class="btn-secondary">SFX: ON</button> </div>
+            </div>
+        </div>
+        <div id="feedback-popup" class="feedback-popup"><span id="feedback-message-text-el"></span></div>
+    </div>
+    
+    <audio id="background-game-music" loop src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3"></audio>
+    <audio id="start-game-sound" src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3"></audio>
+    <audio id="interaction-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
+    <audio id="correct-answer-sound" src="https://static.wixstatic.com/mp3/9ce3e5_76691a6fefcd4536aa403ada111e886a.mp3"></audio>
+    <audio id="wrong-answer-sound" src="https://static.wixstatic.com/mp3/9ce3e5_277f814439064d1bbe5c0342241b23e4.mp3"></audio>
+    <audio id="win-game-sound" src="https://static.wixstatic.com/mp3/9ce3e5_5d7fcfc389734cf7994f5d37de621e3d.mp3"></audio>
+    <audio id="curtain-sound" src="https://static.wixstatic.com/mp3/9ce3e5_ccd36cdf98bf4e1594cf2e52d5296c51.wav"></audio>
+
+    <script>
+        const gameConfig = { sfxEnabled: true, musicVolume: 0.2, winningScore: 5, singlePlayerRounds: 5 };
+        const gameState = {
+            players: [], currentRound: 1, scores: {}, gameMode: 'single', currentPuzzle: null,
+            puzzles: [ { emojis: ["⭐", "💵"], answer: "Starbucks", category: "Brand" }, { emojis: ["🔍","🐠"], answer: "Finding Nemo", category: "Movie" }, { emojis : ["👸","❄️"], answer : "Frozen", category: "Movie" }, { emojis : ["🕷️","👨"], answer : "Spiderman", category: "Character" }, { emojis : ["🌮","🔔"], answer : "Tacobell", category: "Brand" }, { emojis : ["🐭","🏰"], answer : "Disney", category: "Brand" }, { emojis : ["👨","👨","👨","👨","👨"], answer : "Five guys", category: "Brand" }, { emojis : ["🍔","👑"], answer : "Burger King", category: "Brand" }, { emojis : ["🍕","🛖"], answer : "Pizza Hut", category: "Brand" }, { emojis : ["👵","💊"], answer : "Nandos", category: "Brand" }, { emojis : ["🇨🇷","☕"], answer : "Costa Coffee", category: "Brand" }, { emojis : ["🗑️","🏀","🍩"], answer : "Dunkin Donuts", category: "Brand" }, { emojis : ["🍗","🛑"], answer : "Wingstop", category: "Brand" }, { emojis : ["👨🏻‍🔧","🍄","🇮🇹"], answer : "Mario", category: "Character" }, { emojis : ["👩‍🍼","🐐","🚣‍♀️","🐝"], answer : "Margot Robbie", category: "Celebrity" },
+                 { emojis : ["🔑","🪵","🪵"], answer : "Kellogg's", category: "Brand" }, { emojis : ["🎲","☀️"], answer : "Dyson", category: "Brand" }, { emojis : ["⚫","🫐"], answer : "Blackberry", category: "Brand" }, { emojis : ["🐜","🐜","🐜","🐜"], answer : "France", category: "Place" }, { emojis : ["🍫","🌧️"], answer : "Bahrain", category: "Place" }, { emojis : ["📷","🎀","🦌"], answer : "Cambodia", category: "Place"  }, { emojis : ["👁️","🏃"], answer : "Iran", category: "Place" }, { emojis : ["😡","⛽","🏎️"], answer : "Madagascar", category: "Place" }, { emojis : ["👔","🛬"], answer : "Thailand", category: "Place" }, { emojis : ["🐢","🔑"], answer : "Turkey", category: "Place" }, { emojis : ["🐝","🔛","🤒"], answer : "Beyonce", category: "Celebrity" }, { emojis : ["🐅","🪵"], answer : "Tiger Woods", category: "Celebrity" }, { emojis : ["🌶️","👯"], answer : "Spice Girls", category: "Celebrity" }, { emojis : ["🍅","🚢"], answer : "Tom Cruise", category: "Celebrity" }, { emojis : ["Ⓜ️","Ⓜ️"], answer : "Eminem", category: "Celebrity" },
+                 { emojis : ["💩","💀","🥧"], answer : "Pewdiepie", category: "Celebrity" }, { emojis : ["🔴","🐂"], answer : "Red Bull", category: "Brand" }, { emojis : ["🧽","🩳"], answer : "SpongeBob", category: "Character" }, { emojis : ["🇪","🌳","🤿"], answer : "Elon Musk", category: "Celebrity" }, { emojis : ["👎","🐰"], answer : "Bad Bunny", category: "Celebrity" },
+            ], usedPuzzles: [],
+        };
+        const dom = {
+            screens: { start: document.getElementById('start-screen'), game: document.getElementById('game-screen'), gameOver: document.getElementById('game-over-screen') },
+            cornerLogo: document.getElementById('corner-logo-static'),
+            modeOptions: document.querySelectorAll('.mode-option'),
+            teamInputsContainer: document.getElementById('team-inputs-container'),
+            teamNamesGrid: document.getElementById('team-names-grid'),
+            addTeamBtn: document.getElementById('add-team-btn'),
+            startGameBtn: document.getElementById('start-game-btn'),
+            gameInfoBar: document.getElementById('game-info-bar'),
+            categoryDisplay: document.getElementById('category-display'),
+            leftCurtain: document.querySelector('.stage-curtains.left'),
+            rightCurtain: document.querySelector('.stage-curtains.right'),
+            emojiDisplay: document.getElementById('emoji-display'),
+            answerRevealDisplay: document.getElementById('answer-reveal-display'),
+            playerGuessInput: document.getElementById('player-guess-input'),
+            submitGuessBtn: document.getElementById('submit-guess-btn'),
+            actionBtn: document.getElementById('action-btn'),
+            winMessageFinalText: document.getElementById('win-message-final-text'),
+            winnerSubtext: document.getElementById('winner-subtext'),
+            finalScoresDisplay: document.getElementById('final-scores-display'),
+            playAgainBtn: document.getElementById('play-again-btn'),
+            mainMenuBtn: document.getElementById('main-menu-btn'),
+            visitStoreBtn: document.getElementById('visit-store-btn'),
+            storeButtonWrapper: document.getElementById('store-button-wrapper'),
+            settings: { btn: document.getElementById('settings-btn'), modal: document.getElementById('settings-modal'), closeBtn: document.getElementById('close-modal-btn'), volumeSlider: document.getElementById('bgm-volume-slider'), sfxToggle: document.getElementById('sfx-toggle-btn') },
+            feedback: { popup: document.getElementById('feedback-popup'), text: document.getElementById('feedback-message-text-el') },
+            audio: { background: document.getElementById('background-game-music'), start: document.getElementById('start-game-sound'), interaction: document.getElementById('interaction-sound'), correct: document.getElementById('correct-answer-sound'), wrong: document.getElementById('wrong-answer-sound'), win: document.getElementById('win-game-sound'), curtain: document.getElementById('curtain-sound') }
+        };
+        let feedbackTimeoutId;
+        let treatYourselfElement = null;
+
+        function playSound(audioElement) { if (gameConfig.sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.volume = 0.7; audioElement.play().catch(e => console.error("SFX error:", e)); } }
+        function initBackgroundMusic() { if(dom.audio.background.paused){ dom.audio.background.volume = gameConfig.musicVolume; dom.audio.background.play().catch(e => {}); } }
+        function showFeedbackMessage(message, type, duration = 1500) {
+            dom.feedback.text.textContent = message; dom.feedback.popup.className = 'feedback-popup';
+            if (type) dom.feedback.popup.classList.add(type);
+            dom.feedback.popup.classList.add('show');
+            clearTimeout(feedbackTimeoutId);
+            feedbackTimeoutId = setTimeout(() => dom.feedback.popup.classList.remove('show'), duration - 100);
+        }
+        function triggerConfetti() {
+            playSound(dom.audio.win);
+            const confCount = 100, colors = ['var(--primary)','var(--secondary)','var(--success)','var(--light)','var(--danger)'];
+            for (let i=0; i<confCount; i++) {
+                const piece = document.createElement('div'); piece.classList.add('confetti-piece');
+                piece.style.left = `${Math.random()*100}vw`; piece.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+                const animDur = Math.random()*3+2; piece.style.animationName = 'fallAndFade';
+                piece.style.animationDuration = `${animDur}s`; piece.style.animationDelay = `${Math.random()}s`;
+                document.body.appendChild(piece);
+                setTimeout(() => piece.remove(), (animDur + parseFloat(piece.style.animationDelay||0))*1000 + 500);
+            }
+        }
+        function switchScreen(screenId) {
+            Object.values(dom.screens).forEach(screen => screen.classList.remove('active'));
+            dom.screens[screenId].classList.add('active');
+            dom.cornerLogo.style.display = (screenId !== 'start') ? 'block' : 'none';
+             if (treatYourselfElement) {
+                treatYourselfElement.style.display = (screenId === 'gameOver') ? 'flex' : 'none';
+            }
+        }
+        
+        function addTeamInput() {
+            const teamCount = dom.teamNamesGrid.querySelectorAll('.team-name-input').length;
+            if (teamCount >= 4) { showFeedbackMessage("Maximum of 4 teams allowed.", "info-feedback"); return; }
+            const newInputDiv = document.createElement('div'); newInputDiv.className = 'team-input';
+            newInputDiv.innerHTML = `<input type="text" class="team-name-input" placeholder="Team ${teamCount + 1}"><button class="remove-team-btn"><i class="fas fa-times"></i></button>`;
+            dom.teamNamesGrid.appendChild(newInputDiv);
+            newInputDiv.querySelector('.remove-team-btn').addEventListener('click', function() {
+                playSound(dom.audio.interaction);
+                if (dom.teamNamesGrid.querySelectorAll('.team-input').length > 2) dom.teamNamesGrid.removeChild(newInputDiv);
+                updateRemoveTeamButtonsState();
+            });
+            updateRemoveTeamButtonsState();
+        }
+        function updateRemoveTeamButtonsState() {
+             const removeButtons = dom.teamNamesGrid.querySelectorAll('.remove-team-btn');
+            const canRemove = dom.teamNamesGrid.querySelectorAll('.team-input').length > 2;
+            removeButtons.forEach(btn => btn.disabled = !canRemove);
+        }
+
+        function startGame() {
+            if (gameState.gameMode === 'single') {
+                gameState.players = ['You']; gameState.scores = { 'You': 0 };
+            } else {
+                gameState.players = Array.from(dom.teamNamesGrid.querySelectorAll('.team-name-input')).map((input, idx) => input.value.trim() || `Team ${idx + 1}`);
+                if (gameState.players.length < 2) { showFeedbackMessage('You need at least 2 teams!', "info-feedback"); return; }
+                if (new Set(gameState.players).size !== gameState.players.length) { showFeedbackMessage("Team names must be unique!", "info-feedback"); return; }
+                gameState.scores = {}; gameState.players.forEach(team => { gameState.scores[team] = 0; });
+            }
+            gameState.currentRound = 1; gameState.usedPuzzles = [];
+            switchScreen('game');
+            playSound(dom.audio.start);
+            initBackgroundMusic();
+            setupRound();
+        }
+
+        function setupRound() {
+            dom.leftCurtain.classList.remove('open');
+            dom.rightCurtain.classList.remove('open');
+            dom.emojiDisplay.innerHTML = '';
+            dom.answerRevealDisplay.style.display = 'none';
+
+            let availablePuzzles = gameState.puzzles.filter(p => !gameState.usedPuzzles.includes(p.answer));
+            if (availablePuzzles.length === 0) { gameState.usedPuzzles = []; availablePuzzles = [...gameState.puzzles]; }
+            if (availablePuzzles.length === 0) { showGameOver(); return; }
+            gameState.currentPuzzle = availablePuzzles[Math.floor(Math.random() * availablePuzzles.length)];
+            gameState.usedPuzzles.push(gameState.currentPuzzle.answer);
+
+            dom.categoryDisplay.textContent = `Category: ${gameState.currentPuzzle.category}`;
+            gameState.currentPuzzle.emojis.forEach((emoji, i) => {
+                const emojiSpan = document.createElement('span'); emojiSpan.className = 'emoji-card';
+                emojiSpan.textContent = emoji;
+                emojiSpan.style.animationDelay = `${i * 0.1}s`;
+                dom.emojiDisplay.appendChild(emojiSpan);
+            });
+            updateGameInfoUI();
+            
+            dom.playerGuessInput.value = '';
+            dom.playerGuessInput.disabled = false;
+            dom.submitGuessBtn.disabled = false;
+            dom.submitGuessBtn.style.display = 'inline-flex';
+            dom.actionBtn.style.display = 'none';
+            setTimeout(() => { dom.playerGuessInput.focus(); }, 500);
+
+            setTimeout(() => {
+                playSound(dom.audio.curtain);
+                dom.leftCurtain.classList.add('open');
+                dom.rightCurtain.classList.add('open');
+                dom.emojiDisplay.querySelectorAll('.emoji-card').forEach(card => card.classList.add('visible'));
+            }, 300);
+        }
+
+        function handleSubmitGuess() {
+            const playerGuess = dom.playerGuessInput.value.trim();
+            if (!playerGuess) { showFeedbackMessage("Please enter a guess!", "info-feedback"); return; }
+
+            const isCorrect = playerGuess.toLowerCase() === gameState.currentPuzzle.answer.toLowerCase();
+            const currentTeamIndex = (gameState.currentRound - 1) % gameState.players.length;
+            const currentTeamName = gameState.players[currentTeamIndex];
+            
+            dom.playerGuessInput.disabled = true;
+            dom.submitGuessBtn.style.display = 'none';
+            dom.actionBtn.style.display = 'inline-flex';
+
+            if (isCorrect) {
+                playSound(dom.audio.correct);
+                showFeedbackMessage(gameState.gameMode === 'single' ? "Correct!" : `${currentTeamName} gets a point!`, "correct-feedback");
+                gameState.scores[currentTeamName]++;
+            } else {
+                playSound(dom.audio.wrong);
+                showFeedbackMessage("Incorrect!", "incorrect-feedback");
+            }
+
+            dom.answerRevealDisplay.textContent = `Answer: ${gameState.currentPuzzle.answer}`;
+            dom.answerRevealDisplay.style.display = 'block';
+
+            // FIXED: Always increment round in both modes to ensure turn rotation
+            gameState.currentRound++;
+            
+            updateGameInfoUI();
+            checkGameOver();
+        }
+
+        function checkGameOver() {
+             const maxScore = gameState.gameMode === 'multi' ? Math.max(...Object.values(gameState.scores)) : 0;
+             if ((gameState.gameMode === 'single' && gameState.currentRound > gameConfig.singlePlayerRounds) ||
+                 (gameState.gameMode === 'multi' && maxScore >= gameConfig.winningScore)) {
+                dom.actionBtn.innerHTML = 'See Final Results <i class="fas fa-trophy"></i>';
+                dom.actionBtn.onclick = showGameOver;
+             } else {
+                dom.actionBtn.innerHTML = 'Next Round <i class="fas fa-arrow-right"></i>';
+                dom.actionBtn.onclick = setupRound;
+             }
+        }
+        
+        function updateGameInfoUI() {
+            dom.gameInfoBar.innerHTML = '';
+            if (gameState.gameMode === 'single') {
+                dom.gameInfoBar.innerHTML = `<div>Round: ${gameState.currentRound}/${gameConfig.singlePlayerRounds}</div><div>Score: ${gameState.scores['You'] || 0}</div>`;
+            } else {
+                 const currentTeamIndex = (gameState.currentRound - 1) % gameState.players.length;
+                 const currentTeamName = gameState.players[currentTeamIndex];
+                 const roundDisplay = Math.floor((gameState.currentRound - 1) / gameState.players.length) + 1;
+                 dom.gameInfoBar.innerHTML = `<div>Turn: ${currentTeamName}</div><div>Round: ${roundDisplay}</div>`;
+            }
+        }
+
+        function showGameOver() {
+            switchScreen('gameOver');
+            if (gameState.gameMode === 'single') {
+                const finalScore = gameState.scores['You'];
+                dom.winMessageFinalText.textContent = 'Well Played!';
+                dom.winnerSubtext.textContent = `You scored ${finalScore} out of ${gameConfig.singlePlayerRounds}!`;
+                if(finalScore >= gameConfig.singlePlayerRounds -1) triggerConfetti(); else playSound(dom.audio.win);
+            } else {
+                const maxScore = Math.max(...Object.values(gameState.scores));
+                if (maxScore < gameConfig.winningScore) {
+                     dom.winMessageFinalText.textContent = "Game Over";
+                     dom.winnerSubtext.textContent = "Nobody reached the winning score. Better luck next time!";
+                     playSound(dom.audio.wrong);
+                } else {
+                    const winners = Object.entries(gameState.scores).filter(([_, score]) => score === maxScore).map(([name]) => name);
+                    if (winners.length === 1) {
+                        dom.winMessageFinalText.textContent = `${winners[0]} Wins!`;
+                        dom.winnerSubtext.textContent = `Congratulations on reaching ${maxScore} points!`;
+                    } else {
+                        dom.winMessageFinalText.textContent = "It's a Tie!";
+                        dom.winnerSubtext.textContent = `Multiple teams finished with ${maxScore} points!`;
+                    }
+                    triggerConfetti();
+                }
+            }
+            
+            dom.finalScoresDisplay.innerHTML = '';
+            const maxScore = Math.max(...Object.values(gameState.scores));
+            Object.entries(gameState.scores).forEach(([name, score]) => {
+                const scoreCard = document.createElement('div');
+                const isWinner = gameState.gameMode === 'multi' && score === maxScore && maxScore >= gameConfig.winningScore;
+                scoreCard.className = `score-card ${isWinner ? 'winner-glow' : ''}`;
+                scoreCard.innerHTML = `<div class="team-name-score">${name}</div><div class="score-value-display">${score}</div>`;
+                dom.finalScoresDisplay.appendChild(scoreCard);
+            });
+
+            // "Treat Yourself" logic
+            if (!treatYourselfElement) {
+                treatYourselfElement = document.createElement('div');
+                treatYourselfElement.className = 'treat-yourself-callout';
+                treatYourselfElement.innerHTML = `<span>Treat Yourself!</span> <i class="fas fa-arrow-down"></i>`;
+                if (dom.storeButtonWrapper) {
+                   dom.storeButtonWrapper.insertBefore(treatYourselfElement, dom.visitStoreBtn);
+                }
+            }
+            if(treatYourselfElement) treatYourselfElement.style.display = 'flex';
+        }
+        
+        function newGame() {
+            dom.teamNamesGrid.innerHTML = `<div class="team-input"><input type="text" class="team-name-input" placeholder="Team 1"><button class="remove-team-btn" disabled><i class="fas fa-times"></i></button></div><div class="team-input"><input type="text" class="team-name-input" placeholder="Team 2"><button class="remove-team-btn" disabled><i class="fas fa-times"></i></button></div>`;
+            dom.modeOptions.forEach(opt => opt.classList.remove('selected'));
+            dom.modeOptions[0].classList.add('selected'); gameState.gameMode = 'single';
+            dom.teamInputsContainer.style.display = 'none';
+            updateRemoveTeamButtonsState(); switchScreen('start');
+        }
+
+        // --- Event Listeners ---
+        dom.modeOptions.forEach(option => option.addEventListener('click', function() {
+            playSound(dom.audio.interaction); dom.modeOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected'); gameState.gameMode = this.dataset.mode;
+            dom.teamInputsContainer.style.display = gameState.gameMode === 'multi' ? 'block' : 'none';
+        }));
+        dom.addTeamBtn.addEventListener('click', () => { playSound(dom.audio.interaction); addTeamInput(); });
+        dom.startGameBtn.addEventListener('click', startGame);
+        dom.submitGuessBtn.addEventListener('click', handleSubmitGuess);
+        dom.playerGuessInput.addEventListener('keypress', e => { if (e.key === 'Enter' && !dom.submitGuessBtn.disabled) dom.submitGuessBtn.click(); });
+        dom.playAgainBtn.addEventListener('click', () => { playSound(dom.audio.start); startGame(); });
+        dom.mainMenuBtn.addEventListener('click', () => { playSound(dom.audio.interaction); newGame(); });
+        dom.visitStoreBtn.addEventListener('click', () => { playSound(dom.audio.interaction); window.open('https://www.blyza.com/', '_blank'); });
+        dom.settings.btn.addEventListener('click', () => { playSound(dom.audio.interaction); dom.settings.modal.style.display = 'flex'; });
+        dom.settings.closeBtn.addEventListener('click', () => { playSound(dom.audio.interaction); dom.settings.modal.style.display = 'none'; });
+        window.addEventListener('click', (e) => { if (e.target === dom.settings.modal) { playSound(dom.audio.interaction); dom.settings.modal.style.display = 'none'; } });
+        dom.settings.volumeSlider.addEventListener('input', e => { gameConfig.musicVolume = parseFloat(e.target.value); dom.audio.background.volume = gameConfig.musicVolume; });
+        dom.settings.sfxToggle.addEventListener('click', () => {
+            playSound(dom.audio.interaction); gameConfig.sfxEnabled = !gameConfig.sfxEnabled;
+            dom.settings.sfxToggle.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
+            dom.settings.sfxToggle.classList.toggle('btn-success', gameConfig.sfxEnabled);
+            dom.settings.sfxToggle.classList.toggle('btn-danger', !gameConfig.sfxEnabled);
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            dom.settings.sfxToggle.classList.toggle('btn-success', gameConfig.sfxEnabled);
+            dom.settings.sfxToggle.classList.toggle('btn-danger', !gameConfig.sfxEnabled);
+            dom.settings.volumeSlider.value = gameConfig.musicVolume;
+            updateRemoveTeamButtonsState(); newGame();
+        });
+    </script>
+</body>
+</html>

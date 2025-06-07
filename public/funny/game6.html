@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paranoia - Game Show Edition!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Luckiest+Guy&family=Quicksand:wght@300..700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles from Guess The Price */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #FF8833; /* Blyza Orange */
+            --secondary: #CB7AE1; /* Blyza Purple */
+            --light: #F2F2F2;
+            --success: #00BFA6; /* Blyza Keppel */
+            --danger: #ff4b2b;
+            --dark: #1a1c20;
+            --darker: #0f1012;
+            --info: #4ECDC4;
+            --gold: #FFD700; /* Game show gold */
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px; /* GTP Padding */
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Brand Logo Styles */
+        .brand-logo {
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        .brand-logo-prominent {
+            display: block;
+            margin: 0 auto 20px;
+            max-height: 80px; /* GTP Height */
+        }
+
+        h1 { /* Main Game Title */
+            font-family: "Luckiest Guy", cursive;
+            font-size: 3rem; /* GTP Size */
+            margin-bottom: 25px;
+            color: var(--gold);
+            text-shadow:
+                0 2px 0px #000,
+                0 4px 6px rgba(0, 0, 0, 0.5),
+                0 0 30px var(--primary);
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        /* Screen Styles */
+        .screen { display: none; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .active { display: block; }
+
+        /* Player Input Styles - GTP Style */
+        .player-inputs {
+            margin: 30px 0;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .player-inputs h3 { /* "Enter Player Names" */
+             font-family: "Bungee", cursive;
+             font-size: 1.6rem;
+             margin-bottom: 20px;
+             color: var(--primary);
+             text-shadow: 0 1px 2px #000;
+        }
+        .player-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .player-input-wrapper input {
+            flex-grow: 1;
+            padding: 15px 20px; /* GTP input padding */
+            border-radius: 12px; /* GTP input radius */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 1.1rem; /* GTP input font size */
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            transition: all 0.3s ease;
+            font-family: 'Quicksand', sans-serif;
+        }
+        .player-input-wrapper input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 10px rgba(203, 122, 225, 0.2);
+        }
+        .remove-player-btn { /* Inherits general button, specific overrides */
+            padding: 8px 12px !important;
+            font-size: 0.9rem !important;
+            min-width: auto; /* Allow to shrink for icon */
+        }
+        .remove-player-btn i { margin: 0; } /* Center icon if only child */
+
+
+        /* Slot Machine Animation - GTP Style */
+        .slot-machine {
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+            background: var(--darker); /* Darker, like a TV screen */
+            border-radius: 15px;
+            margin: 30px auto;
+            border: 5px solid #333; /* TV border */
+            box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 600px; /* Wider for effect */
+        }
+        .slot-window { /* The "selected" area, like a target line on a slot */
+            height: 50px;
+            width: 100%;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(var(--gold-rgb, 255, 215, 0), 0.15); /* Gold tint */
+            border-top: 3px solid var(--gold);
+            border-bottom: 3px solid var(--gold);
+            box-shadow: 0 0 15px var(--gold);
+            z-index: 1;
+        }
+        .slot-items-container {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        .slot-item {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem; /* Larger font */
+            color: var(--light);
+            font-weight: bold;
+            font-family: "Bungee", cursive;
+            text-shadow: 0 1px 3px #000, 0 0 5px var(--primary); /* Game show text shadow */
+            text-transform: uppercase; /* More emphasis */
+        }
+
+        /* Question Display - GTP Style Card */
+        .question-display-area {
+            background: rgba(0,0,0, 0.2); /* GTP card BG */
+            padding: 25px;
+            border-radius: 20px;
+            margin: 30px 0;
+            border: 2px solid var(--gold); /* GTP card border */
+            box-shadow: 0 0 15px var(--gold); /* GTP card shadow */
+            position: relative;
+        }
+        .question-text-element {
+            font-size: 1.5rem; /* Larger question text */
+            margin-bottom: 20px;
+            color: var(--light); /* Question in light, player name in gold/primary */
+            filter: blur(8px);
+            transition: filter 0.3s ease-in-out;
+            user-select: none;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+        .question-text-element.revealed { filter: blur(0); }
+        .selected-player-name { /* "Question for: Player X" */
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin: 10px 0 20px 0;
+            font-family: "Bungee", cursive;
+            text-shadow: 0 1px 2px #000;
+        }
+        .reveal-instruction-text {
+            font-size: 1.1rem;
+            color: var(--secondary);
+            margin: 15px 0 5px 0; /* Adjusted margin */
+            font-style: italic;
+        }
+
+        /* Buttons - GTP Style */
+        button {
+            background: linear-gradient(135deg, var(--primary) 0%, #ff7711 100%);
+            color: var(--light);
+            border: 2px solid var(--darker);
+            padding: 15px 25px;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: normal; /* Bungee is bold */
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3), inset 0 -2px 5px rgba(0,0,0,0.2);
+            margin: 10px 5px;
+            font-family: "Bungee", cursive;
+            text-shadow: 1px 1px 2px #000;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            flex-shrink: 0;
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--primary);
+            background: linear-gradient(135deg, #ff7711 0%, var(--primary) 100%);
+        }
+        button:active:not(:disabled) { transform: translateY(-1px) scale(1.02); }
+        button:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed; opacity: 0.6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transform: none; border-color: rgba(0,0,0,0.5);
+        }
+
+        .btn-primary {} /* Default */
+        .btn-secondary { background: linear-gradient(135deg, var(--secondary) 0%, #b85cd6 100%); }
+        .btn-secondary:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--secondary); }
+        .btn-success { background: linear-gradient(135deg, var(--success) 0%, #00a890 100%); }
+        .btn-success:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--success); }
+        .btn-danger { background: linear-gradient(135deg, var(--danger) 0%, #ff416c 100%); }
+        .btn-danger:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--danger); }
+        .btn-info { background: linear-gradient(135deg, var(--info) 0%, #3eb7af 100%); }
+        .btn-info:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--info); }
+
+
+        /* Round Info - GTP Style */
+        .round-info-display {
+            background: rgba(0, 0, 0, 0.2); /* GTP game info BG */
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-size: 1.2rem; /* Larger */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: "Orbitron", sans-serif; /* Match GTP Game Info */
+            color: var(--gold);
+            text-shadow: 0 0 5px var(--primary);
+        }
+
+        /* Instructions Section - GTP Style */
+        .instructions {
+            font-family: "Quicksand", sans-serif;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            margin: 30px 0;
+            line-height: 1.8;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+        .instructions p { /* "How to Play" title */
+            font-size: 1.2rem; margin-bottom: 15px; color: var(--light);
+            font-family: "Bungee", cursive;
+        }
+        .instructions ul { list-style-type: none; padding: 0 15px; }
+        .instructions li { margin-bottom: 12px; display: flex; align-items: center; color: var(--light); font-size: 1rem;}
+        .instructions li a { color: var(--primary); text-decoration: none; display:inline-flex; align-items: center; transition: color 0.3s ease;}
+        .instructions li a:hover { color: var(--secondary); }
+        .instructions i { margin-right: 15px; font-size: 1.4em; color: var(--primary); width:20px; text-align:center;}
+
+        /* Game Over Screen Specifics - GTP Style */
+        .game-over-message {
+            font-size: 3rem; /* Match GTP win message */
+            margin: 30px 0;
+            color: var(--gold);
+            text-shadow: 0 3px 0px #000, 0 0 20px var(--primary);
+            font-family: "Luckiest Guy", cursive;
+        }
+        .game-over-trophy {
+            font-size: 6rem; /* Match GTP trophy */
+            margin: 20px 0 30px 0;
+            animation: bounce 1.5s infinite ease-in-out;
+            color: var(--gold);
+            text-shadow: 0 0 20px var(--gold), 0 0 30px var(--primary);
+        }
+        @keyframes bounce { /* Match GTP bounce */
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-35px) scale(1.1); }
+        }
+        /* Game Over Buttons & Treat Yourself - GTP Style */
+        .game-over-buttons-container {
+            display: flex; justify-content: center; align-items: flex-start;
+            flex-wrap: wrap; gap: 10px; margin-top: 20px;
+        }
+        .game-over-button-wrapper {
+            position: relative; display: flex; flex-direction: column; align-items: center;
+        }
+        .treat-yourself-callout {
+            margin-bottom: 8px; background-color: var(--gold); color: var(--darker);
+            padding: 8px 15px; border-radius: 20px; font-family: "Bungee", cursive;
+            font-size: 0.9rem; white-space: nowrap; box-shadow: 0 2px 10px rgba(255,215,0,0.5);
+            display: none; align-items: center; gap: 8px; z-index: 10;
+        }
+        .treat-yourself-callout i { font-size: 1.2em; animation: bounceArrow 1s infinite; }
+        @keyframes bounceArrow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+
+        /* Settings Icon Button - GTP Style */
+        .icon-btn {
+            position: absolute;
+            background: rgba(0,0,0, 0.3); color: var(--light);
+            border: 1px solid var(--gold); border-radius: 50%;
+            width: 40px; height: 40px; font-size: 1.1rem;
+            cursor: pointer; transition: all 0.3s ease;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 100; padding: 0; margin: 0;
+            box-shadow: none; text-shadow: none; /* Remove general button styles */
+        }
+        .icon-btn#settings-btn { top: 15px; right: 15px; }
+        .icon-btn:hover {
+            background: rgba(0,0,0, 0.5); transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 0 10px var(--gold);
+        }
+        .icon-btn i { margin: 0; }
+
+        /* Modal Styles - GTP Style */
+        .modal {
+            position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; overflow: auto;
+            background-color: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: var(--darker); margin: auto; padding: 30px;
+            border: 2px solid var(--gold); border-radius: 15px;
+            width: 80%; max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px var(--primary);
+            position: relative; color: var(--light);
+        }
+        .modal-content h2 { /* Settings title in modal */
+            font-family: "Bungee", cursive; color: var(--primary);
+            text-align: center; margin-bottom: 25px; font-size: 1.8rem;
+        }
+        .setting-item { margin-bottom: 20px; display: flex; flex-direction: column; }
+        .setting-item label { margin-bottom: 8px; font-weight: 600; font-size: 0.9rem;}
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+          -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
+          background: var(--primary); cursor: pointer; margin-top: -7px;
+          box-shadow: 0 0 8px var(--primary);
+        }
+        input[type=range]::-moz-range-thumb {
+          height: 20px; width: 20px; border-radius: 50%; background: var(--primary);
+          cursor: pointer; border: none; box-shadow: 0 0 8px var(--primary);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+          width: 100%; height: 6px; cursor: pointer; background: rgba(255,255,255,0.2);
+          border-radius: 3px; border: 1px solid rgba(0,0,0,0.2);
+        }
+        input[type=range]::-moz-range-track {
+          width: 100%; height: 6px; cursor: pointer; background: rgba(255,255,255,0.2);
+          border-radius: 3px; border: 1px solid rgba(0,0,0,0.2);
+        }
+        .close-modal-btn {
+            color: #aaa; position: absolute; top: 15px; right: 20px;
+            font-size: 28px; font-weight: bold; cursor: pointer;
+        }
+        .close-modal-btn:hover, .close-modal-btn:focus { color: var(--light); text-decoration: none; }
+
+        /* Feedback Pop-up Styles - GTP Style */
+        .feedback-popup {
+            position: fixed; top: 50%; left: 50%;
+            background-color: rgba(15, 16, 18, 0.97);
+            color: white; padding: 30px 50px;
+            border-radius: 20px;
+            font-size: 2.8rem;
+            font-family: "Luckiest Guy", cursive; text-align: center;
+            z-index: 2000; box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+            opacity: 0; transform: translate(-50%, -50%) scale(0.7);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            pointer-events: none; border: 3px solid var(--gold);
+            display: none; /* JS toggles .show */
+        }
+        .feedback-popup.show { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; display: block; }
+        .feedback-popup.info { color: var(--info); border-color: var(--info); text-shadow: 0 0 15px var(--info); }
+        /* Add .correct and .incorrect to feedback-popup if you plan to use them */
+        .feedback-popup.correct { color: var(--success); border-color: var(--success); text-shadow: 0 0 15px var(--success); }
+        .feedback-popup.danger { color: var(--danger); border-color: var(--danger); text-shadow: 0 0 15px var(--danger); }
+
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .game-container { padding: 25px; }
+            h1 { font-size: 2.5rem; }
+            .player-inputs h3 { font-size: 1.4rem; }
+            .slot-machine { height: 160px; width: 95%;}
+            .slot-item { font-size: 1.4rem; }
+            .question-text-element { font-size: 1.3rem; min-height: 80px; }
+            .selected-player-name { font-size: 1.6rem; }
+            .feedback-popup { font-size: 2rem; padding: 25px 35px; width: 90%;}
+            .modal-content { padding: 20px; }
+            .game-over-buttons-container { flex-direction: column; align-items: center;}
+            .game-over-buttons-container .game-over-button-wrapper { width: 90%; margin: 5px auto;}
+            .game-over-buttons-container .game-over-button-wrapper button { width: 100%;}
+            .round-info-display { font-size: 1.1rem; padding: 12px 18px;}
+        }
+         @media (max-width: 480px) {
+              h1 { font-size: 2rem; }
+              .player-inputs h3 { font-size: 1.2rem; }
+              .instructions li { font-size: 0.9rem; }
+              .player-input-wrapper input { padding: 12px 18px; font-size: 1rem;}
+              .remove-player-btn { padding: 7px 10px !important; font-size: 0.8rem !important;}
+              .icon-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1rem; }
+              .slot-machine { height: 140px; }
+              .slot-item { font-size: 1.2rem; }
+              .question-text-element { font-size: 1.1rem; min-height: 70px;}
+              .selected-player-name { font-size: 1.4rem; }
+              .game-over-message { font-size: 2.2rem; }
+         }
+
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <img id="corner-logo-static" class="brand-logo" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="position: absolute; top: 20px; left: 20px; max-height: 40px; opacity: 0.7; display: none;">
+        <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
+            <h1>Paranoia</h1>
+            <div class="instructions">
+                <p>HOW TO PLAY:</p>
+                <ul>
+                    <li><i class="fas fa-users"></i> Play with 3-12 players</li>
+                    <li><i class="fas fa-random"></i> A random player is selected each round</li>
+                    <li><i class="fas fa-question"></i> The selected player gets a secret question</li>
+                    <li><i class="fas fa-user-secret"></i> They must answer by choosing another player</li>
+                    <li><i class="fas fa-volume-up"></i> The question is revealed to everyone *after* the choice</li>
+                    <li><i class="fas fa-trophy"></i> 5 rounds of fun and revelations!</li>
+                     <li>
+                        <a href="https://www.youtube.com/watch?v=rGRIRy4LG50" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-youtube"></i> Watch a video tutorial on rules
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="player-inputs">
+                <h3>Enter Player Names</h3>
+                <p class="info-text" style="font-size:0.9rem; margin-top:-15px; margin-bottom:15px; color: rgba(var(--light-rgb, 242,242,242),0.7);">(3-12 players)</p>
+                <div id="player-names-list">
+                    <!-- Player inputs generated by JS -->
+                </div>
+                <button id="add-player-btn" class="btn-secondary"><i class="fas fa-plus"></i> Add Player</button>
+            </div>
+            <button id="start-game-btn" class="btn-primary">Start Game <i class="fas fa-play"></i></button>
+        </div>
+
+        <!-- Player Selection Screen -->
+        <div id="selection-screen" class="screen">
+            <div class="round-info-display">
+                Round <span id="current-round-text">1</span>/<span id="total-rounds-text">5</span>
+            </div>
+            <div class="slot-machine">
+                <div class="slot-window"></div>
+                <div id="slot-items-container" class="slot-items-container">
+                    <!-- Slot items generated by JS -->
+                </div>
+            </div>
+            <button id="pick-player-btn" class="btn-primary">Pick Player <i class="fas fa-random"></i></button>
+        </div>
+
+        <!-- Question Screen -->
+        <div id="question-screen" class="screen">
+             <div class="round-info-display">
+                Round <span id="question-screen-round-text">1</span>/<span id="question-screen-total-rounds-text">5</span>
+            </div>
+            <div class="question-display-area">
+                <div class="selected-player-name" id="selected-player-display"></div>
+                <div class="reveal-instruction-text">Tap question to reveal</div>
+                <div class="question-text-element" id="question-text-display"></div>
+            </div>
+            <button id="next-round-btn" class="btn-primary">Next Round <i class="fas fa-arrow-right"></i></button>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="game-over-screen" class="screen">
+            <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
+            <h1>Game Over!</h1>
+            <div class="game-over-message">Thanks for playing Paranoia!</div>
+            <div class="game-over-trophy">🎉</div>
+            <div class="game-over-buttons-container">
+                <div class="game-over-button-wrapper">
+                    <button id="play-again-btn" class="btn-success"><i class="fas fa-redo"></i> Play Again</button>
+                </div>
+                <div class="game-over-button-wrapper">
+                     <button id="main-menu-btn" class="btn-secondary"><i class="fas fa-home"></i> Main Menu</button>
+                </div>
+                <div class="game-over-button-wrapper" id="store-button-wrapper">
+                    <!-- "Treat Yourself" callout will be inserted here -->
+                    <button id="visit-store-btn" class="btn-info"><i class="fas fa-store"></i> Visit Store</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal-btn" class="close-modal-btn">×</span>
+            <h2>Settings</h2>
+            <div class="setting-item">
+                <label for="bgm-volume-slider">Background Music Volume:</label>
+                <input type="range" id="bgm-volume-slider" min="0" max="1" step="0.01" value="0.2">
+            </div>
+            <div class="setting-item">
+                <label for="sfx-toggle-btn">Sound Effects:</label>
+                <button id="sfx-toggle-btn" class="btn-secondary">SFX: ON</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Pop-up -->
+    <div id="feedback-popup" class="feedback-popup"> <!-- display:none handled by .show -->
+        <span id="feedback-message-text-el"></span>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="background-game-music" loop src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3"></audio>
+    <audio id="start-game-sound" src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3"></audio>
+    <audio id="interaction-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
+    <audio id="slot-spin-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
+    <audio id="player-selected-sound" src="https://static.wixstatic.com/mp3/9ce3e5_76691a6fefcd4536aa403ada111e886a.mp3"></audio>
+    <audio id="question-reveal-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
+    <audio id="game-over-sound" src="https://static.wixstatic.com/mp3/9ce3e5_5d7fcfc389734cf7994f5d37de621e3d.mp3"></audio>
+
+
+       <script>
+        const gameConfig = {
+            sfxEnabled: true,
+            musicVolume: 0.2,
+            minPlayers: 3,
+            maxPlayers: 12,
+            totalRounds: 5,
+            slotSpinDuration: 4500,
+            slotItemHeight: 50,
+        };
+
+        const gameState = {
+            players: [],
+            currentRound: 1,
+            selectedPlayerName: null,
+            questions: [
+                "Who here do you think is the most attractive?", "Who here do you think is the least attractive?", "Who here would you trust with your deepest secret?", "Who here do you think is the least trustowrthy?", "Who here would you want to be stranded on a desert island with?", "Who here do you think is the most intelligent?", "Who here do you think is the dumbest?", "Who here do you think is the most charismatic?", "Who here would you never want as your roommate?", "Who here do you think is the least reliable?", "Who’s most likely to make out with a stranger at a party?", "Who gives off the most “main character” energy?", "Who do you think has the best-looking body?", "Who's most likely to ghost someone after a first date?", "Who looks like they’d be amazing in bed?", "Who looks like they’d be horrible in bed?", "Who would you most want to kiss right now?", "Who gives off the strongest “walking red flag” energy?", "Who’s most likely to get back with a toxic ex?", "Who’s most likely to pretend they’re innocent but really aren't?", "Who do you think has the worst music taste?", "Who’s most likely to betray someone for personal gain?", "Who's most likely to throw someone under the bus at work or school?", "Who do you think would fake being sick to get out of plans?", "Who's most likely to take credit for someone else's work?", "Who do you secretly think is way too fake in group settings?", "Who’s most likely to act like a victim when they were the problem?", "Who is the best at gaslighting someone?", "Who’s most likely to talk big online and be quiet in person?", "Who tries too hard to be liked by everyone?", "Who's most likely to exaggerate everything they say?"
+            ],
+            usedQuestionsThisGame: []
+        };
+
+        // DOM elements
+        const screens = {
+            start: document.getElementById('start-screen'),
+            selection: document.getElementById('selection-screen'),
+            question: document.getElementById('question-screen'),
+            gameOver: document.getElementById('game-over-screen')
+        };
+        const cornerLogoEl = document.getElementById('corner-logo-static');
+        const playerNamesListDiv = document.getElementById('player-names-list');
+        const addPlayerBtnEl = document.getElementById('add-player-btn');
+        const startGameBtnEl = document.getElementById('start-game-btn');
+        const pickPlayerBtnEl = document.getElementById('pick-player-btn');
+        const nextRoundBtnEl = document.getElementById('next-round-btn');
+        const playAgainBtnEl = document.getElementById('play-again-btn');
+        const mainMenuBtnEl = document.getElementById('main-menu-btn');
+        const visitStoreBtnEl = document.getElementById('visit-store-btn');
+        const currentRoundTextEl = document.getElementById('current-round-text');
+        const totalRoundsTextEl = document.getElementById('total-rounds-text'); // Added for total rounds
+        const questionScreenRoundTextEl = document.getElementById('question-screen-round-text');
+        const questionScreenTotalRoundsTextEl = document.getElementById('question-screen-total-rounds-text'); // Added
+        const selectedPlayerDisplayEl = document.getElementById('selected-player-display');
+        const questionTextDisplayEl = document.getElementById('question-text-display');
+        const slotItemsContainerEl = document.getElementById('slot-items-container');
+        const storeButtonWrapperEl = document.getElementById("store-button-wrapper"); // For Treat Yourself
+        let treatYourselfElement = null;
+
+        const settingsBtnEl = document.getElementById('settings-btn');
+        const settingsModalEl = document.getElementById('settings-modal');
+        const closeModalBtnEl = document.getElementById('close-modal-btn');
+        const bgmVolumeSliderEl = document.getElementById('bgm-volume-slider');
+        const sfxToggleBtnEl = document.getElementById('sfx-toggle-btn');
+
+        const backgroundMusicAudioEl = document.getElementById('background-game-music');
+        const startGameSoundAudioEl = document.getElementById('start-game-sound');
+        const interactionSoundAudioEl = document.getElementById('interaction-sound');
+        const slotSpinSoundAudioEl = document.getElementById('slot-spin-sound');
+        const playerSelectedSoundAudioEl = document.getElementById('player-selected-sound');
+        const questionRevealSoundAudioEl = document.getElementById('question-reveal-sound');
+        const gameOverSoundAudioEl = document.getElementById('game-over-sound');
+
+        const feedbackPopupEl = document.getElementById('feedback-popup');
+        const feedbackMessageTextPopupEl = document.getElementById('feedback-message-text-el');
+        let feedbackTimeoutId;
+
+        // --- Sound Functions ---
+        function playSound(audioElement) {
+            if (gameConfig.sfxEnabled && audioElement) {
+                audioElement.currentTime = 0;
+                audioElement.volume = 0.7;
+                audioElement.play().catch(e => console.error("SFX play error:", e));
+            }
+        }
+        function playSoundWithCallback(audioElement, callback, ...args) {
+            if (gameConfig.sfxEnabled && audioElement) {
+                audioElement.currentTime = 0;
+                audioElement.volume = 0.7;
+                let callbackExecuted = false;
+                const executeCallback = () => {
+                    if (!callbackExecuted) {
+                        callbackExecuted = true;
+                        audioElement.removeEventListener('ended', executeCallback);
+                        if (typeof soundTimeoutId !== 'undefined' && soundTimeoutId) clearTimeout(soundTimeoutId); // Renamed from timeoutId
+                        if (callback) callback(...args);
+                    }
+                };
+                audioElement.addEventListener('ended', executeCallback);
+                const soundDurationMs = (audioElement.duration && isFinite(audioElement.duration)) ? audioElement.duration * 1000 : 500;
+                const soundTimeoutId = setTimeout(executeCallback, soundDurationMs + 200); // Renamed
+                audioElement.play().catch(e => { console.error("SFX play error:", e); executeCallback(); });
+            } else {
+                if (callback) callback(...args);
+            }
+        }
+        function initBackgroundMusic() {
+            backgroundMusicAudioEl.volume = gameConfig.musicVolume;
+            backgroundMusicAudioEl.play().catch(e => console.log("BGM autoplay failed.", e));
+        }
+
+        // --- Feedback Pop-up ---
+        function showFeedbackMessage(message, type = 'info', duration = 2500) { // Match GTP duration
+            feedbackMessageTextPopupEl.textContent = message;
+            feedbackPopupEl.className = 'feedback-popup';
+            if (type) feedbackPopupEl.classList.add(type);
+            feedbackPopupEl.classList.add('show');
+            // feedbackPopupEl.style.display = 'block'; // .show class handles display
+
+            clearTimeout(feedbackTimeoutId);
+            feedbackTimeoutId = setTimeout(() => {
+                feedbackPopupEl.classList.remove('show');
+                // setTimeout(() => { feedbackPopupEl.style.display = 'none'; }, 300); // .show handles display
+            }, duration);
+        }
+
+        // --- Event listeners ---
+        addPlayerBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); addPlayerInput(); });
+        startGameBtnEl.addEventListener('click', () => {
+            if(backgroundMusicAudioEl.paused) initBackgroundMusic();
+            playSoundWithCallback(startGameSoundAudioEl, startGame);
+        });
+        pickPlayerBtnEl.addEventListener('click', () => {
+            // slotSpinSoundAudioEl is played within startPlayerSelection after button disabled
+            startPlayerSelection();
+        });
+        nextRoundBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); nextRound(); });
+        playAgainBtnEl.addEventListener('click', () => { playSoundWithCallback(startGameSoundAudioEl, playAgain); });
+        mainMenuBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); mainMenu(); });
+        visitStoreBtnEl.addEventListener('click', () => {
+            playSound(interactionSoundAudioEl);
+            window.open('https://www.example.com/store', '_blank'); // Replace with actual store URL
+        });
+        // Event listener for revealing question by clicking the area
+        questionTextDisplayEl.parentElement.addEventListener('click', (e) => { // Listen on parent for better click area
+            if (!questionTextDisplayEl.classList.contains('revealed')) {
+                playSound(questionRevealSoundAudioEl);
+                questionTextDisplayEl.classList.add('revealed');
+            }
+        });
+
+        settingsBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'flex'; });
+        closeModalBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; });
+        window.addEventListener('click', (event) => { if (event.target === settingsModalEl) { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; } });
+        bgmVolumeSliderEl.addEventListener('input', (e) => { gameConfig.musicVolume = parseFloat(e.target.value); backgroundMusicAudioEl.volume = gameConfig.musicVolume; });
+        sfxToggleBtnEl.addEventListener('click', () => {
+            playSound(interactionSoundAudioEl);
+            gameConfig.sfxEnabled = !gameConfig.sfxEnabled;
+            sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
+            sfxToggleBtnEl.classList.toggle('btn-success', gameConfig.sfxEnabled);
+            sfxToggleBtnEl.classList.toggle('btn-danger', !gameConfig.sfxEnabled);
+        });
+
+
+        // --- Functions ---
+        function switchScreen(screenId) {
+            Object.values(screens).forEach(screen => screen.classList.remove('active'));
+            screens[screenId].classList.add('active');
+            cornerLogoEl.style.display = (screenId !== 'start') ? 'block' : 'none';
+            if (treatYourselfElement) {
+                treatYourselfElement.style.display = (screenId === 'gameOver') ? 'flex' : 'none';
+            }
+        }
+
+        function createPlayerInputField(playerNumber) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'player-input-wrapper';
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'player-name-input';
+            input.placeholder = `Player ${playerNumber}`;
+            wrapper.appendChild(input);
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-player-btn btn-danger'; // Apply danger for style
+            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            removeBtn.onclick = function() {
+                playSound(interactionSoundAudioEl);
+                wrapper.remove();
+                updateAddRemovePlayerButtons();
+            };
+            wrapper.appendChild(removeBtn);
+            return wrapper;
+        }
+
+        function addPlayerInput() {
+            const playerCount = playerNamesListDiv.querySelectorAll('.player-input-wrapper').length;
+            if (playerCount >= gameConfig.maxPlayers) {
+                showFeedbackMessage(`Maximum of ${gameConfig.maxPlayers} players.`, "info", 2000);
+                return;
+             }
+            playerNamesListDiv.appendChild(createPlayerInputField(playerCount + 1));
+            updateAddRemovePlayerButtons();
+        }
+
+        function updateAddRemovePlayerButtons() {
+            const playerInputWrappers = playerNamesListDiv.querySelectorAll('.player-input-wrapper');
+            const playerCount = playerInputWrappers.length;
+            addPlayerBtnEl.disabled = playerCount >= gameConfig.maxPlayers;
+            playerInputWrappers.forEach(wrapper => {
+                const removeBtn = wrapper.querySelector('.remove-player-btn');
+                if (removeBtn) removeBtn.disabled = playerCount <= gameConfig.minPlayers;
+            });
+        }
+
+        function startGame() {
+            gameState.players = Array.from(playerNamesListDiv.querySelectorAll('.player-name-input'))
+                .map((input, index) => input.value.trim() || `Player ${index + 1}`) // Default name if empty
+                .filter(name => name !== ''); // Should not filter out defaults
+
+            if (gameState.players.some(name => name.length > 15)) {
+                showFeedbackMessage("Player names too long (max 15)!", "danger");
+                return;
+            }
+            if (gameState.players.length < gameConfig.minPlayers) {
+                showFeedbackMessage(`Need ${gameConfig.minPlayers}-${gameConfig.maxPlayers} players!`, 'danger');
+                return;
+            }
+
+
+            gameState.currentRound = 1;
+            gameState.selectedPlayerName = null;
+            gameState.usedQuestionsThisGame = [];
+            currentRoundTextEl.textContent = gameState.currentRound;
+            totalRoundsTextEl.textContent = gameConfig.totalRounds;
+            questionScreenRoundTextEl.textContent = gameState.currentRound;
+            questionScreenTotalRoundsTextEl.textContent = gameConfig.totalRounds;
+            setupSlotMachine();
+            switchScreen('selection');
+        }
+
+        function setupSlotMachine() {
+            slotItemsContainerEl.innerHTML = '';
+            // Reset for immediate positioning, no transition
+            slotItemsContainerEl.style.transition = 'none';
+            slotItemsContainerEl.style.transform = 'translateY(0px)';
+
+            // For a visually longer spin, create more items than just one set of players
+            const repetitions = Math.max(15, Math.ceil(3000 / (gameState.players.length * gameConfig.slotItemHeight)) * gameState.players.length + gameState.players.length * 3);
+
+            for (let i = 0; i < repetitions; i++) {
+                // Shuffle players for each repetition for visual randomness in the reel
+                const shuffledPlayers = [...gameState.players].sort(() => Math.random() - 0.5);
+                shuffledPlayers.forEach(player => {
+                    const item = document.createElement('div');
+                    item.className = 'slot-item';
+                    item.textContent = player;
+                    slotItemsContainerEl.appendChild(item);
+                });
+            }
+            // Force reflow to apply the no-transition style before re-enabling it
+            void slotItemsContainerEl.offsetWidth;
+        }
+
+
+        function startPlayerSelection() {
+            if (pickPlayerBtnEl.disabled) return;
+            pickPlayerBtnEl.disabled = true;
+            playSound(slotSpinSoundAudioEl);
+
+
+            const reelItems = Array.from(slotItemsContainerEl.children);
+            const actualPlayerIndex = Math.floor(Math.random() * gameState.players.length);
+            gameState.selectedPlayerName = gameState.players[actualPlayerIndex];
+
+            // Find a target index for the selected player name
+            // Aim for an instance of the name that's not too close to the start of the reel
+            // to give the illusion of a longer spin.
+            let targetIndexInReel = -1;
+            const minTargetIndex = gameState.players.length * 5; // Try to land at least 5 sets down
+
+            for (let i = reelItems.length - 1; i >= 0; i--) {
+                if (reelItems[i].textContent === gameState.selectedPlayerName && i >= minTargetIndex) {
+                    targetIndexInReel = i;
+                    break;
+                }
+            }
+            // Fallback if no suitable target found (e.g., very short reel or player list)
+            if (targetIndexInReel === -1) {
+                 // Find any instance of the player and add some offset
+                 const firstInstance = reelItems.findIndex(item => item.textContent === gameState.selectedPlayerName);
+                 targetIndexInReel = firstInstance !== -1 ? firstInstance + gameState.players.length * (Math.floor(reelItems.length / (gameState.players.length*2))) : Math.floor(reelItems.length / 2);
+            }
+            targetIndexInReel = Math.min(targetIndexInReel, reelItems.length -1); // Ensure it's a valid index
+
+
+            // Calculate the Y offset to center the target item in the slot window
+            const slotMachineHeight = parseFloat(getComputedStyle(document.querySelector('.slot-machine')).height);
+            const yOffset = (targetIndexInReel * gameConfig.slotItemHeight) - (slotMachineHeight / 2) + (gameConfig.slotItemHeight / 2);
+
+            slotItemsContainerEl.style.transition = `transform ${gameConfig.slotSpinDuration / 1000}s cubic-bezier(0.23, 1, 0.32, 1)`; // Easing for spin
+            slotItemsContainerEl.style.transform = `translateY(-${yOffset}px)`;
+
+            setTimeout(() => {
+                playSound(playerSelectedSoundAudioEl);
+                selectedPlayerDisplayEl.textContent = `Question for: ${gameState.selectedPlayerName}`;
+
+                let questionPool = gameState.questions.filter(q => !gameState.usedQuestionsThisGame.includes(q));
+                if (questionPool.length === 0) { // Reshuffle if all questions used
+                    gameState.usedQuestionsThisGame = [];
+                    questionPool = [...gameState.questions];
+                }
+                const randomQuestion = questionPool[Math.floor(Math.random() * questionPool.length)];
+                gameState.usedQuestionsThisGame.push(randomQuestion); // Mark as used for this game session
+
+                questionTextDisplayEl.textContent = randomQuestion;
+                questionTextDisplayEl.classList.remove('revealed'); // Ensure it's blurred initially
+                pickPlayerBtnEl.disabled = false; // Re-enable for next potential pick if UI allows
+                switchScreen('question');
+            }, gameConfig.slotSpinDuration + 200); // Wait for spin to "finish"
+        }
+
+
+        function nextRound() {
+            if (gameState.currentRound >= gameConfig.totalRounds) {
+                playSound(gameOverSoundAudioEl);
+                showGameOver();
+            } else {
+                gameState.currentRound++;
+                currentRoundTextEl.textContent = gameState.currentRound;
+                questionScreenRoundTextEl.textContent = gameState.currentRound;
+                questionTextDisplayEl.classList.remove('revealed');
+                setupSlotMachine(); // Re-populate and reset slot machine for next round
+                switchScreen('selection');
+            }
+        }
+
+        function showGameOver() {
+             // "Treat Yourself" callout for Game Over
+            if (!treatYourselfElement) {
+                treatYourselfElement = document.createElement('div');
+                treatYourselfElement.className = 'treat-yourself-callout';
+                treatYourselfElement.innerHTML = `<span>Treat Yourself!</span> <i class="fas fa-arrow-down"></i>`;
+                storeButtonWrapperEl.insertBefore(treatYourselfElement, visitStoreBtnEl);
+            }
+            switchScreen('gameOver'); // This will also handle showing/hiding treatYourselfElement
+        }
+
+
+        function playAgain() {
+            // If player names were from inputs and inputs are gone, go to main menu to re-enter.
+            if (playerNamesListDiv.querySelectorAll('.player-name-input').length === 0 && gameState.players.length === 0) {
+                mainMenu();
+                return;
+            }
+            startGame(); // This will reset rounds, selected player, questions
+        }
+
+        function mainMenu() {
+            playerNamesListDiv.innerHTML = ''; // Clear any existing inputs
+            for (let i = 0; i < gameConfig.minPlayers; i++) {
+                playerNamesListDiv.appendChild(createPlayerInputField(i + 1));
+            }
+            updateAddRemovePlayerButtons();
+            if (treatYourselfElement) treatYourselfElement.style.display = 'none';
+            if(backgroundMusicAudioEl.paused) initBackgroundMusic();
+            switchScreen('start');
+        }
+
+
+        // Initial Setup on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
+            sfxToggleBtnEl.classList.toggle('btn-success', gameConfig.sfxEnabled);
+            sfxToggleBtnEl.classList.toggle('btn-danger', !gameConfig.sfxEnabled);
+            bgmVolumeSliderEl.value = gameConfig.musicVolume;
+            initBackgroundMusic();
+
+            // Populate total rounds display
+            totalRoundsTextEl.textContent = gameConfig.totalRounds;
+            questionScreenTotalRoundsTextEl.textContent = gameConfig.totalRounds;
+
+            // Initialize player inputs
+            playerNamesListDiv.innerHTML = ''; // Clear static HTML
+            for (let i = 0; i < gameConfig.minPlayers; i++) {
+                playerNamesListDiv.appendChild(createPlayerInputField(i + 1));
+            }
+            updateAddRemovePlayerButtons();
+            switchScreen('start');
+        });
+    </script>
+</body>
+</html>

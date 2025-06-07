@@ -1,0 +1,1327 @@
+\<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find The Imposter - Game Show Edition!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Luckiest+Guy&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #FF8833; /* Blyza Orange */
+            --secondary: #CB7AE1; /* Blyza Purple */
+            --light: #F2F2F2;
+            --success: #00BFA6; /* Blyza Keppel */
+            --danger: #ff4b2b;
+            --dark: #1a1c20;
+            --darker: #0f1012;
+            --info: #4ECDC4;
+            --gold: #FFD700; /* Game show gold */
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+            overflow-x: hidden; /* Prevent scrollbars from confetti */
+        }
+
+        .game-container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px; /* Adjusted to match GTP */
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Brand Logo Styles */
+        .brand-logo {
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        .brand-logo-prominent {
+            display: block;
+            margin: 0 auto 20px;
+            max-height: 80px; /* Adjusted to match GTP */
+        }
+
+        h1 {
+            font-family: "Luckiest Guy", cursive;
+            font-size: 3rem; /* Adjusted to match GTP */
+            margin-bottom: 25px; /* Was 25px, GTP is 30px. Keeping 25 for balance */
+            color: var(--gold); /* Match GTP */
+            text-shadow:
+                0 2px 0px #000,
+                0 4px 6px rgba(0, 0, 0, 0.5),
+                0 0 30px var(--primary); /* Match GTP */
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        h2 { /* Used for major section titles WITHIN cards */
+             font-family: "Bungee", cursive;
+             font-size: 1.8rem; /* Adjusted */
+             margin-bottom: 18px;
+             color: var(--light);
+             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        h3 { /* Used for sub-section titles like "Enter Player Names" or card titles */
+            font-family: "Bungee", cursive; /* Match GTP common subheaders */
+            font-size: 1.4rem; /* Adjusted */
+            margin-bottom: 15px; /* Adjusted */
+            color: var(--primary); /* Use primary or light for these */
+            font-weight: normal; /* Bungee is bold by default */
+        }
+
+        /* Screen Styles */
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .active {
+            display: block;
+        }
+
+        /* Instructions Section */
+        .instructions {
+            font-family: "Quicksand", sans-serif; /* Match GTP */
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px; /* Match GTP */
+            border-radius: 20px;
+            margin: 30px 0; /* Match GTP */
+            line-height: 1.8; /* Match GTP */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .instructions p { /* How to Play title */
+            font-size: 1.2rem; /* Match GTP */
+            margin-bottom: 20px; /* Match GTP */
+            color: var(--light);
+            font-family: "Bungee", cursive;
+        }
+
+        .instructions ul {
+            list-style-type: none;
+            text-align: left;
+            padding: 0 20px; /* Match GTP */
+        }
+
+        .instructions li {
+            margin-bottom: 15px; /* Match GTP */
+            display: flex;
+            align-items: center;
+            color: var(--light);
+            font-size: 1rem; /* Slightly smaller than GTP's 1.1rem default text, looks better here */
+        }
+        .instructions li a {
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+        .instructions li a:hover {
+            color: var(--secondary);
+        }
+        .instructions i {
+            margin-right: 15px; /* Match GTP */
+            font-size: 1.4em; /* Match GTP */
+            color: var(--primary);
+            width: 20px;
+            text-align: center;
+        }
+
+
+        /* Player Inputs */
+        .player-inputs {
+            margin: 30px 0; /* Match GTP team-inputs */
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px; /* Match GTP team-inputs */
+            border-radius: 20px; /* Match GTP team-inputs */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .player-inputs h3 { /* "Enter Player Names" */
+             margin-bottom: 20px;
+        }
+
+        .player-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .player-input-wrapper input {
+            flex-grow: 1;
+            padding: 15px 20px; /* Match GTP team-input */
+            border-radius: 12px; /* Match GTP team-input */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 1.1rem; /* Match GTP team-input */
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            transition: all 0.3s ease;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .player-input-wrapper input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 10px rgba(203, 122, 225, 0.2); /* Match GTP team-input */
+        }
+        .remove-player-btn { /* Styled like main buttons but smaller */
+            padding: 8px 12px !important; /* Override general button padding */
+            font-size: 0.9rem !important; /* Override general button font-size */
+            min-width: 40px;
+            flex-shrink: 0;
+        }
+        .remove-player-btn i { margin: 0; } /* Remove gap if only icon */
+
+
+        /* Role Card Styling */
+        .role-card-container {
+             display: flex;
+             justify-content: center;
+             margin: 25px 0;
+        }
+        .role-card {
+            perspective: 1000px;
+            width: 280px;
+            height: 320px;
+        }
+
+        .role-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .role-card.flipped .role-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .role-card-front, .role-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            /* Inherit .result-card style, but with specific background for card face */
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            /* Shadow from original, border from result-card in parent */
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .role-card-back {
+            transform: rotateY(180deg);
+            cursor: default;
+        }
+
+        .role-card-front p, .role-card-back p {
+            font-size: 1.1rem;
+            color: var(--light);
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        .role-card-back h3#player-role { /* Specifically target the role title */
+            font-family: "Bungee", cursive;
+            font-size: 2rem; /* Larger for role title */
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            /* Color will be set by JS */
+        }
+        .role-imposter { color: var(--danger); }
+        .role-crewmate { color: var(--success); }
+        .role-icon {
+            font-size: 3.5rem;
+            margin-bottom: 18px;
+            color: var(--primary);
+        }
+
+        /* Player Avatars/Lists */
+        .player-avatars {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .player-avatar {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 18px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .player-avatar:hover:not(.disabled) {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+            border-color: var(--gold); /* GTP accent */
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .player-avatar.selected {
+            border: 2px solid var(--primary); /* Original primary is good for selection */
+            background: rgba(255, 136, 51, 0.1);
+            box-shadow:
+                0 0 15px rgba(255, 136, 51, 0.2),
+                inset 0 0 8px rgba(255, 136, 51, 0.1);
+            transform: scale(1.02);
+        }
+        .player-avatar.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .avatar-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin: 0 auto 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            color: var(--light);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .player-avatar h4 {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--light);
+            margin-top: 4px;
+             font-family: 'Quicksand', sans-serif; /* Ensure it's not Bungee unless intended */
+        }
+
+
+        /* Buttons - GTP Style */
+        button {
+            background: linear-gradient(135deg, var(--primary) 0%, #ff7711 100%);
+            color: var(--light);
+            border: 2px solid var(--darker);
+            padding: 15px 25px;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600; /* Quicksand needs this, Bungee is bold */
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3), inset 0 -2px 5px rgba(0,0,0,0.2);
+            margin: 10px 5px;
+            font-family: "Bungee", cursive;
+            text-shadow: 1px 1px 2px #000;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--primary);
+            background: linear-gradient(135deg, #ff7711 0%, var(--primary) 100%);
+        }
+        button:active:not(:disabled) {
+            transform: translateY(-1px) scale(1.02);
+        }
+        button:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transform: none; /* Reset transform for disabled */
+            border-color: rgba(0,0,0,0.5);
+        }
+
+        .btn-primary { /* Already styled by button general */ }
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #00a890 100%);
+        }
+        .btn-success:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--success); }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #ff416c 100%);
+        }
+        .btn-danger:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--danger); }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary) 0%, #b85cd6 100%);
+        }
+        .btn-secondary:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--secondary); }
+
+        .btn-info {
+             background: linear-gradient(135deg, var(--info) 0%, #3eb7af 100%);
+        }
+        .btn-info:hover:not(:disabled) {
+            background: linear-gradient(135deg, #3eb7af 0%, var(--info) 100%);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--info);
+        }
+
+
+        /* Results Screen Styling & General Card for sections - GTP Style */
+        .result-card { /* This is used for Role, Discussion, Voting, Results screen main content box */
+            background: rgba(0,0,0, 0.2);
+            padding: 25px;
+            border-radius: 20px;
+            margin: 25px 0;
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 15px var(--gold);
+        }
+        .result-card h2 { /* Section titles like "Discuss Your Answers" */
+            color: var(--gold);
+            text-shadow: 0 1px 1px #000;
+        }
+
+
+        /* Discussion Screen Specifics */
+        .discussion-info {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+        }
+        .discussion-info h3 { /* "Crewmates' Question:" */
+            font-size: 1.2rem; /* Slightly larger */
+            margin-bottom: 8px;
+            color: var(--secondary);
+        }
+        .discussion-info p {
+            font-size: 1rem;
+            font-style: italic;
+            color: var(--light);
+        }
+
+        /* Imposter Reveal Section (within .result-card on Results screen) */
+        #imposter-reveal {
+            margin: 25px 0;
+            padding: 18px;
+            background: rgba(0,0,0, 0.1); /* Darker than parent */
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        #imposter-reveal h3#result-title-text { /* Result Title, e.g. "Imposter Found!" */
+            font-family: "Luckiest Guy", cursive; /* Match main H1 */
+            font-size: 2.5rem; /* Prominent */
+            margin-bottom: 20px;
+            /* Color set by JS (success/danger) */
+            text-shadow: 0 2px 3px rgba(0,0,0,0.5), 0 0 10px currentColor;
+        }
+
+        #imposter-avatar-display { /* Renamed from #imposter-avatar for clarity */
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 0 auto 18px auto;
+            background: linear-gradient(135deg, var(--danger) 0%, #ff416c 100%);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 10px var(--danger);
+            color: var(--light);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        #imposter-question-reveal-text { /* Was #imposter-question-reveal */
+            font-style: italic;
+            color: var(--secondary);
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        #result-message-text { /* Was #result-message */
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+         .result-correct { color: var(--success); }
+         .result-incorrect { color: var(--danger); }
+
+        /* Vote Results Section */
+        .vote-results {
+            display: grid;
+            gap: 15px;
+            margin: 25px 0;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Wider cards */
+        }
+
+        .vote-card { /* Styled like GTP score-card */
+            background: rgba(0,0,0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--gold);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+            text-align: left;
+        }
+
+        .vote-card h4 { /* "Most Voted:", "Actual Imposter:" */
+            font-family: "Bungee", cursive;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--primary); /* GTP score card h4 color */
+        }
+
+        .vote-card p {
+            font-size: 1.1rem; /* Larger text for results */
+            color: var(--light);
+            font-family: 'Quicksand', sans-serif; /* Or Orbitron if added */
+            font-weight: bold;
+        }
+         .vote-card p strong { /* For (Correct)/(Incorrect) */
+             /* Color set inline by JS */
+             font-family: "Bungee", cursive;
+             font-size: 0.9em;
+         }
+
+         /* Role Screen Specifics (within .result-card) */
+         #current-player-info {
+             margin-bottom: 18px;
+             font-size: 1.3rem; /* Larger */
+             font-family: "Bungee", cursive;
+             color: var(--gold); /* GTP style */
+         }
+         #current-player-info strong { /* Player's name */
+             color: var(--primary);
+             font-weight: normal; /* Bungee is bold */
+         }
+         .info-text { /* General instruction text in cards */
+             margin-bottom: 18px;
+             font-size: 1rem;
+             color: rgba(242, 242, 242, 0.8);
+         }
+        /* Settings Icon Button - GTP Style */
+        .icon-btn {
+            position: absolute;
+            top: 15px; right: 15px;
+            background: rgba(0,0,0, 0.3);
+            color: var(--light);
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            width: 40px; height: 40px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 100;
+            padding: 0; /* Remove padding for icon buttons */
+            margin: 0;  /* Remove margin for icon buttons */
+            box-shadow: none; /* Remove general button shadow */
+            text-shadow: none; /* Remove general button text-shadow */
+        }
+        .icon-btn:hover {
+            background: rgba(0,0,0, 0.5);
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 0 10px var(--gold);
+        }
+        .icon-btn i {
+            margin: 0; /* Ensure icon is centered */
+        }
+
+
+        /* Modal Styles - GTP Style */
+        .modal {
+            position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; overflow: auto;
+            background-color: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: var(--darker); margin: auto; padding: 30px;
+            border: 2px solid var(--gold); border-radius: 15px;
+            width: 80%; max-width: 450px; /* GTP is 500px, 450px is fine */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px var(--primary);
+            position: relative; color: var(--light);
+        }
+        .modal-content h2 {
+            font-family: "Bungee", cursive; color: var(--primary);
+            text-align: center; margin-bottom: 25px;
+            font-size: 1.8rem; /* GTP is 1.8rem for modal h2 */
+        }
+        .setting-item { margin-bottom: 20px; display: flex; flex-direction: column; }
+        .setting-item label { margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+
+        /* Range Slider from GTP */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+          -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
+          background: var(--primary); cursor: pointer; margin-top: -7px;
+          box-shadow: 0 0 8px var(--primary);
+        }
+        input[type=range]::-moz-range-thumb {
+          height: 20px; width: 20px; border-radius: 50%; background: var(--primary);
+          cursor: pointer; border: none; box-shadow: 0 0 8px var(--primary);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+          width: 100%; height: 6px; cursor: pointer; background: rgba(255,255,255,0.2);
+          border-radius: 3px; border: 1px solid rgba(0,0,0,0.2);
+        }
+        input[type=range]::-moz-range-track {
+          width: 100%; height: 6px; cursor: pointer; background: rgba(255,255,255,0.2);
+          border-radius: 3px; border: 1px solid rgba(0,0,0,0.2);
+        }
+        /* End Range Slider from GTP */
+
+        .close-modal-btn {
+            color: #aaa; position: absolute; top: 15px; right: 20px;
+            font-size: 28px; font-weight: bold; cursor: pointer;
+        }
+        .close-modal-btn:hover, .close-modal-btn:focus { color: var(--light); text-decoration: none; }
+
+        /* Feedback Pop-up Styles - GTP Style */
+        .feedback-popup {
+            position: fixed; top: 50%; left: 50%;
+            background-color: rgba(15, 16, 18, 0.97);
+            color: white; padding: 30px 50px;
+            border-radius: 20px;
+            font-size: 2.8rem;
+            font-family: "Luckiest Guy", cursive; text-align: center;
+            z-index: 2000; box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+            opacity: 0; transform: translate(-50%, -50%) scale(0.7);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            pointer-events: none; border: 3px solid var(--gold);
+            display: none; /* JS will toggle .show */
+        }
+        .feedback-popup.show { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; display: block; }
+        .feedback-popup.correct { color: var(--success); border-color: var(--success); text-shadow: 0 0 15px var(--success); }
+        .feedback-popup.incorrect { color: var(--danger); border-color: var(--danger); text-shadow: 0 0 15px var(--danger); }
+        .feedback-popup.info { color: var(--info); border-color: var(--info); text-shadow: 0 0 15px var(--info); }
+
+        /* Confetti Styles */
+        .confetti-piece {
+            position: fixed; width: 8px; height: 15px; /* Original size is fine */
+            background-color: var(--primary); opacity: 0;
+            animation-timing-function: linear; animation-fill-mode: forwards;
+            pointer-events: none; z-index: 3000;
+        }
+        @keyframes fallAndFade {
+            0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .game-container { padding: 20px; }
+            h1 { font-size: 2.2rem; } /* GTP H1 size */
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.2rem; }
+            .instructions { padding: 20px; }
+            .instructions li { font-size: 0.9rem; }
+            .instructions i { font-size: 1.2em; }
+            .player-avatars { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
+            .avatar-icon { width: 50px; height: 50px; font-size: 1.8rem; }
+            .player-avatar h4 { font-size: 0.9rem; }
+            .role-card { width: 230px; height: 280px; }
+            .role-card-front p, .role-card-back p { font-size: 1rem; }
+            .role-card-back h3#player-role { font-size: 1.8rem; }
+            .role-icon { font-size: 3rem; }
+            button { padding: 12px 20px; font-size: 0.9rem; } /* Adjusted general button padding */
+            .remove-player-btn { padding: 7px 10px !important; font-size: 0.8rem !important; }
+            .vote-results { grid-template-columns: 1fr; }
+            .feedback-popup { font-size: 2rem; padding: 25px 35px; width: 90%; }
+            .modal-content { padding: 20px; }
+            .modal-content h2 { font-size: 1.5rem; }
+            .game-over-buttons button { display: block; width: 80%; margin: 10px auto; }
+        }
+         @media (max-width: 480px) {
+              h1 { font-size: 2rem; } /* GTP H1 size */
+              .game-container { padding: 15px;}
+              .player-avatars { grid-template-columns: repeat(2, 1fr); gap: 8px;}
+              .avatar-icon { width: 45px; height: 45px; font-size: 1.6rem;}
+              button { padding: 10px 18px; font-size: 0.8rem; } /* Adjusted general button padding */
+              .remove-player-btn { padding: 6px 8px !important; font-size: 0.7rem !important;}
+              .instructions li { font-size: 0.85rem; }
+              .role-card { width: 200px; height: 260px;}
+              .icon-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1rem; }
+              .player-input-wrapper input { padding: 12px 15px; font-size: 0.9rem;}
+         }
+
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <img id="corner-logo-static" class="brand-logo" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="position: absolute; top: 20px; left: 20px; max-height: 40px; opacity: 0.7; display: none;">
+        <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
+            <h1>Find The Imposter</h1>
+            <div class="instructions">
+                <p>HOW TO PLAY:</p> <!-- Removed <strong> for Bungee font -->
+                <ul>
+                    <li><i class="fas fa-user-secret"></i> One player is randomly chosen as the Imposter</li>
+                    <li><i class="fas fa-question-circle"></i> All players get the same question except the Imposter</li>
+                    <li><i class="fas fa-comments"></i> Discuss answers and try to spot inconsistencies</li>
+                    <li><i class="fas fa-vote-yea"></i> Vote for who you think is the Imposter</li>
+                    <li>
+                        <a href="https://www.youtube.com/watch?v=6BIxOgyl-qE" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-youtube"></i> Watch a video tutorial on rules
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="player-inputs">
+                <h3>Enter Player Names</h3>
+                <p class="info-text" style="margin-top: -10px; margin-bottom:20px;">(3-10 Players)</p>
+                <div id="player-names-list">
+                    <!-- Player inputs will be added here by JS -->
+                </div>
+                <button id="add-player-btn" class="btn-secondary"><i class="fas fa-plus"></i> Add Player</button>
+            </div>
+
+            <button id="start-game-btn" class="btn-primary">Start Game <i class="fas fa-play"></i></button>
+        </div>
+
+        <!-- Role Assignment Screen -->
+        <div id="role-screen" class="screen">
+            <h1>Assigning Roles</h1>
+             <div class="result-card">
+                <div id="current-player-info">Pass to <strong id="current-player-name">Player 1</strong></div>
+                <p class="info-text">Click the card below to reveal your role and question. Keep it secret!</p>
+                <div class="role-card-container">
+                    <div class="role-card" id="role-card">
+                        <div class="role-card-inner">
+                            <div class="role-card-front">
+                                <i class="fas fa-eye role-icon"></i>
+                                <p>Click to Reveal</p>
+                            </div>
+                            <div class="role-card-back">
+                                <h3 id="player-role">ROLE</h3> <!-- This h3 is styled specifically -->
+                                <p id="player-question">Your question will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+                <button id="next-player-btn" class="btn-primary">Next Player <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Discussion Screen -->
+        <div id="discussion-screen" class="screen">
+            <h1>Discussion Time</h1>
+            <div class="result-card">
+                <h2>Discuss Your Answers</h2>
+                <div class="discussion-info">
+                    <h3>Crewmates' Question:</h3>
+                    <p id="crew-question-display">The question for non-imposters appears here.</p>
+                </div>
+                <h3 style="color: var(--light); margin-top: 25px;">Players in Game:</h3>
+                <div id="player-list-display" class="player-avatars"></div>
+                <p class="info-text">Discuss everyone's answers. The imposter needs to blend in!</p>
+                <button id="start-voting-btn" class="btn-primary">Start Voting <i class="fas fa-vote-yea"></i></button>
+            </div>
+        </div>
+
+        <!-- Voting Screen -->
+        <div id="voting-screen" class="screen">
+             <h1>Cast Your Vote</h1>
+             <div class="result-card">
+                <h2>Who is the Imposter?</h2>
+                <p class="info-text" id="voting-instruction-text">Select the player you suspect is the Imposter.</p>
+                <div id="voting-options-display" class="player-avatars"></div>
+                <button id="reveal-imposter-btn" class="btn-danger" disabled>Reveal Imposter <i class="fas fa-user-secret"></i></button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
+            <h1>Game Over</h1>
+            <div class="result-card">
+                <h2 style="margin-bottom: 5px;">Results</h2> <!-- Reduced margin for tighter look -->
+                <div id="imposter-reveal">
+                    <h3 id="result-title-text">Result Title</h3> <!-- Styled specifically -->
+                    <div id="imposter-avatar-display">?</div>
+                    <p id="imposter-name-reveal-text" style="font-size: 1.2rem; margin-top: -10px; margin-bottom: 15px; font-weight: 600;">Imposter: </p>
+                    <p id="imposter-question-reveal-text">Imposter's Question: </p>
+                    <p id="result-message-text">Result message here.</p>
+                </div>
+                <h3 style="color: var(--light); margin-top:25px;">Voting Summary</h3>
+                <div id="vote-results-display" class="vote-results">
+                     <div class="vote-card"><h4>Most Voted:</h4><p id="most-voted-player-text">---</p></div>
+                     <div class="vote-card"><h4>Actual Imposter:</h4><p id="actual-imposter-text">---</p></div>
+                </div>
+                <div class="game-over-buttons" style="margin-top: 20px;">
+                    <button id="play-again-btn" class="btn-success"><i class="fas fa-redo"></i> Play Again</button>
+                    <button id="new-game-btn" class="btn-secondary"><i class="fas fa-home"></i> Main Menu</button>
+                    <button id="visit-store-btn" class="btn-info"><i class="fas fa-store"></i> Visit Store</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal-btn" class="close-modal-btn">×</span>
+            <h2>Settings</h2>
+            <div class="setting-item">
+                <label for="bgm-volume-slider">Background Music Volume:</label>
+                <input type="range" id="bgm-volume-slider" min="0" max="1" step="0.01" value="0.2">
+            </div>
+            <div class="setting-item">
+                <label for="sfx-toggle-btn">Sound Effects:</label>
+                <button id="sfx-toggle-btn" class="btn-secondary">SFX: ON</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Pop-up -->
+    <div id="feedback-popup" class="feedback-popup"> <!-- display: none is handled by .show class -->
+        <span id="feedback-message-text-el"></span>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="background-game-music" loop>
+        <source src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="start-game-sound">
+        <source src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="interaction-sound">
+        <source src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" type="audio/wav">
+    </audio>
+    <audio id="card-flip-sound">
+        <source src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" type="audio/wav">
+    </audio>
+    <audio id="vote-cast-sound">
+        <source src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" type="audio/wav">
+    </audio>
+    <audio id="imposter-reveal-correct-sound">
+        <source src="https://static.wixstatic.com/mp3/9ce3e5_76691a6fefcd4536aa403ada111e886a.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="imposter-reveal-incorrect-sound">
+        <source src="https://static.wixstatic.com/mp3/9ce3e5_277f814439064d1bbe5c0342241b23e4.mp3" type="audio/mpeg">
+    </audio>
+     <audio id="confetti-sound">
+        <source src="https://static.wixstatic.com/mp3/9ce3e5_5d7fcfc389734cf7994f5d37de621e3d.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Game state
+        const gameState = {
+            players: [],
+            currentPlayerIndex: 0,
+            imposterIndex: -1,
+            playerVotes: {},
+            selectedVote: null,
+            crewQuestion: "",
+            imposterQuestion: "",
+            sfxEnabled: true,
+            musicVolume: 0.2,
+            minPlayers: 3,
+            maxPlayers: 10,
+            questions: [
+                 { crew: "Which player here is most likely to end up in Jail?", imposter: "Which player here is most likely to have 7+ kids?" },
+                 { crew: "Which player here is most likely to break a World Record?", imposter: "Which player here is most likely to break multiple bones?" },
+                 { crew: "Which player here is most likely to date their family member?", imposter: "Which player here is most likely to stay single forever?" },
+                 { crew: "Which player here is most likely to chicken out of a fight?", imposter: "Which player here would you least want as your roommate?" },
+                 { crew: "Which player here is most likely to give the best advice?", imposter: "Which player here is most likely to give the worst advice?" },
+                 { crew: "Which player here is most likely to clog the toilet at a party?", imposter: "Which player here is most likely to burn the kitchen down while cooking?" },
+                 { crew: "Which player here is most likely to laugh the loudest at their own joke?", imposter: "Which player here is most likely to sleep through an apocalypse?" },
+                 { crew: "Which player here is most likely to become internet famous (or infamous)?", imposter: "Which player here is most likely to accidentally join a cult?" },
+                 { crew: "Which player here is most likely to get kicked off an airplane?", imposter: "Which player here is most likely to win a Nobel prize?" },
+                 { crew: "Which player here has the best hairstyle right now?", imposter: "Which player here is most likely to go a week without showering?" },
+                 { crew: "Which player here is most likely to black out after two drinks at a club?", imposter: "Which player here is most likely to bring their toddler to a nightclub?" },
+                 { crew: "Describe your ideal vacation in one word.", imposter: "What's one word you hope nobody ever uses to describe you?" },
+                 { crew: "What's your all-time favorite movie?", imposter: "What's the most overrated movie you've *never* actually watched?" },
+                 { crew: "If you could permanently delete one website from the internet, what would it be?", imposter: "What's a website you visit often that might surprise people?" },
+                 { crew: "What's one country you would absolutely never want to visit?", imposter: "What's the most underrated country for travel?" },
+                 { crew: "Who is your ultimate celebrity crush?", imposter: "Which celebrity do you think is massively overpaid/overrated?" },
+                 { crew: "Realistically, how many miles could you walk right now without stopping?", imposter: "Realistically, how many consecutive push-ups can you do right now?" },
+                 { crew: "What age do you genuinely hope to live until?", imposter: "Quick, pick a number between 35 and 125." },
+                 { crew: "What's the minimum amount of money (in USD) you'd need in your bank account to retire tomorrow?", imposter: "What's the absolute minimum price (in USD) you'd sell tasteful pictures of your feet for?" },
+                 { crew: "What's a name you would absolutely *never* give to a beloved pet?", imposter: "Quick, name any common object starting with the letter 'L'." },
+                 { crew: "What do you think is objectively the easiest sport to play?", imposter: "If you had to go professional in *any* sport, which one would you choose (even if you'd be terrible)?" },
+                 { crew: "What's a drink (alcoholic or non-alcoholic) you would never willingly drink again?", imposter: "What's the most underrated beverage?" },
+                 { crew: "Honestly, how many coordinated 10-year-olds do you think you could defeat in a boxing ring simultaneously?", imposter: "Quick, pick a number between 1 and 200." },
+                 { crew: "Which fictional superhero or supervillain do you think you could realistically defeat in a fight?", imposter: "Which fictional superhero or supervillain do you secretly wish was real?" }
+            ]
+        };
+
+        // DOM elements
+        const screens = {
+            start: document.getElementById('start-screen'),
+            role: document.getElementById('role-screen'),
+            discussion: document.getElementById('discussion-screen'),
+            voting: document.getElementById('voting-screen'),
+            results: document.getElementById('results-screen')
+        };
+        const playerNamesListDiv = document.getElementById('player-names-list');
+        const addPlayerBtnEl = document.getElementById('add-player-btn');
+        const startGameBtnEl = document.getElementById('start-game-btn');
+        const cornerLogoEl = document.getElementById('corner-logo-static');
+
+        const currentPlayerNameDisplayEl = document.getElementById('current-player-name');
+        const roleCardEl = document.getElementById('role-card');
+        const playerRoleDisplayEl = document.getElementById('player-role');
+        const playerQuestionDisplayEl = document.getElementById('player-question');
+        const nextPlayerBtnEl = document.getElementById('next-player-btn');
+
+        const crewQuestionDisplayEl = document.getElementById('crew-question-display');
+        const playerListDisplayEl = document.getElementById('player-list-display');
+        const startVotingBtnEl = document.getElementById('start-voting-btn');
+
+        const votingOptionsDisplayEl = document.getElementById('voting-options-display');
+        const revealImposterBtnEl = document.getElementById('reveal-imposter-btn');
+        const votingInstructionTextEl = document.getElementById('voting-instruction-text');
+
+        const resultTitleTextEl = document.getElementById('result-title-text');
+        const imposterAvatarDisplayEl = document.getElementById('imposter-avatar-display'); // Corrected this variable name to match HTML ID `imposter-avatar-display`
+        const imposterNameRevealTextEl = document.getElementById('imposter-name-reveal-text');
+        const imposterQuestionRevealTextEl = document.getElementById('imposter-question-reveal-text'); // Corrected this to match HTML ID
+        const resultMessageTextEl = document.getElementById('result-message-text'); // Corrected this to match HTML ID
+        const mostVotedPlayerTextEl = document.getElementById('most-voted-player-text');
+        const actualImposterTextEl = document.getElementById('actual-imposter-text');
+        const playAgainBtnEl = document.getElementById('play-again-btn');
+        const newGameBtnEl = document.getElementById('new-game-btn');
+        const visitStoreBtnEl = document.getElementById('visit-store-btn');
+
+        const settingsBtnEl = document.getElementById('settings-btn');
+        const settingsModalEl = document.getElementById('settings-modal');
+        const closeModalBtnEl = document.getElementById('close-modal-btn');
+        const bgmVolumeSliderEl = document.getElementById('bgm-volume-slider');
+        const sfxToggleBtnEl = document.getElementById('sfx-toggle-btn');
+
+        const backgroundMusicAudioEl = document.getElementById('background-game-music');
+        const startGameSoundAudioEl = document.getElementById('start-game-sound');
+        const interactionSoundAudioEl = document.getElementById('interaction-sound');
+        const cardFlipSoundAudioEl = document.getElementById('card-flip-sound');
+        const voteCastSoundAudioEl = document.getElementById('vote-cast-sound');
+        const imposterRevealCorrectSoundAudioEl = document.getElementById('imposter-reveal-correct-sound');
+        const imposterRevealIncorrectSoundAudioEl = document.getElementById('imposter-reveal-incorrect-sound');
+        const confettiSoundAudioEl = document.getElementById('confetti-sound');
+
+        const feedbackPopupEl = document.getElementById('feedback-popup');
+        const feedbackMessageTextPopupEl = document.getElementById('feedback-message-text-el');
+        let feedbackTimeoutId;
+
+
+        // --- Sound Functions ---
+        function playSound(audioElement) {
+            if (gameState.sfxEnabled && audioElement) {
+                audioElement.currentTime = 0;
+                audioElement.volume = 0.7; // Consistent volume for SFX
+                audioElement.play().catch(e => console.error("SFX play error:", e));
+            }
+        }
+        function playSoundWithCallback(audioElement, callback, ...args) {
+            if (gameState.sfxEnabled && audioElement) {
+                audioElement.currentTime = 0;
+                audioElement.volume = 0.7;
+                let callbackExecuted = false;
+                const executeCallback = () => {
+                    if (!callbackExecuted) {
+                        callbackExecuted = true;
+                        audioElement.removeEventListener('ended', executeCallback);
+                        if (soundTimeoutId) clearTimeout(soundTimeoutId);
+                        if (callback) callback(...args);
+                    }
+                };
+                audioElement.addEventListener('ended', executeCallback);
+                const soundDurationMs = (audioElement.duration && isFinite(audioElement.duration)) ? audioElement.duration * 1000 : 500;
+                const soundTimeoutId = setTimeout(executeCallback, soundDurationMs + 200);
+                audioElement.play().catch(e => { console.error("SFX play error:", e); executeCallback(); });
+            } else {
+                if (callback) callback(...args);
+            }
+        }
+        function initBackgroundMusic() {
+            backgroundMusicAudioEl.volume = gameState.musicVolume;
+            backgroundMusicAudioEl.play().then(() => {
+                // console.log("Background music started.");
+            }).catch(e => {
+                console.log("Background music autoplay prevented.", e);
+            });
+        }
+
+        // --- Feedback Pop-up Function ---
+        function showFeedbackMessage(message, type = 'info', duration = 2500) { // Default duration to match GTP
+            feedbackMessageTextPopupEl.textContent = message;
+            feedbackPopupEl.className = 'feedback-popup';
+            if (type) feedbackPopupEl.classList.add(type);
+            feedbackPopupEl.classList.add('show');
+            // feedbackPopupEl.style.display = 'block'; // .show class handles display
+
+            clearTimeout(feedbackTimeoutId);
+            feedbackTimeoutId = setTimeout(() => {
+                feedbackPopupEl.classList.remove('show');
+                // setTimeout(() => { feedbackPopupEl.style.display = 'none'; }, 300); // .show handles display
+            }, duration);
+        }
+
+        // --- Confetti Function ---
+        function triggerConfetti() {
+            playSound(confettiSoundAudioEl);
+            const confettiCount = 80;
+            const colors = ['var(--primary)', 'var(--secondary)', 'var(--success)', 'var(--danger)', 'var(--gold)']; // Added gold
+            for (let i = 0; i < confettiCount; i++) {
+                const confettiPiece = document.createElement('div');
+                confettiPiece.classList.add('confetti-piece');
+                confettiPiece.style.left = Math.random() * 100 + 'vw';
+                confettiPiece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                const animDuration = Math.random() * 2.5 + 1.5;
+                confettiPiece.style.animationName = 'fallAndFade';
+                confettiPiece.style.animationDuration = animDuration + 's';
+                confettiPiece.style.animationDelay = Math.random() * 0.8 + 's';
+                confettiPiece.style.width = Math.random() * 4 + 4 + 'px';
+                confettiPiece.style.height = Math.random() * 8 + 8 + 'px';
+                document.body.appendChild(confettiPiece);
+                setTimeout(() => confettiPiece.remove(), (animDuration + parseFloat(confettiPiece.style.animationDelay || 0)) * 1000 + 500);
+            }
+        }
+
+
+        // --- Event listeners ---
+        addPlayerBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); addPlayerInput(); });
+        startGameBtnEl.addEventListener('click', () => {
+             if (backgroundMusicAudioEl.paused) initBackgroundMusic();
+             playSoundWithCallback(startGameSoundAudioEl, startGame);
+        });
+        roleCardEl.addEventListener('click', () => { playSound(cardFlipSoundAudioEl); flipRoleCard(); });
+        nextPlayerBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); nextPlayer(); });
+        startVotingBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); startVoting(); });
+        revealImposterBtnEl.addEventListener('click', () => { revealImposter(); });
+        playAgainBtnEl.addEventListener('click', () => { playSoundWithCallback(startGameSoundAudioEl, playAgain); });
+        newGameBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); newGame(); });
+        visitStoreBtnEl.addEventListener('click', () => {
+            playSound(interactionSoundAudioEl);
+            window.open('https://www.blyza.com/store', '_blank'); // Updated URL
+        });
+
+        settingsBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'flex'; });
+        closeModalBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; });
+        window.addEventListener('click', (event) => { if (event.target === settingsModalEl) { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; } });
+        bgmVolumeSliderEl.addEventListener('input', (e) => { gameState.musicVolume = parseFloat(e.target.value); backgroundMusicAudioEl.volume = gameState.musicVolume; });
+        sfxToggleBtnEl.addEventListener('click', () => {
+            playSound(interactionSoundAudioEl);
+            gameState.sfxEnabled = !gameState.sfxEnabled;
+            sfxToggleBtnEl.textContent = `SFX: ${gameState.sfxEnabled ? 'ON' : 'OFF'}`;
+            // Class toggling for ON/OFF state if you want to change button color based on state
+            sfxToggleBtnEl.classList.toggle('btn-success', gameState.sfxEnabled);
+            sfxToggleBtnEl.classList.toggle('btn-danger', !gameState.sfxEnabled);
+        });
+
+
+        // --- Functions ---
+        function switchScreen(activeScreenId) {
+            Object.values(screens).forEach(screen => screen.classList.remove('active'));
+            screens[activeScreenId].classList.add('active');
+            cornerLogoEl.style.display = (activeScreenId !== 'start') ? 'block' : 'none';
+        }
+
+        function createPlayerInputField(playerNumber) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'player-input-wrapper';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'player-name';
+            input.placeholder = `Player ${playerNumber}`;
+            wrapper.appendChild(input);
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-player-btn btn-danger'; // Added btn-danger for base styling
+            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            removeBtn.onclick = function() {
+                playSound(interactionSoundAudioEl);
+                wrapper.remove();
+                updateAddRemovePlayerButtons();
+            };
+            wrapper.appendChild(removeBtn);
+            return wrapper;
+        }
+
+        function addPlayerInput() {
+            const playerCount = playerNamesListDiv.querySelectorAll('.player-input-wrapper').length;
+            if (playerCount >= gameState.maxPlayers) {
+                showFeedbackMessage(`Maximum of ${gameState.maxPlayers} players!`, "info");
+                return;
+             }
+            const newInputWrapper = createPlayerInputField(playerCount + 1);
+            playerNamesListDiv.appendChild(newInputWrapper);
+            updateAddRemovePlayerButtons();
+        }
+
+        function updateAddRemovePlayerButtons() {
+            const playerInputWrappers = playerNamesListDiv.querySelectorAll('.player-input-wrapper');
+            const playerCount = playerInputWrappers.length;
+
+            addPlayerBtnEl.disabled = playerCount >= gameState.maxPlayers;
+
+            playerInputWrappers.forEach(wrapper => {
+                const removeBtn = wrapper.querySelector('.remove-player-btn');
+                if (removeBtn) {
+                    removeBtn.disabled = playerCount <= gameState.minPlayers;
+                }
+            });
+        }
+
+
+        function startGame() {
+            // MODIFICATION START: Enforce minimum player names
+            const playerInputs = Array.from(playerNamesListDiv.querySelectorAll('.player-name'));
+            const enteredNames = playerInputs
+                .map(input => input.value.trim())
+                .filter(name => name !== ''); // Get only the names that have been typed in
+
+            if (enteredNames.length < gameState.minPlayers) {
+                showFeedbackMessage(`Please enter at least ${gameState.minPlayers} player names!`, 'danger');
+                return;
+            }
+
+            // Use only the entered names for the game
+            gameState.players = enteredNames;
+            
+            if (gameState.players.length > gameState.maxPlayers) {
+                showFeedbackMessage(`Cannot have more than ${gameState.maxPlayers} players.`, 'danger');
+                return;
+            }
+
+            if (gameState.players.some(name => name.length > 15)) {
+                showFeedbackMessage('Player names are too long (max 15 chars)!', 'danger');
+                return;
+            }
+            // MODIFICATION END
+
+            const randomQuestionIndex = Math.floor(Math.random() * gameState.questions.length);
+            gameState.crewQuestion = gameState.questions[randomQuestionIndex].crew;
+            gameState.imposterQuestion = gameState.questions[randomQuestionIndex].imposter;
+            gameState.imposterIndex = Math.floor(Math.random() * gameState.players.length);
+            gameState.currentPlayerIndex = 0;
+            gameState.playerVotes = {};
+            gameState.selectedVote = null;
+
+            roleCardEl.classList.remove('flipped');
+            playerRoleDisplayEl.textContent = "ROLE";
+            playerQuestionDisplayEl.textContent = "Your question will appear here.";
+            playerRoleDisplayEl.className = ""; // Reset classes like role-imposter/role-crewmate
+
+            currentPlayerNameDisplayEl.innerHTML = `<strong>${gameState.players[0]}</strong>`; // Use strong tag
+            nextPlayerBtnEl.disabled = true;
+            switchScreen('role');
+        }
+
+        function flipRoleCard() {
+            if (roleCardEl.classList.contains('flipped')) return;
+            roleCardEl.classList.add('flipped');
+            nextPlayerBtnEl.disabled = false;
+
+            const isImposter = gameState.currentPlayerIndex === gameState.imposterIndex;
+            playerRoleDisplayEl.textContent = isImposter ? 'IMPOSTER' : 'CREWMATE';
+            // Remove old classes and add new one for color
+            playerRoleDisplayEl.classList.remove('role-imposter', 'role-crewmate');
+            playerRoleDisplayEl.classList.add(isImposter ? 'role-imposter' : 'role-crewmate');
+            playerQuestionDisplayEl.textContent = isImposter ? gameState.imposterQuestion : gameState.crewQuestion;
+        }
+
+        function nextPlayer() {
+            if (!roleCardEl.classList.contains('flipped')) {
+                showFeedbackMessage('Please reveal your role!', 'info');
+                return;
+            }
+            gameState.currentPlayerIndex++;
+            if (gameState.currentPlayerIndex < gameState.players.length) {
+                currentPlayerNameDisplayEl.innerHTML = `Pass to <strong id="current-player-name">${gameState.players[gameState.currentPlayerIndex]}</strong>`;
+                roleCardEl.classList.remove('flipped');
+                playerRoleDisplayEl.textContent = "ROLE";
+                playerQuestionDisplayEl.textContent = "Your question will appear here.";
+                playerRoleDisplayEl.classList.remove('role-imposter', 'role-crewmate');
+                nextPlayerBtnEl.disabled = true;
+            } else {
+                setupDiscussionScreen();
+                switchScreen('discussion');
+            }
+        }
+
+        function setupDiscussionScreen() {
+             crewQuestionDisplayEl.textContent = gameState.crewQuestion;
+             playerListDisplayEl.innerHTML = '';
+             gameState.players.forEach((player) => {
+                 const playerElement = document.createElement('div');
+                 playerElement.className = 'player-avatar';
+                 playerElement.innerHTML = `
+                    <div class="avatar-icon">${player.charAt(0).toUpperCase()}</div>
+                    <h4>${player}</h4>
+                 `;
+                 playerListDisplayEl.appendChild(playerElement);
+             });
+        }
+
+        function startVoting() {
+            setupVotingScreen();
+            switchScreen('voting');
+        }
+
+        function setupVotingScreen() {
+             votingOptionsDisplayEl.innerHTML = '';
+             gameState.selectedVote = null;
+             revealImposterBtnEl.disabled = true;
+             votingInstructionTextEl.textContent = "Select the player you suspect is the Imposter.";
+             gameState.players.forEach((player) => {
+                 const voteOption = document.createElement('div');
+                 voteOption.className = 'player-avatar';
+                 voteOption.dataset.playerName = player;
+                 voteOption.innerHTML = `
+                    <div class="avatar-icon">${player.charAt(0).toUpperCase()}</div>
+                    <h4>${player}</h4>
+                 `;
+                 voteOption.addEventListener('click', handleVoteSelection);
+                 votingOptionsDisplayEl.appendChild(voteOption);
+             });
+        }
+
+        function handleVoteSelection(event) {
+            playSound(voteCastSoundAudioEl);
+            const selectedAvatar = event.currentTarget;
+            const previouslySelected = votingOptionsDisplayEl.querySelector('.selected');
+            if (previouslySelected) {
+                previouslySelected.classList.remove('selected');
+            }
+            selectedAvatar.classList.add('selected');
+            gameState.selectedVote = selectedAvatar.dataset.playerName;
+            revealImposterBtnEl.disabled = false;
+            votingInstructionTextEl.textContent = `You are voting for ${gameState.selectedVote}. Click Reveal when ready.`;
+        }
+
+        function revealImposter() {
+            if (!gameState.selectedVote) {
+                showFeedbackMessage('Please select a player!', 'danger');
+                return;
+            }
+            gameState.playerVotes = {}; // Simplified voting: only one vote is cast by the "group"
+            gameState.playerVotes[gameState.selectedVote] = (gameState.playerVotes[gameState.selectedVote] || 0) + 1;
+
+            let mostVotedPlayer = gameState.selectedVote; // Since only one vote is tracked
+            const imposterName = gameState.players[gameState.imposterIndex];
+            const isCorrect = mostVotedPlayer === imposterName;
+
+            // MODIFICATION START: Trigger sound and feedback pop-up simultaneously
+            if (isCorrect) {
+                playSound(imposterRevealCorrectSoundAudioEl);
+                showFeedbackMessage('Imposter Found!', 'correct', 3000);
+                triggerConfetti();
+            } else {
+                playSound(imposterRevealIncorrectSoundAudioEl);
+                showFeedbackMessage('Wrong Guess!', 'incorrect', 3000);
+            }
+            // MODIFICATION END
+
+            resultTitleTextEl.textContent = isCorrect ? 'Imposter Found!' : 'Wrong Guess!';
+            resultTitleTextEl.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
+
+            imposterAvatarDisplayEl.textContent = imposterName.charAt(0).toUpperCase();
+            imposterNameRevealTextEl.innerHTML = `Imposter: <strong style="color: var(--danger);">${imposterName}</strong>`; // Highlight imposter name
+            imposterQuestionRevealTextEl.textContent = `Imposter's Question: ${gameState.imposterQuestion}`;
+            resultMessageTextEl.textContent = isCorrect ?
+                `The group correctly identified ${imposterName} as the Imposter!` :
+                `The group voted for ${mostVotedPlayer}, but the real Imposter was ${imposterName}!`;
+            resultMessageTextEl.className = isCorrect ? 'result-correct' : 'result-incorrect';
+
+            mostVotedPlayerTextEl.innerHTML = `${mostVotedPlayer} ${isCorrect ? '<strong style="color: var(--success);">(Correctly Identified!)</strong>' : '<strong style="color: var(--danger);">(Oops, not the Imposter!)</strong>'}`;
+            actualImposterTextEl.innerHTML = `<strong style="color: var(--danger);">${imposterName}</strong>`;
+            switchScreen('results');
+        }
+
+        function playAgain() {
+            // Reset scores or any other game-specific state for a new round WITH SAME PLAYERS
+            gameState.currentPlayerIndex = 0;
+            gameState.playerVotes = {};
+            gameState.selectedVote = null;
+            // Re-pick questions and imposter
+            const randomQuestionIndex = Math.floor(Math.random() * gameState.questions.length);
+            gameState.crewQuestion = gameState.questions[randomQuestionIndex].crew;
+            gameState.imposterQuestion = gameState.questions[randomQuestionIndex].imposter;
+            gameState.imposterIndex = Math.floor(Math.random() * gameState.players.length);
+
+            roleCardEl.classList.remove('flipped');
+            playerRoleDisplayEl.textContent = "ROLE";
+            playerQuestionDisplayEl.textContent = "Your question will appear here.";
+            playerRoleDisplayEl.className = "";
+            currentPlayerNameDisplayEl.innerHTML = `Pass to <strong id="current-player-name">${gameState.players[0]}</strong>`;
+            nextPlayerBtnEl.disabled = true;
+            switchScreen('role'); // Go to role assignment screen
+        }
+
+        function newGame() {
+            // Full reset to start screen
+            gameState.players = []; // Clear players for new input
+            playerNamesListDiv.innerHTML = '';
+            for (let i = 0; i < gameState.minPlayers; i++) {
+                playerNamesListDiv.appendChild(createPlayerInputField(i + 1));
+            }
+            updateAddRemovePlayerButtons();
+            switchScreen('start');
+        }
+
+        // Initial Setup on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            sfxToggleBtnEl.classList.toggle('btn-success', gameState.sfxEnabled);
+            sfxToggleBtnEl.classList.toggle('btn-danger', !gameState.sfxEnabled);
+            bgmVolumeSliderEl.value = gameState.musicVolume;
+            // initBackgroundMusic(); // Moved to first interaction to comply with browser autoplay policies
+
+            playerNamesListDiv.innerHTML = '';
+            for (let i = 0; i < gameState.minPlayers; i++) {
+                playerNamesListDiv.appendChild(createPlayerInputField(i + 1));
+            }
+            updateAddRemovePlayerButtons();
+
+            switchScreen('start');
+        });
+
+    </script>
+</body>
+</html>

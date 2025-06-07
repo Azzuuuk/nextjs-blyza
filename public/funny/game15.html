@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEN ZDLE - A Blyza Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Luckiest+Guy&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FF8833;
+            --secondary: #CB7AE1;
+            --light: #F2F2F2;
+            --success: #00BFA6;
+            --danger: #ff4b2b;
+            --dark: #1a1c20;
+            --darker: #0f1012;
+            --info: #4ECDC4;
+        }
+
+        /* Game's existing animations */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        .shake {
+            animation: shake 0.5s;
+        }
+        @keyframes flip {
+            0% { transform: rotateX(0); }
+            50% { transform: rotateX(-90deg); }
+            100% { transform: rotateX(0); }
+        }
+        .flip {
+            animation: flip 0.5s;
+        }
+        .keyboard-key {
+            transition: all 0.2s;
+        }
+        .keyboard-key:active {
+            transform: scale(0.9);
+        }
+
+        /* Styles for Blyza specific elements (modal, popups, settings, logo) */
+        body {
+            font-family: 'Quicksand', sans-serif; /* Base font for Blyza elements */
+             /* Tailwind handles body bg, but keep this for reference if needed */
+        }
+        .game-title-blyza { /* For H1 if we want to use Blyza font */
+            font-family: "Luckiest Guy", cursive;
+            color: var(--primary); /* Example: Use primary color for title */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .brand-logo {
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        .brand-logo-prominent {
+            display: block;
+            margin: 0 auto 15px; /* Centered, space below */
+            max-height: 70px; /* Adjust as needed */
+        }
+
+        .icon-btn {
+            position: fixed; /* Changed to fixed for consistent placement */
+            top: 20px;
+            right: 20px;
+            background: var(--dark); /* Darker background for Blyza elements */
+            color: var(--light);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it's above game board */
+            padding: 0;
+            margin: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .icon-btn:hover {
+            background: var(--darker);
+            transform: scale(1.1);
+        }
+
+        .modal {
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Quicksand', sans-serif;
+        }
+        .modal-content {
+            background-color: var(--darker);
+            margin: auto;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            color: var(--light);
+        }
+        .modal-content h2 {
+            font-family: "Bungee", cursive;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .setting-item {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .setting-item label { margin-bottom: 8px; font-weight: 600; }
+        .setting-item input[type="range"] { width: 100%; cursor: pointer; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -7px; box-shadow: 0 0 5px rgba(0,0,0,0.3); }
+        input[type=range]::-moz-range-thumb { height: 20px; width: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; border: none; box-shadow: 0 0 5px rgba(0,0,0,0.3); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: rgba(255,255,255,0.2); border-radius: 3px; }
+        input[type=range]::-moz-range-track { width: 100%; height: 6px; cursor: pointer; background: rgba(255,255,255,0.2); border-radius: 3px; }
+        .close-modal-btn { color: #aaa; position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-modal-btn:hover, .close-modal-btn:focus { color: var(--light); text-decoration: none; }
+        /* Button inside modal */
+        .modal-content button {
+            background: linear-gradient(135deg, var(--secondary) 0%, #b85cd6 100%);
+            color: var(--light); border: none; padding: 10px 20px; font-size: 1rem;
+            border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2); margin-top: 10px;
+            font-family: "Quicksand", sans-serif;
+        }
+        .modal-content button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+
+
+        .feedback-popup {
+            position: fixed; top: 50%; left: 50%;
+            background-color: rgba(15, 16, 18, 0.95); /* var(--darker) with alpha */
+            color: white; padding: 30px 50px; border-radius: 20px;
+            font-size: 2.2rem; font-family: "Bungee", cursive; text-align: center;
+            z-index: 3000; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            opacity: 0; transform: translate(-50%, -50%) scale(0.8);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            pointer-events: none; border: 2px solid var(--primary);
+        }
+        .feedback-popup.show { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+        .feedback-popup.win-feedback { color: var(--success); border-color: var(--success); text-shadow: 0 0 10px var(--success); }
+        .feedback-popup.lose-feedback { color: var(--danger); border-color: var(--danger); text-shadow: 0 0 10px var(--danger); }
+        .feedback-popup.info-feedback { color: var(--info); border-color: var(--info); text-shadow: 0 0 10px var(--info); }
+
+
+        .confetti-piece {
+            position: fixed; width: 10px; height: 20px;
+            background-color: var(--primary); opacity: 0;
+            animation-timing-function: linear; animation-fill-mode: forwards;
+            pointer-events: none; z-index: 4000;
+        }
+        @keyframes fallAndFade {
+            0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Store button specific style if needed, or use Tailwind */
+        #visit-store-btn {
+            background-color: var(--info); /* Tailwind: bg-cyan-500 */
+        }
+        #visit-store-btn:hover {
+            background-color: #3eb7af; /* Tailwind: hover:bg-cyan-600 */
+        }
+
+        /* Ensure Blyza buttons in modal don't inherit keyboard key styles */
+        .modal-content .btn-secondary {
+             background: linear-gradient(135deg, var(--secondary) 0%, #b85cd6 100%) !important; /* important to override tailwind if needed */
+        }
+         .modal-content .btn-secondary:hover {
+             background: linear-gradient(135deg, #b85cd6 0%, var(--secondary) 100%) !important;
+        }
+
+        /* Responsive adjustments for Blyza elements */
+        @media (max-width: 640px) { /* Tailwind's sm breakpoint */
+            .brand-logo-prominent { max-height: 50px; margin-bottom: 10px;}
+            .icon-btn { width: 40px; height: 40px; font-size: 1rem; top:15px; right:15px;}
+            .modal-content { padding: 20px; width: 90%;}
+            .modal-content h2 { font-size: 1.5rem; margin-bottom: 20px; }
+            .feedback-popup { font-size: 1.5rem; padding: 20px 30px; width: 85%; }
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center py-8">
+    <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
+        <i class="fas fa-cog"></i>
+    </button>
+
+    <div class="w-full max-w-md px-4">
+        <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
+        <h1 class="text-4xl font-bold text-center mb-2 text-gray-800 game-title-blyza">GEN ZDLE</h1>
+        <p class="text-center text-gray-600 mb-6">Guess the slang word in 5 tries!</p>
+        
+        <div class="flex flex-col sm:flex-row justify-center items-center mb-6 gap-2">
+            <div class="flex items-center gap-2">
+                <span class="text-gray-700">Word length:</span>
+                <select id="wordLength" class="border rounded px-3 py-1 bg-white text-gray-700">
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5" selected>5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
+            <div class="flex gap-2 mt-2 sm:mt-0">
+                <button id="newGameBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">
+                    <i class="fas fa-sync-alt mr-1"></i> New Game
+                </button>
+                <button id="visit-store-btn" class="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-1 rounded hidden">
+                    <i class="fas fa-store mr-1"></i> Visit Store
+                </button>
+            </div>
+        </div>
+        
+        <div id="gameBoard" class="grid gap-2 mb-8"></div>
+        
+        <div id="keyboard" class="grid gap-1.5"></div>
+        
+        <div id="message" class="text-center mt-4 h-6 font-semibold text-gray-700"></div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal-btn" class="close-modal-btn">×</span>
+            <h2>Settings</h2>
+            <div class="setting-item">
+                <label for="bgm-volume-slider">Background Music Volume:</label>
+                <input type="range" id="bgm-volume-slider" min="0" max="1" step="0.01" value="0.3">
+            </div>
+            <div class="setting-item">
+                <label for="sfx-toggle-btn">Sound Effects:</label>
+                <button id="sfx-toggle-btn" class="btn-secondary">SFX: ON</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Pop-up -->
+    <div id="feedback-popup" class="feedback-popup" style="display: none;">
+        <span id="feedback-message-text-el"></span>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="background-game-music" loop><source src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3" type="audio/mpeg"></audio>
+    <audio id="start-game-sound"><source src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3" type="audio/mpeg"></audio>
+    <audio id="interaction-sound"><source src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" type="audio/wav"></audio>
+    <audio id="error-sound"><source src="https://static.wixstatic.com/mp3/9ce3e5_277f814439064d1bbe5c0342241b23e4.mp3" type="audio/mpeg"></audio>
+    <audio id="win-game-sound"><source src="https://static.wixstatic.com/mp3/9ce3e5_76691a6fefcd4536aa403ada111e886a.mp3" type="audio/mpeg"></audio>
+    <audio id="submit-guess-sound"><source src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" type="audio/wav"></audio> <!-- Using interaction for submit -->
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Game state
+            let targetWord = '';
+            let currentGuess = '';
+            let guesses = [];
+            let gameOver = false;
+            let wordLength = 5;
+            
+            const slangWords = { /* ... [Your existing slangWords object] ... */
+                3: ['MOG', 'LIT', 'CAP', 'SUS', 'BET', 'MID', 'DAB', 'DAP', 'FAM', 'NIP', 'TEA', 'YAP', 'LOL', 'AFK', 'OMG', 'WTF',  'IRL', 'FYP', 'BFF', 'SMH' , 'FTW', 'POV', 'BAE' , 'RIP', 'HMU', 'ILY', 'WYD', 'KYS', 'MVP', 'GYM', 'KSI', 'MEN', 'CEO', 'BOP', 'SIS', 'HOE', 'DIP', 'DTF', 'ICK', 'UNC', 'GAS'],
+                4: ['RIZZ','CLAP', 'DRIP', 'YEET', 'SIMP', 'VIBE', 'FLEX', 'GOAT', 'FOMO', 'NSFW', 'ROFL', 'STFU', 'YOLO', 'TYSM', 'LMAO', 'OOTD', 'GTFO', 'MILF', 'MAGA', 'ASMR' , 'BYOB', 'STAN', 'SLAY', 'CHAD', 'FIRE', 'DOPE', 'SALT' , 'SHIP',  'BETA' , 'BAIT' , 'FLOP' , 'KING' , 'SWAG', 'WOKE','DEAD', 'MOOD', 'THOT', 'RENT', 'BAKA', 'TATE', 'NOOB', 'RAGE', 'FEET', 'PAUL', 'YASS', 'EBOY', 'DANK','DRAG', 'WEAK','SMOL','GYAT', 'AURA', 'BRAT', 'CAKE', 'CHAT', 'OHIO'],
+                5: ['SUSSY', 'CLOUT', 'BASED', 'GRIND', 'VIBES', 'RATIO', 'GLAZE', 'FANUM', 'KAREN', 'SIGMA', 'TOXIC', 'BROKE', 'TRUMP','TRASH', 'GOOFY', 'PUSSY', 'BITCH', 'MUTED', 'ZESTY', 'SPICY', 'TROLL', 'PRANK', 'SALTY', 'NATTY', 'PRIME' , 'BEAST', 'SHOOK', 'WOMEN', 'CURRY' , 'INDIA', 'SPEED', 'EGIRL' , 'FINNA', 'YIKES', 'SNACK','IYKYK','BUNDA', 'BASIC', 'FACTS', 'FURRY', 'GUCCI', 'HELLA', 'BREAD', 'MEWING'],
+                6: ['MENACE', 'POGGER', 'CRYPTO', 'CRINGE', 'BOUJEE', 'CURSED', 'YEETED', 'SAVAGE', 'BUSSIN', 'NORMIE', 'BROKIE', 'WASHED', 'BANGER','GLOWUP', 'CANCEL', 'LOWKEY', 'CHEUGY', 'TWITCH', 'COOKED', 'DELULU', 'DEMURE', 'GIVING'],
+                7: ['PERIODT', 'FINESSE','SKIBIDI', 'CATFISH','BOYMATH', 'HIGHKEY', 'HOTTAKE', 'BUSSING', 'MOGGING', 'REDFLAG', 'PRESSED', 'SAYLESS', 'SENDING',  'SIDEEYE', 'RIZZLER'],
+                8: ['GHOSTING', 'BRAINROT', 'CRASHOUT', 'GIRLMATH', 'GIGACHAD', 'HAMMERED', 'LOWTAPER', 'CLAPBACK', 'RENTFREE', 'FORTNITE', 'JONJONES', 'ADINROSS', 'KAICENAT'],
+                9: ['BODYCOUNT','LOOKSMAXX', 'WEIRDFLEX', 'AESTHETIC', 'CANCELLED', 'GREENFLAG', 'BOMBASTIC', 'BEIGEFLAG', 'VIBECHECK', 'CURVEBALL', 'MINECRAFT'],
+                10: ['CAUGHTIN4K','LETHIMCOOK', 'TOUCHGRASS', 'THIRSTTRAP', 'ASSIGNMENT', 'AURAPOINTS', 'DOOMSCROLL', 'ASHTONHALL']
+            };
+
+            // Blyza Elements State
+            let sfxEnabled = true;
+            let musicVolume = 0.3;
+
+            // DOM Elements
+            const wordLengthSelect = document.getElementById('wordLength');
+            const newGameBtn = document.getElementById('newGameBtn');
+            const gameBoardEl = document.getElementById('gameBoard');
+            const keyboardEl = document.getElementById('keyboard');
+            const messageEl = document.getElementById('message');
+            const visitStoreBtn = document.getElementById('visit-store-btn');
+
+            // Blyza DOM Elements
+            const settingsBtn = document.getElementById('settings-btn');
+            const settingsModal = document.getElementById('settings-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const bgmVolumeSlider = document.getElementById('bgm-volume-slider');
+            const sfxToggleBtn = document.getElementById('sfx-toggle-btn');
+            const feedbackPopup = document.getElementById('feedback-popup');
+            const feedbackMessageTextEl = document.getElementById('feedback-message-text-el');
+
+            // Audio Elements
+            const backgroundMusic = document.getElementById('background-game-music');
+            const startGameSound = document.getElementById('start-game-sound');
+            const interactionSound = document.getElementById('interaction-sound');
+            const errorSound = document.getElementById('error-sound');
+            const winGameSound = document.getElementById('win-game-sound');
+            const submitGuessSound = document.getElementById('submit-guess-sound');
+            
+            // Initialize game
+            initGame();
+            initBackgroundMusic(); // Try to play BGM
+            
+            // --- Blyza Sound Functions ---
+            function playSound(audioElement) {
+                if (sfxEnabled && audioElement) {
+                    audioElement.currentTime = 0;
+                    audioElement.play().catch(e => console.error("SFX play error:", e));
+                }
+            }
+            function playSoundWithCallback(audioElement, callback, ...args) {
+                if (sfxEnabled && audioElement) { /* ... (same as previous example) ... */ 
+                    audioElement.currentTime = 0;
+                    let callbackExecuted = false;
+                    const executeCallback = () => {
+                        if (!callbackExecuted) {
+                            callbackExecuted = true;
+                            audioElement.onended = null;
+                            if (timeoutId) clearTimeout(timeoutId);
+                            if (callback) callback(...args);
+                        }
+                    };
+                    audioElement.onended = executeCallback;
+                    const soundDurationMs = (audioElement.duration && isFinite(audioElement.duration)) ? audioElement.duration * 1000 : 500;
+                    const timeoutId = setTimeout(executeCallback, soundDurationMs + 200); 
+                    audioElement.play().catch(e => { console.error("SFX play error:", e); executeCallback(); });
+                } else {
+                    if (callback) callback(...args);
+                }
+            }
+            function initBackgroundMusic() {
+                backgroundMusic.volume = musicVolume;
+                // Autoplay might be blocked, user interaction usually needed
+                document.body.addEventListener('click', () => {
+                    if (backgroundMusic.paused) {
+                         backgroundMusic.play().catch(e => console.log("BGM autoplay prevented."));
+                    }
+                }, { once: true });
+            }
+
+            // --- Blyza Settings Modal Functions ---
+            settingsBtn.addEventListener('click', () => { playSound(interactionSound); settingsModal.style.display = 'flex'; });
+            closeModalBtn.addEventListener('click', () => { playSound(interactionSound); settingsModal.style.display = 'none'; });
+            window.addEventListener('click', (event) => { if (event.target === settingsModal) { playSound(interactionSound); settingsModal.style.display = 'none'; } });
+            bgmVolumeSlider.addEventListener('input', (e) => { musicVolume = parseFloat(e.target.value); backgroundMusic.volume = musicVolume; });
+            sfxToggleBtn.addEventListener('click', () => { sfxEnabled = !sfxEnabled; sfxToggleBtn.textContent = `SFX: ${sfxEnabled ? 'ON' : 'OFF'}`; playSound(interactionSound); });
+
+            // --- Blyza Feedback Pop-up Functions ---
+            let feedbackTimeout;
+            function showFeedbackMessage(message, type = '', duration = 2500) { /* ... (same as previous example) ... */ 
+                feedbackMessageTextEl.textContent = message;
+                feedbackPopup.className = 'feedback-popup'; 
+                if (type) feedbackPopup.classList.add(type);
+                feedbackPopup.classList.add('show');
+                feedbackPopup.style.display = 'block';
+                clearTimeout(feedbackTimeout);
+                feedbackTimeout = setTimeout(() => {
+                    feedbackPopup.classList.remove('show');
+                    setTimeout(() => { feedbackPopup.style.display = 'none'; }, 300); 
+                }, duration);
+            }
+
+            // --- Blyza Confetti Function ---
+            function triggerConfetti() { /* ... (same as previous example) ... */ 
+                const confettiCount = 100;
+                const colors = ['var(--primary)', 'var(--secondary)', 'var(--success)', 'var(--info)', '#FFD700', '#FF69B4'];
+                for (let i = 0; i < confettiCount; i++) {
+                    const confettiPiece = document.createElement('div');
+                    confettiPiece.classList.add('confetti-piece');
+                    confettiPiece.style.left = Math.random() * 100 + 'vw';
+                    confettiPiece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    const animDuration = Math.random() * 3 + 2;
+                    confettiPiece.style.animationName = 'fallAndFade';
+                    confettiPiece.style.animationDuration = animDuration + 's';
+                    confettiPiece.style.animationDelay = Math.random() * 1 + 's';
+                    confettiPiece.style.width = Math.random() * 5 + 5 + 'px';
+                    confettiPiece.style.height = Math.random() * 10 + 10 + 'px';
+                    document.body.appendChild(confettiPiece);
+                    setTimeout(() => {
+                        confettiPiece.remove();
+                    }, (animDuration + parseFloat(confettiPiece.style.animationDelay || 0)) * 1000 + 500);
+                }
+            }
+            
+            // Original Game Event listeners
+            wordLengthSelect.addEventListener('change', (e) => {
+                playSound(interactionSound);
+                wordLength = parseInt(e.target.value);
+                initGame();
+            });
+            
+            newGameBtn.addEventListener('click', () => {
+                playSoundWithCallback(startGameSound, initGame);
+            });
+
+            visitStoreBtn.addEventListener('click', () => {
+                playSound(interactionSound);
+                window.open('https://www.blyza.com/', '_blank');
+            });
+            
+            document.addEventListener('keydown', handleKeyPress);
+            
+            // Original Game Functions (modified for sounds and Blyza elements)
+            function initGame() {
+                const words = slangWords[wordLength] || slangWords[5]; // Fallback to 5
+                targetWord = words[Math.floor(Math.random() * words.length)].toUpperCase();
+                
+                currentGuess = '';
+                guesses = [];
+                gameOver = false;
+                
+                messageEl.textContent = '';
+                messageEl.className = 'text-center mt-4 h-6 font-semibold text-gray-700'; // Reset message style
+                visitStoreBtn.classList.add('hidden'); // Hide store button on new game
+                
+                renderGameBoard();
+                renderKeyboard();
+            }
+            
+            function renderGameBoard() {
+                gameBoardEl.innerHTML = '';
+                gameBoardEl.className = `grid gap-2 mb-8 grid-cols-${wordLength}`;
+                
+                for (let row = 0; row < 5; row++) {
+                    for (let col = 0; col < wordLength; col++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'w-full aspect-square border-2 border-gray-300 flex items-center justify-center text-2xl font-bold uppercase';
+                        
+                        if (row < guesses.length) {
+                            const guessLetter = guesses[row][col];
+                            cell.textContent = guessLetter;
+                            if (targetWord.includes(guessLetter)) {
+                                if (targetWord[col] === guessLetter) cell.className += ' bg-green-500 text-white border-green-500';
+                                else cell.className += ' bg-yellow-500 text-white border-yellow-500';
+                            } else cell.className += ' bg-gray-400 text-white border-gray-400';
+                        } 
+                        else if (row === guesses.length && col < currentGuess.length) {
+                            cell.textContent = currentGuess[col];
+                            cell.className += ' border-gray-800';
+                        }
+                        gameBoardEl.appendChild(cell);
+                    }
+                }
+            }
+            
+            function renderKeyboard() {
+                keyboardEl.innerHTML = '';
+                const keyboardLayout = [
+                    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+                    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+                    ['Enter', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'Backspace']
+                ];
+                
+                keyboardLayout.forEach(row => {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'flex justify-center gap-1 sm:gap-1.5'; // Adjusted gap for smaller screens
+                    
+                    row.forEach(key => {
+                        const keyButton = document.createElement('button');
+                        keyButton.textContent = key;
+                        
+                        if (key.length > 1) {
+                            keyButton.className = 'keyboard-key px-2 sm:px-3 py-3 bg-gray-300 rounded font-semibold flex-grow sm:flex-grow-0';
+                            if (key === 'Enter') keyButton.className += ' bg-blue-500 text-white';
+                        } else {
+                            keyButton.className = 'keyboard-key w-7 h-12 sm:w-8 bg-gray-200 rounded font-semibold uppercase';
+                        }
+                        
+                        // Color keys based on previous guesses (existing logic)
+                        let keyState = '';
+                        guesses.forEach(guess => {
+                            guess.split('').forEach((letter, i) => {
+                                if (letter === key) {
+                                    if (targetWord[i] === letter) keyState = 'correct';
+                                    else if (targetWord.includes(letter) && keyState !== 'correct') keyState = 'present';
+                                    else if (!targetWord.includes(letter) && keyState !== 'correct' && keyState !== 'present') keyState = 'absent';
+                                }
+                            });
+                        });
+                        if (keyState === 'correct') keyButton.className += ' bg-green-500 text-white';
+                        else if (keyState === 'present') keyButton.className += ' bg-yellow-500 text-white';
+                        else if (keyState === 'absent') keyButton.className += ' bg-gray-500 text-white';
+                        
+                        keyButton.addEventListener('click', () => { playSound(interactionSound); handleKeyClick(key); });
+                        rowDiv.appendChild(keyButton);
+                    });
+                    keyboardEl.appendChild(rowDiv);
+                });
+            }
+            
+            function handleKeyClick(key) {
+                if (gameOver) return;
+                if (key === 'Enter') submitGuess();
+                else if (key === 'Backspace') currentGuess = currentGuess.slice(0, -1);
+                else if (currentGuess.length < wordLength) currentGuess += key.toUpperCase();
+                renderGameBoard();
+            }
+            
+            function handleKeyPress(e) {
+                if (gameOver) return;
+                if (e.key === 'Enter') { playSound(interactionSound); submitGuess(); }
+                else if (e.key === 'Backspace') { playSound(interactionSound); currentGuess = currentGuess.slice(0, -1); renderGameBoard(); }
+                else if (/^[a-zA-Z]$/.test(e.key) && currentGuess.length < wordLength) { /* playSound(interactionSound); // Optional: sound for physical keypress */ currentGuess += e.key.toUpperCase(); renderGameBoard(); }
+            }
+            
+            function submitGuess() {
+                if (currentGuess.length !== wordLength) {
+                    playSound(errorSound);
+                    showMessage('Not enough letters!');
+                    gameBoardEl.classList.add('shake');
+                    setTimeout(() => gameBoardEl.classList.remove('shake'), 500);
+                    return;
+                }
+                
+                playSound(submitGuessSound);
+
+                const cells = document.querySelectorAll(`#gameBoard > div:nth-child(n+${guesses.length * wordLength + 1}):nth-child(-n+${(guesses.length + 1) * wordLength})`);
+                cells.forEach((cell, i) => {
+                    setTimeout(() => {
+                        cell.classList.add('flip');
+                        // After flip, update colors based on the new guess
+                        setTimeout(() => {
+                            cell.classList.remove('flip');
+                            // Re-rendering board will handle colors correctly after guess is pushed
+                            if (i === cells.length - 1) { // After last cell flips
+                                guesses.push(currentGuess);
+                                checkWinLoss();
+                                currentGuess = '';
+                                renderGameBoard(); // Render board with new guess colored
+                                renderKeyboard();   // Render keyboard with updated key colors
+                            }
+                        }, 250); // Halfway through flip
+                    }, i * 100); // Stagger flip
+                });
+            }
+
+            function checkWinLoss() {
+                 const lastGuess = guesses[guesses.length - 1];
+                if (lastGuess === targetWord) {
+                    gameOver = true;
+                    playSound(winGameSound);
+                    triggerConfetti();
+                    setTimeout(() => {
+                        showFeedbackMessage('You got it! 🎉', 'win-feedback', 3000);
+                        showMessage('You got it! 🎉', 'text-green-600');
+                        visitStoreBtn.classList.remove('hidden');
+                    }, (wordLength * 100) + 300); // After flip animations
+                } else if (guesses.length === 5) {
+                    gameOver = true;
+                    playSound(errorSound); // Or a specific lose sound
+                    setTimeout(() => {
+                        showFeedbackMessage(`The word was ${targetWord}`, 'lose-feedback', 4000);
+                        showMessage(`Game over! The word was ${targetWord}`, 'text-red-600');
+                        visitStoreBtn.classList.remove('hidden');
+                    }, (wordLength * 100) + 300); // After flip animations
+                }
+            }
+            
+            function showMessage(msg, className = 'text-gray-700') {
+                messageEl.textContent = msg;
+                messageEl.className = `text-center mt-4 h-6 font-semibold ${className}`;
+            }
+
+            // Initial setup for Blyza elements
+            bgmVolumeSlider.value = musicVolume;
+            sfxToggleBtn.textContent = `SFX: ${sfxEnabled ? 'ON' : 'OFF'}`;
+
+        });
+    </script>
+</body>
+</html>
