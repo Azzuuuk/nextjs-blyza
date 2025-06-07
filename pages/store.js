@@ -56,7 +56,7 @@ export default function StorePage() {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [sfxEnabled, setSfxEnabled] = useState(true);
   const [musicVolume, setMusicVolume] = useState(0.2);
-  const [showFeedback, setShowFeedback] = useState(false); // Corrected: Added setShowFeedback
+  const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
 
   const bgMusicRef = useRef(null);
@@ -64,7 +64,7 @@ export default function StorePage() {
   const purchaseSoundRef = useRef(null);
 
   const playSound = (audioRef, volume = 0.7) => {
-    if (sfxEnabled && audioRef && audioRef.current) { // Added audioRef check
+    if (sfxEnabled && audioRef && audioRef.current) {
       audioRef.current.currentTime = 0;
       audioRef.current.volume = volume;
       audioRef.current.play().catch(e => console.error("SFX play error:", e));
@@ -81,7 +81,7 @@ export default function StorePage() {
   }, [router]);
 
   useEffect(() => {
-    if (bgMusicRef.current) { // Check if ref is set
+    if (bgMusicRef.current) {
       bgMusicRef.current.volume = musicVolume;
       if (musicVolume > 0 && bgMusicRef.current.paused) {
         bgMusicRef.current.play().catch(e => console.log("BGM autoplay prevented by browser."));
@@ -93,13 +93,13 @@ export default function StorePage() {
 
   useEffect(() => {
     const playBGMOnInteraction = () => {
-      if (bgMusicRef.current && bgMusicRef.current.paused && musicVolume > 0) { // Check ref
+      if (bgMusicRef.current && bgMusicRef.current.paused && musicVolume > 0) {
         bgMusicRef.current.play().catch(e => console.log("BGM play on interaction failed."));
       }
     };
     document.body.addEventListener('click', playBGMOnInteraction, { once: true });
     return () => document.body.removeEventListener('click', playBGMOnInteraction);
-  }, [musicVolume]); // musicVolume dependency is important here
+  }, [musicVolume]);
 
   const triggerConfetti = () => {
     const confettiCount = 100;
@@ -118,7 +118,7 @@ export default function StorePage() {
         confettiPiece.style.zIndex = '9999';
         confettiPiece.style.transform = `rotate(${Math.random() * 360}deg)`;
         const animDuration = Math.random() * 3 + 2;
-        confettiPiece.style.animation = `fallAndFade_confetti ${animDuration}s linear forwards`; // Use global animation
+        confettiPiece.style.animation = `fallAndFade_confetti ${animDuration}s linear forwards`;
         confettiPiece.style.animationDelay = `${Math.random() * 0.5}s`;
         container.appendChild(confettiPiece);
         setTimeout(() => {
@@ -144,13 +144,16 @@ export default function StorePage() {
     } catch (error) { console.error("Logout failed:", error); }
   };
 
-  const handleBack = () => { playSound(interactionSoundRef); router.back(); };
+  // MODIFIED: This function now navigates to the homepage
+  const handleBack = () => { 
+    playSound(interactionSoundRef); 
+    router.push('/'); 
+  };
 
   if (loading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: `linear-gradient(135deg, ${blyzaColors.dark} 0%, ${blyzaColors.darker} 100%)`, color: blyzaColors.light, fontFamily: "'Quicksand', sans-serif" }}>
         <svg width="72" height="72" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          {/* SVG Style using defined Blyza colors - no need for var() here if defined in Head */}
           <style>{`.spinner_9y7u{animation:spinner_fUkk 2.4s linear infinite;animation-delay:-2.4s; fill: ${blyzaColors.primary};} .spinner_DF2s{animation-delay:-1.6s; fill: ${blyzaColors.secondary};} .spinner_q27e{animation-delay:-.8s; fill: ${blyzaColors.success};} @keyframes spinner_fUkk{8.33%{x:13px;y:1px}25%{x:13px;y:1px}33.3%{x:13px;y:13px}50%{x:13px;y:13px}58.33%{x:1px;y:13px}75%{x:1px;y:13px}83.33%{x:1px;y:1px}}`}</style>
           <rect className="spinner_9y7u" x="1" y="1" rx="1" width="10" height="10"/>
           <rect className="spinner_9y7u spinner_DF2s" x="1" y="1" rx="1" width="10" height="10"/>
@@ -171,7 +174,7 @@ export default function StorePage() {
         <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Luckiest+Guy&family=Quicksand:wght@300..700&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
         <style jsx global>{`
-            :root { /* Ensure CSS variables are available */
+            :root {
                 --primary: ${blyzaColors.primary};
                 --secondary: ${blyzaColors.secondary};
                 --success: ${blyzaColors.success};
@@ -217,13 +220,13 @@ export default function StorePage() {
 
        {showFeedback && (
             <div style={{
-                position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', // Initial transform for animation
-                backgroundColor: `rgba(0, 191, 166, 0.95)`, // --success with alpha
+                position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                backgroundColor: `rgba(0, 191, 166, 0.95)`,
                 color: blyzaColors.light, padding: '30px 50px', borderRadius: '20px',
                 fontSize: '2.2rem', fontFamily: '"Bungee", cursive', textAlign: 'center',
                 zIndex: 3000, boxShadow: '0 10px 30px rgba(0,0,0,0.6)',
                 border: `2px solid ${blyzaColors.success}`,
-                opacity: 0, // Start hidden for animation
+                opacity: 0,
                 animation: 'feedbackPopupAnim 2.5s ease-out forwards'
             }}>
                 <i className="fas fa-check-circle" style={{ marginRight: '10px' }}></i>
