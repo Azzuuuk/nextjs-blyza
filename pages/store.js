@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import Head from 'next/head';
-import { auth } from '../firebaseConfig'; // Ensure this path is correct
+import { auth } from '/firebaseConfig'; // Ensure this path is correct
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useRouter } from 'next/router';
 
