@@ -1036,10 +1036,11 @@
         revealImposterBtnEl.addEventListener('click', () => { revealImposter(); });
         playAgainBtnEl.addEventListener('click', () => { playSoundWithCallback(startGameSoundAudioEl, playAgain); });
         newGameBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); newGame(); });
-        visitStoreBtnEl.addEventListener('click', () => {
-            playSound(interactionSoundAudioEl);
-            window.open('https://www.blyza.com/store', '_blank'); // Updated URL
-        });
+        visitStoreBtn.addEventListener('click', () => {
+    playSound(interactionSound);
+    // Change this line to navigate to the /store route oo
+    window.location.href = '/store'; 
+}); 
 
         settingsBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'flex'; });
         closeModalBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; });

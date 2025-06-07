@@ -631,7 +631,7 @@
         dom.playerGuessInput.addEventListener('keypress', e => { if (e.key === 'Enter' && !dom.submitGuessBtn.disabled) dom.submitGuessBtn.click(); });
         dom.playAgainBtn.addEventListener('click', () => { playSound(dom.audio.start); startGame(); });
         dom.mainMenuBtn.addEventListener('click', () => { playSound(dom.audio.interaction); newGame(); });
-        dom.visitStoreBtn.addEventListener('click', () => { playSound(dom.audio.interaction); window.open('https://www.blyza.com/', '_blank'); });
+        dom.visitStoreBtn.addEventListener('click', () => { playSound(dom.audio.interaction); window.location.href = '/store';  });
         dom.settings.btn.addEventListener('click', () => { playSound(dom.audio.interaction); dom.settings.modal.style.display = 'flex'; });
         dom.settings.closeBtn.addEventListener('click', () => { playSound(dom.audio.interaction); dom.settings.modal.style.display = 'none'; });
         window.addEventListener('click', (e) => { if (e.target === dom.settings.modal) { playSound(dom.audio.interaction); dom.settings.modal.style.display = 'none'; } });

@@ -874,7 +874,7 @@
 
         playAgainBtnEl.addEventListener('click', () => { playSoundWithCallback(startGameSoundAudioEl, startGame);});
         mainMenuBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); teamNamesListEl.innerHTML = `<div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 1"><button class="remove-team-btn btn-danger" disabled><i class="fas fa-times"></i></button></div><div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 2"><button class="remove-team-btn btn-danger" disabled><i class="fas fa-times"></i></button></div>`; updateTeamAddRemoveButtons(); if(modeOptionsEl.length>0)modeOptionsEl[0].click(); if (treatYourselfElement) treatYourselfElement.style.display = 'none'; if(backgroundMusicAudioEl.paused) initBackgroundMusic(); switchScreen('start');});
-        visitStoreBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); window.open('https://www.example.com/store','_blank');});
+        visitStoreBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); window.location.href = '/store'; });
 
         document.addEventListener('DOMContentLoaded', () => {
             sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;

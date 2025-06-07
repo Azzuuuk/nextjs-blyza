@@ -515,7 +515,7 @@
         failResultBtnEl.addEventListener("click", () => { playSound(failSoundAudioEl); handleResult(false); });
         playAgainGameBtnEl.addEventListener("click", () => { playSoundWithCallback(startGameSoundAudioEl, resetGame); });
         mainMenuNavBtnEl.addEventListener("click", () => { playSound(interactionSoundAudioEl); goToMainMenu(); });
-        visitStoreBtnEl.addEventListener("click", () => { playSound(interactionSoundAudioEl); window.open('https://www.example.com/store', '_blank');});
+        visitStoreBtnEl.addEventListener("click", () => { playSound(interactionSoundAudioEl); window.location.href = '/store'; });
 
         settingsBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'flex'; });
         closeModalBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; });

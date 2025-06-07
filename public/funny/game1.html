@@ -1235,10 +1235,10 @@
         playAgainBtn.addEventListener('click', () => { playSoundWithCallback(startGameSound, playAgain); });
         newGameBtn.addEventListener('click', () => { playSoundWithCallback(interactionSound, newGame); });
         visitStoreBtn.addEventListener('click', () => {
-            playSound(interactionSound);
-            window.location.href = '#/store-placeholder'; 
-            console.log("Navigating to store (placeholder)");
-        });
+    playSound(interactionSound);
+    // Change this line to navigate to the /store route oo
+    window.location.href = '/store'; 
+}); 
 
         function selectGameMode() {
             modeOptions.forEach(option => option.classList.remove('selected'));

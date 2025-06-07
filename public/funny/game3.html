@@ -1592,12 +1592,11 @@
             if (treatYourselfElement) treatYourselfElement.style.display = 'none';
             switchScreen('start');
         });
-        visitStoreBtn.addEventListener('click', () => {
-            playSound(interactionSound);
-            window.open('https://www.example.com/store', '_blank'); 
-            console.log("Navigating to store (placeholder: example.com)");
-        });
-
+       visitStoreBtn.addEventListener('click', () => {
+    playSound(interactionSound);
+    // Change this line to navigate to the /store route oo
+    window.location.href = '/store'; 
+}); 
 
         // Initial Setup on Load
         document.addEventListener('DOMContentLoaded', () => {

@@ -695,7 +695,7 @@
         mainMenuBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); mainMenu(); });
         visitStoreBtnEl.addEventListener('click', () => {
             playSound(interactionSoundAudioEl);
-            window.open('https://www.example.com/store', '_blank'); // Replace with actual store URL
+            window.location.href = '/store'; 
         });
         // Event listener for revealing question by clicking the area
         questionTextDisplayEl.parentElement.addEventListener('click', (e) => { // Listen on parent for better click area

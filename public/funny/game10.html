@@ -646,7 +646,7 @@
             switchScreen("teamSetup");
         }
 
-        function visitStore() { playSound(interactionSound); window.open('https://www.blyza.com', '_blank'); }
+        function visitStore() { playSound(interactionSound); window.location.href = '/store';  }
 
         document.addEventListener('DOMContentLoaded', () => {
             initBackgroundMusic();
