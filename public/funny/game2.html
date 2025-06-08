@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -830,7 +830,7 @@
     <audio id="start-game-sound">
         <source src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3" type="audio/mpeg">
     </audio>
-    <audio id="interaction-sound">`
+    <audio id="interaction-sound">
         <source src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" type="audio/wav">
     </audio>
     <audio id="card-flip-sound">
@@ -1036,11 +1036,16 @@
         revealImposterBtnEl.addEventListener('click', () => { revealImposter(); });
         playAgainBtnEl.addEventListener('click', () => { playSoundWithCallback(startGameSoundAudioEl, playAgain); });
         newGameBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); newGame(); });
-        visitStoreBtn.addEventListener('click', () => {
-    playSound(interactionSound);
-    // Change this line to navigate to the /store route oo
-    window.location.href = '/store'; 
-}); 
+
+        // ### FIX START ###
+        // Corrected the variable names `visitStoreBtn` to `visitStoreBtnEl`
+        // and `interactionSound` to `interactionSoundAudioEl`.
+        visitStoreBtnEl.addEventListener('click', () => {
+            playSound(interactionSoundAudioEl);
+            // This will navigate to the /store page on your site
+            window.location.href = '/store';
+        });
+        // ### FIX END ###
 
         settingsBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'flex'; });
         closeModalBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; });
@@ -1175,7 +1180,7 @@
             }
             gameState.currentPlayerIndex++;
             if (gameState.currentPlayerIndex < gameState.players.length) {
-                currentPlayerNameDisplayEl.innerHTML = `Pass to <strong id="current-player-name">${gameState.players[gameState.currentPlayerIndex]}</strong>`;
+                currentPlayerNameDisplayEl.innerHTML = `<strong id="current-player-name">${gameState.players[gameState.currentPlayerIndex]}</strong>`;
                 roleCardEl.classList.remove('flipped');
                 playerRoleDisplayEl.textContent = "ROLE";
                 playerQuestionDisplayEl.textContent = "Your question will appear here.";
@@ -1291,7 +1296,7 @@
             playerRoleDisplayEl.textContent = "ROLE";
             playerQuestionDisplayEl.textContent = "Your question will appear here.";
             playerRoleDisplayEl.className = "";
-            currentPlayerNameDisplayEl.innerHTML = `Pass to <strong id="current-player-name">${gameState.players[0]}</strong>`;
+            currentPlayerNameDisplayEl.innerHTML = `<strong id="current-player-name">${gameState.players[0]}</strong>`;
             nextPlayerBtnEl.disabled = true;
             switchScreen('role'); // Go to role assignment screen
         }

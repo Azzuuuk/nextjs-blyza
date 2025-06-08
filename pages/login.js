@@ -31,7 +31,7 @@ export default function LoginPage() {
       <Head>
         <title>{isSignUp ? 'Sign Up' : 'Login'} | Guess The Price</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Luckiest+Guy&family=Quicksand:wght@300..700&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
       </Head>
@@ -56,10 +56,45 @@ export default function LoginPage() {
           padding: '40px',
           boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1)',
           textAlign: 'center',
-          position: 'relative',
+          position: 'relative', // This is important for the button's position
           overflow: 'hidden',
           border: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
+
+          {/* ### ADDED THIS BUTTON ### */}
+          <button
+            onClick={() => router.push('/')} // Navigates to the home page
+            aria-label="Back to Home"
+            style={{
+              position: 'absolute',
+              top: '20px',
+              left: '20px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: '#F2F2F2',
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.2rem',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              zIndex: 10,
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+              e.currentTarget.style.transform = 'scale(1.1)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <i className="fas fa-home"></i>
+          </button>
+          
           <h1 style={{
             fontFamily: '"Bungee", cursive',
             fontSize: '3rem',
@@ -91,8 +126,12 @@ export default function LoginPage() {
                   transition: 'all 0.3s ease'
                 }}
                 onFocus={(e) => {
-                  e.target.borderColor = '#CB7AE1';
-                  e.target.boxShadow = '0 0 10px rgba(203, 122, 225, 0.2)';
+                  e.currentTarget.style.borderColor = '#CB7AE1';
+                  e.currentTarget.style.boxShadow = '0 0 10px rgba(203, 122, 225, 0.2)';
+                }}
+                onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.boxShadow = 'none';
                 }}
               />
             </div>
@@ -116,8 +155,12 @@ export default function LoginPage() {
                   transition: 'all 0.3s ease'
                 }}
                 onFocus={(e) => {
-                  e.target.borderColor = '#CB7AE1';
-                  e.target.boxShadow = '0 0 10px rgba(203, 122, 225, 0.2)';
+                  e.currentTarget.style.borderColor = '#CB7AE1';
+                  e.currentTarget.style.boxShadow = '0 0 10px rgba(203, 122, 225, 0.2)';
+                }}
+                onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.boxShadow = 'none';
                 }}
               />
             </div>
@@ -152,14 +195,14 @@ export default function LoginPage() {
               maxWidth: '300px'
             }}
               onMouseOver={(e) => {
-                e.target.background = 'linear-gradient(135deg, #ff7711 0%, #FF8833 100%)';
-                e.target.transform = 'translateY(-3px)';
-                e.target.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.3)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, #ff7711 0%, #FF8833 100%)';
+                e.currentTarget.style.transform = 'translateY(-3px)';
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.3)';
               }}
               onMouseOut={(e) => {
-                e.target.background = 'linear-gradient(135deg, #FF8833 0%, #ff7711 100%)';
-                e.target.transform = 'translateY(0)';
-                e.target.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, #FF8833 0%, #ff7711 100%)';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
               }}
             >
               {isSignUp ? 'Create Account' : 'Login'} <i className={`fas ${isSignUp ? 'fa-user-plus' : 'fa-sign-in-alt'}`} style={{ marginLeft: '8px' }}></i>
@@ -178,10 +221,11 @@ export default function LoginPage() {
                 cursor: 'pointer',
                 fontWeight: '600',
                 textDecoration: 'underline',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                padding: '0'
               }}
-              onMouseOver={(e) => e.target.color = '#FF8833'}
-              onMouseOut={(e) => e.target.color = '#CB7AE1'}
+              onMouseOver={(e) => e.currentTarget.style.color = '#FF8833'}
+              onMouseOut={(e) => e.currentTarget.style.color = '#CB7AE1'}
             >
               {isSignUp ? 'Login instead' : 'Sign up now'}
             </button>

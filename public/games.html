@@ -602,173 +602,201 @@
     </audio>
 
     <script>
-        const gameConfig = { // New config object
-            sfxEnabled: true,
-            musicVolume: 0.3 // Default music volume
-        };
+    // The config object will now be populated by localStorage
+    const gameConfig = {
+        sfxEnabled: true,
+        musicVolume: 0.3
+    };
 
-        const searchInput = document.querySelector('.search-input');
-        const gameCards = document.querySelectorAll('.game-card');
-        const categoryButtons = document.querySelectorAll('.category-btn');
+    const searchInput = document.querySelector('.search-input');
+    const gameCards = document.querySelectorAll('.game-card');
+    const categoryButtons = document.querySelectorAll('.category-btn');
 
-        // DOM Elements for settings and audio
-        const backgroundMusic = document.getElementById('background-music');
-        const settingsOpenBtn = document.getElementById('settings-open-btn'); // Changed from mute-btn
-        const settingsModal = document.getElementById('settings-modal');
-        const settingsCloseBtn = document.getElementById('settings-close-btn');
-        const bgmVolumeSlider = document.getElementById('bgm-volume-slider');
-        const sfxToggleBtn = document.getElementById('sfx-toggle-btn');
+    // DOM Elements for settings and audio
+    const backgroundMusic = document.getElementById('background-music');
+    const settingsOpenBtn = document.getElementById('settings-open-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const settingsCloseBtn = document.getElementById('settings-close-btn');
+    const bgmVolumeSlider = document.getElementById('bgm-volume-slider');
+    const sfxToggleBtn = document.getElementById('sfx-toggle-btn');
 
-        const categorySelectSound = document.getElementById('category-select-sound');
-        const itemSelectSound = document.getElementById('item-select-sound');
+    const categorySelectSound = document.getElementById('category-select-sound');
+    const itemSelectSound = document.getElementById('item-select-sound');
 
 
-        // --- Sound Function ---
-        function playSound(audioElement) {
-            if (gameConfig.sfxEnabled && audioElement) {
-                audioElement.currentTime = 0;
-                audioElement.play().catch(error => console.error("Error playing sound:", error));
-            }
+    // --- Sound Function ---
+    function playSound(audioElement) {
+        if (gameConfig.sfxEnabled && audioElement) {
+            audioElement.currentTime = 0;
+            audioElement.play().catch(error => console.error("Error playing sound:", error));
         }
-        // --- Helper function for links with sound + delayed navigation ---
-        function handleLinkWithSound(linkElement, soundElement) {
-            if (!linkElement || !soundElement) return;
+    }
+    // --- Helper function for links with sound + delayed navigation ---
+    function handleLinkWithSound(linkElement, soundElement) {
+        if (!linkElement || !soundElement) return;
 
-            linkElement.addEventListener('click', function(event) {
-                event.preventDefault();
-                const targetUrl = this.href;
-                let navigated = false;
+        linkElement.addEventListener('click', function(event) {
+            event.preventDefault();
+            const targetUrl = this.href;
+            let navigated = false;
 
-                const navigate = () => {
-                    if (!navigated) {
-                        navigated = true;
-                        window.location.href = targetUrl;
-                    }
-                };
-                playSound(soundElement); // Play sound using the new function
-                soundElement.onended = navigate; // Navigate when sound finishes (might not always fire reliably)
-                setTimeout(navigate, 500); // Fallback navigation
-            });
-        }
+            const navigate = () => {
+                if (!navigated) {
+                    navigated = true;
+                    window.location.href = targetUrl;
+                }
+            };
+            playSound(soundElement);
+            soundElement.onended = navigate;
+            setTimeout(navigate, 500);
+        });
+    }
 
 
-        // --- Search functionality ---
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
+    // --- Search functionality ---
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        gameCards.forEach(card => {
+            const title = card.querySelector('.game-title').textContent.toLowerCase();
+            const description = card.querySelector('.game-description').textContent.toLowerCase();
+            const categoryTag = card.querySelector('.category-tag').textContent.toLowerCase();
+            const isVisible = title.includes(searchTerm) || description.includes(searchTerm) || categoryTag.includes(searchTerm);
+            card.style.display = isVisible ? 'block' : 'none';
+        });
+    });
+
+    // --- Category filter functionality & Sound ---
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            playSound(categorySelectSound);
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            const selectedCategory = button.dataset.category;
             gameCards.forEach(card => {
-                const title = card.querySelector('.game-title').textContent.toLowerCase();
-                const description = card.querySelector('.game-description').textContent.toLowerCase();
-                const categoryTag = card.querySelector('.category-tag').textContent.toLowerCase();
-                const isVisible = title.includes(searchTerm) || description.includes(searchTerm) || categoryTag.includes(searchTerm);
-                card.style.display = isVisible ? 'block' : 'none';
+                const cardCategory = card.dataset.category;
+                if (selectedCategory === 'All Games' || cardCategory === selectedCategory) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
             });
         });
+    });
 
-        // --- Category filter functionality & Sound ---
-        categoryButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                playSound(categorySelectSound); // Play category selection sound
+    // --- Game Links Sound & Navigation ---
+    const gameLinks = document.querySelectorAll('.game-card .game-title a');
+    gameLinks.forEach(link => {
+        handleLinkWithSound(link, itemSelectSound);
+    });
 
-                categoryButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
+    // --- Store Button Sound & Navigation ---
+    const storeButton = document.querySelector('.store-btn');
+    if (storeButton) {
+         handleLinkWithSound(storeButton, itemSelectSound);
+    }
 
-                const selectedCategory = button.dataset.category; // Use data-category
-                gameCards.forEach(card => {
-                    const cardCategory = card.dataset.category; // Use data-category
-                    if (selectedCategory === 'All Games' || cardCategory === selectedCategory) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
+
+    // --- Settings Modal Logic ---
+    if (settingsOpenBtn && settingsModal && settingsCloseBtn) {
+        settingsOpenBtn.addEventListener('click', () => {
+            playSound(categorySelectSound);
+            settingsModal.style.display = 'flex';
         });
-
-        // --- Game Links Sound & Navigation ---
-        const gameLinks = document.querySelectorAll('.game-card .game-title a');
-        gameLinks.forEach(link => {
-            handleLinkWithSound(link, itemSelectSound);
+        settingsCloseBtn.addEventListener('click', () => {
+            playSound(categorySelectSound);
+            settingsModal.style.display = 'none';
         });
-
-        // --- Store Button Sound & Navigation ---
-        const storeButton = document.querySelector('.store-btn');
-        if (storeButton) {
-             handleLinkWithSound(storeButton, itemSelectSound);
-        }
-
-
-        // --- Settings Modal Logic ---
-        if (settingsOpenBtn && settingsModal && settingsCloseBtn) {
-            settingsOpenBtn.addEventListener('click', () => {
-                playSound(categorySelectSound); // Use a generic UI sound
-                settingsModal.style.display = 'flex';
-            });
-            settingsCloseBtn.addEventListener('click', () => {
+        window.addEventListener('click', (event) => {
+            if (event.target === settingsModal) {
                 playSound(categorySelectSound);
                 settingsModal.style.display = 'none';
-            });
-            window.addEventListener('click', (event) => {
-                if (event.target === settingsModal) {
-                    playSound(categorySelectSound);
-                    settingsModal.style.display = 'none';
-                }
-            });
-        }
-
-        // --- BGM Volume Control ---
-        if (bgmVolumeSlider && backgroundMusic) {
-            bgmVolumeSlider.value = gameConfig.musicVolume; // Set initial slider value
-            backgroundMusic.volume = gameConfig.musicVolume; // Set initial volume
-            bgmVolumeSlider.addEventListener('input', (e) => {
-                gameConfig.musicVolume = parseFloat(e.target.value);
-                backgroundMusic.volume = gameConfig.musicVolume;
-            });
-        }
-
-        // --- SFX Toggle Control ---
-        if (sfxToggleBtn) {
-            function updateSfxButtonText() {
-                sfxToggleBtn.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
-                sfxToggleBtn.style.background = gameConfig.sfxEnabled ?
-                    'linear-gradient(135deg, var(--success), #00a890)' :
-                    'linear-gradient(135deg, var(--danger), #ff416c)';
             }
-            updateSfxButtonText(); // Initial text
-
-            sfxToggleBtn.addEventListener('click', () => {
-                gameConfig.sfxEnabled = !gameConfig.sfxEnabled;
-                updateSfxButtonText();
-                playSound(categorySelectSound); // Play a sound for the toggle itself
-            });
-        }
-
-        // Attempt to play background music on load (browsers might block this)
-        document.addEventListener('DOMContentLoaded', () => {
-            if (backgroundMusic) {
-                 backgroundMusic.volume = gameConfig.musicVolume; // Set initial volume
-                 backgroundMusic.play().catch(error => {
-                    console.log("Background music autoplay was prevented by the browser. User interaction may be required to start.", error);
-                    // Optionally, you could show a "Click to enable sound" message or button here
-                });
-            }
-            // Ensure category buttons have data-category for filtering
-            categoryButtons.forEach(btn => {
-                if (!btn.dataset.category) { // If data-category is not already set
-                    btn.dataset.category = btn.textContent.trim();
-                }
-            });
-            // Ensure game cards have data-category
-            gameCards.forEach(card => {
-                const tag = card.querySelector('.category-tag');
-                if (tag) {
-                    card.dataset.category = tag.textContent.trim();
-                } else {
-                    card.dataset.category = "Uncategorized"; // Fallback
-                }
-            });
-
         });
-    </script>
+    }
+
+    // --- BGM Volume Control ---
+    if (bgmVolumeSlider && backgroundMusic) {
+        // SET initial slider value from config (which will be loaded from localStorage)
+        bgmVolumeSlider.value = gameConfig.musicVolume; 
+        
+        bgmVolumeSlider.addEventListener('input', (e) => {
+            const newVolume = parseFloat(e.target.value);
+            gameConfig.musicVolume = newVolume;
+            backgroundMusic.volume = newVolume;
+            // ### ADDED THIS LINE ### Save the new volume to localStorage
+            localStorage.setItem('musicVolume', newVolume);
+        });
+    }
+
+    // --- SFX Toggle Control ---
+    if (sfxToggleBtn) {
+        function updateSfxButtonText() {
+            sfxToggleBtn.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
+            sfxToggleBtn.style.background = gameConfig.sfxEnabled ?
+                'linear-gradient(135deg, var(--success), #00a890)' :
+                'linear-gradient(135deg, var(--danger), #ff416c)';
+        }
+        
+        // This will be called on page load to set the correct initial state
+        updateSfxButtonText(); 
+
+        sfxToggleBtn.addEventListener('click', () => {
+            gameConfig.sfxEnabled = !gameConfig.sfxEnabled;
+            // ### ADDED THIS LINE ### Save the new SFX state to localStorage
+            localStorage.setItem('sfxEnabled', gameConfig.sfxEnabled);
+            updateSfxButtonText();
+            playSound(categorySelectSound);
+        });
+    }
+    
+    // ### MODIFIED THIS ENTIRE SECTION ###
+    // Load settings from localStorage and play music on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Load saved settings from localStorage
+        const savedVolume = localStorage.getItem('musicVolume');
+        const savedSfxEnabled = localStorage.getItem('sfxEnabled');
+
+        // 2. Update the gameConfig object with saved values, or use defaults
+        if (savedVolume !== null) {
+            gameConfig.musicVolume = parseFloat(savedVolume);
+        }
+        // localStorage stores booleans as strings "true" or "false"
+        if (savedSfxEnabled !== null) {
+            gameConfig.sfxEnabled = savedSfxEnabled === 'true';
+        }
+
+        // 3. Apply the loaded settings to the UI and audio element
+        if (backgroundMusic) {
+             backgroundMusic.volume = gameConfig.musicVolume;
+             backgroundMusic.play().catch(error => {
+                console.log("Background music autoplay was prevented. User interaction may be required.", error);
+            });
+        }
+        if (bgmVolumeSlider) {
+            bgmVolumeSlider.value = gameConfig.musicVolume;
+        }
+        if (sfxToggleBtn) {
+            // Re-run the update function to show the correct ON/OFF state
+            sfxToggleBtn.dispatchEvent(new Event('click')); // A simple way to trigger the update
+            sfxToggleBtn.dispatchEvent(new Event('click')); // Needs to be toggled back
+        }
+
+        // Setup for game cards (your existing logic)
+        categoryButtons.forEach(btn => {
+            if (!btn.dataset.category) {
+                btn.dataset.category = btn.textContent.trim();
+            }
+        });
+        gameCards.forEach(card => {
+            const tag = card.querySelector('.category-tag');
+            if (tag) {
+                card.dataset.category = tag.textContent.trim();
+            } else {
+                card.dataset.category = "Uncategorized";
+            }
+        });
+    });
+</script>
 
     <script>
       window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };
