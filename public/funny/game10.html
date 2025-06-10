@@ -151,7 +151,7 @@
             border-color: var(--primary);
             box-shadow: 0 0 20px rgba(255,136,51,0.3), 0 0 10px var(--gold),
                         inset 0 0 10px rgba(255,136,51,0.1);
-            transform: scale(1.05); background: rgba(var(--primary-rgb,255,136,51),0.1);
+            transform: scale(1.05); background: rgba(255,136,51,0.1);
         }
         .team-name { /* Team name on card */
             font-family: "Bungee", cursive; font-weight: normal; font-size: 1.4rem;
@@ -221,29 +221,29 @@
         /* Time Up Animation Pop-up - GTP Style */
         .time-up {
             position: fixed; top: 50%; left: 50%;
-            background-color: rgba(var(--danger-rgb,255,75,43),0.97);
+            background-color: rgba(255,75,43, 0.97);
             color: white; padding: 30px 50px; border-radius: 20px; font-size: 2.8rem;
             font-family: "Luckiest Guy", cursive; text-align: center; z-index: 2000;
             box-shadow: 0 15px 40px rgba(0,0,0,0.7);
             opacity: 0; transform: translate(-50%,-50%) scale(0.7);
             border: 3px solid var(--gold);
             animation: timeUpPopAnim 1.5s forwards;
+            display: none;
         }
         @keyframes timeUpPopAnim {
             0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}
             15%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
             85%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
-            100%{opacity:0;transform:translate(-50%,-50%) scale(.7); display:none;}
+            100%{opacity:0;transform:translate(-50%,-50%) scale(.7)}
         }
 
         /* Confetti */
         .confetti {
             position: fixed; width: 10px; height: 20px; background-color: var(--primary);
-            opacity: 0; /* Will be set to 1 by JS for animation */
+            opacity: 0;
             top: -20px; z-index: 3000; pointer-events: none;
             animation-timing-function: linear; animation-fill-mode: forwards;
         }
-        /* Re-using fallAndFade from other GTP-styled games */
         @keyframes fallAndFade { 0%{transform:translateY(-20vh) rotate(0deg); opacity:1;} 100%{transform:translateY(120vh) rotate(720deg); opacity:0;} }
 
 
@@ -279,11 +279,26 @@
         .btn-info:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--info); }
 
 
-        /* Settings Icon Button, Modal - GTP Style */
-        .icon-btn { position:absolute; background:rgba(0,0,0,0.3); color:var(--light); border:1px solid var(--gold); border-radius:50%; width:40px; height:40px; font-size:1.1rem; cursor:pointer; transition:all .3s ease; display:flex; justify-content:center; align-items:center; z-index:100; padding:0; margin:0; box-shadow:none; text-shadow:none; }
-        .icon-btn#settings-btn { top:15px; right:15px; }
-        .icon-btn:hover { background:rgba(0,0,0,0.5); transform:scale(1.1) rotate(15deg); box-shadow:0 0 10px var(--gold); }
-        .icon-btn i { margin:0; }
+        /* Icon Buttons (Home, Back, Settings) */
+        .icon-btn {
+            position: absolute; background: rgba(0,0,0,0.3); color: var(--light);
+            border: 1px solid var(--gold); border-radius: 50%; width: 40px; height: 40px;
+            font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease;
+            display: flex; justify-content: center; align-items: center; z-index: 100;
+            padding: 0; margin: 0; box-shadow: none; text-shadow: none;
+            text-decoration: none; /* For <a> tags */
+        }
+        .icon-btn#settings-btn { top: 15px; right: 15px; }
+        .icon-btn#home-menu-btn { top: 15px; left: 15px; display: flex; }
+        .icon-btn#back-btn { top: 15px; left: 15px; display: none; }
+        .icon-btn:hover {
+            background: rgba(0,0,0,0.5); transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 0 10px var(--gold);
+        }
+        .icon-btn#back-btn:hover { transform: scale(1.1) rotate(-5deg); }
+        .icon-btn i { margin: 0; }
+        
+        /* Modal Styles - GTP Style */
         .modal { position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(8px); display:none; justify-content:center; align-items:center; }
         .modal-content { background-color:var(--darker); margin:auto; padding:30px; border:2px solid var(--gold); border-radius:15px; width:80%; max-width:450px; box-shadow:0 10px 30px rgba(0,0,0,0.6),0 0 20px var(--primary); position:relative; color:var(--light); }
         .modal-content h2 { font-family:"Bungee",cursive; color:var(--primary); text-align:center; margin-bottom:25px; font-size:1.8rem; }
@@ -300,7 +315,7 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .game-container { padding: 25px; }
+            .game-container { padding: 20px; }
             h1 { font-size: 2.5rem; }
             h3 { font-size: 1.4rem; }
             .team-display { flex-direction: column; align-items: center; gap: 15px; }
@@ -309,7 +324,6 @@
             .bullshit-buttons, .result-buttons { flex-direction: column; align-items: center; gap: 10px;}
             .bullshit-buttons button, .result-buttons button { width: 85%; max-width: 320px;}
             button { padding: 12px 22px; font-size: 1rem; min-width: 170px;}
-            .icon-btn { top:15px; right:15px; width:40px; height:40px; font-size:1rem; }
             .modal-content h2 { font-size:1.6rem; }
             .win-message { font-size: 2.2rem; }
             .winner-trophy { font-size: 5rem; }
@@ -317,9 +331,11 @@
             .game-over-buttons-container .game-over-button-wrapper { width: 90%; margin: 5px auto;}
             .game-over-buttons-container .game-over-button-wrapper button { width: 100%;}
             .time-up { font-size: 2.2rem; padding: 25px 40px; width: 80%;}
+            .icon-btn { top: 10px; right: 10px; width: 38px; height: 38px; font-size: 1rem; }
+            .icon-btn#home-menu-btn, .icon-btn#back-btn { top: 10px; left: 10px; }
         }
         @media (max-width: 480px) {
-            h1 { font-size: 2rem; }
+            h1 { font-size: 1.8rem; }
             h3 { font-size: 1.2rem; }
             .team-inputs { grid-template-columns: 1fr; }
             .team-input input { max-width: 100%; padding: 12px 18px; font-size: 1rem;}
@@ -334,6 +350,12 @@
 </head>
 <body>
     <div class="game-container">
+        <a href="/" id="home-menu-btn" class="icon-btn" aria-label="Back to Games List">
+            <i class="fas fa-home"></i>
+        </a>
+        <button id="back-btn" class="icon-btn" aria-label="Go Back" style="display: none;">
+            <i class="fas fa-arrow-left"></i>
+        </button>
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
         </button>
@@ -429,7 +451,6 @@
                      <button onclick="goToMainMenu()" class="btn-secondary"><i class="fas fa-home"></i> Main Menu</button>
                 </div>
                 <div class="game-over-button-wrapper" id="store-button-wrapper">
-                    <!-- "Treat Yourself" callout will be inserted here by JS -->
                     <button onclick="visitStore()" class="btn-info"><i class="fas fa-store"></i> Visit Store</button>
                 </div>
             </div>
@@ -455,31 +476,20 @@
     <!-- Time Up Pop-up -->
     <div id="time-up-animation" class="time-up" style="display:none;">TIME UP!</div>
 
-
-    <!-- Audio elements -->
     <audio id="background-game-music" loop src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3"></audio>
     <audio id="interaction-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
     <audio id="timer-tick-sound" loop src="https://static.wixstatic.com/mp3/9ce3e5_e21a31f16e3944fbbe04069310b2990a.mp3"></audio>
     <audio id="time-up-sound" src="https://static.wixstatic.com/mp3/9ce3e5_16ac679126354f7db8a0f93c9f4fa7a1.wav"></audio>
-    <audio id="confetti-sound" src="https://static.wixstatic.com/mp3/9ce3e5_5d7fcfc389734cf7994f5d37de621e3d.mp3"></audio> <!-- Added confetti sound -->
+    <audio id="confetti-sound" src="https://static.wixstatic.com/mp3/9ce3e5_5d7fcfc389734cf7994f5d37de621e3d.mp3"></audio>
 
 
     <script>
-        const categories = [
-            "Soccer Players", "Colors", "European Countries","Movie Titles", "Fruits", "Political Figures","Pizza Toppings", "Video Games", "Dog Breeds","Marvel Characters", "Desserts", "Fast Food Chains","Currencies", "Sports without a ball","Influencers/Youtubers","Tech Brands", "Luxury Brands", "Captial Cities", "DC Characters", "U.S. States", "Board Games", "Musical Instruments", "Brainrot/Gen Z terms", "Elements on the Periodic Table", "Animateed Movies", "Things found in a Kitchen", "Things found in a Bathroom", "Gym Excercies", "Things you can buy online", "Job Titles", "Cartoon Characters", "TV Shows", "AI Tools", "Things worth under 5$", "Countries that start with S", "People you find Attractive", "Things you cant say at a job interview", "Pick up Lines", "Things you would never say to your boss", "Weird things to text your ex", "Words that rhyme with cat", "Things that ruin a party", "Reasons people break up", "Stuff you Google late at night", "Things you only eat when you're broke", "First date red flags", "Things you pretend to like for a crush", "Songs from your school days"
-        ];
-
-        const gameState = {
-            team1: { name: "Team 1", score: 0 },
-            team2: { name: "Team 2", score: 0 },
-            currentCategory: "",
-            timerInterval: null, 
-            timeLeft: 30,
-            challengedTeamIndex: null,
-            winningScore: 5
-        };
-
+        const categories = [ "Soccer Players", "Colors", "European Countries","Movie Titles", "Fruits", "Political Figures","Pizza Toppings", "Video Games", "Dog Breeds","Marvel Characters", "Desserts", "Fast Food Chains","Currencies", "Sports without a ball","Influencers/Youtubers","Tech Brands", "Luxury Brands", "Captial Cities", "DC Characters", "U.S. States", "Board Games", "Musical Instruments", "Brainrot/Gen Z terms", "Elements on the Periodic Table", "Animateed Movies", "Things found in a Kitchen", "Things found in a Bathroom", "Gym Excercies", "Things you can buy online", "Job Titles", "Cartoon Characters", "TV Shows", "AI Tools", "Things worth under 5$", "Countries that start with S", "People you find Attractive", "Things you cant say at a job interview", "Pick up Lines", "Things you would never say to your boss", "Weird things to text your ex", "Words that rhyme with cat", "Things that ruin a party", "Reasons people break up", "Stuff you Google late at night", "Things you only eat when you're broke", "First date red flags", "Things you pretend to like for a crush", "Songs from your school days" ];
+        const gameState = { team1: { name: "Team 1", score: 0 }, team2: { name: "Team 2", score: 0 }, currentCategory: "", timerInterval: null, timeLeft: 30, challengedTeamIndex: null, winningScore: 5, usedCategories: [] };
+        
         const screens = { start: document.getElementById("start-screen"), teamSetup: document.getElementById("team-setup"), game: document.getElementById("game-screen"), win: document.getElementById("win-screen") };
+        const homeMenuBtnEl = document.getElementById('home-menu-btn');
+        const backBtnEl = document.getElementById('back-btn');
         const timerProgressBar = document.getElementById("timer-progress-bar");
         const timeUpAnimationEl = document.getElementById("time-up-animation");
         const storeButtonWrapperEl = document.getElementById("store-button-wrapper");
@@ -503,7 +513,6 @@
         function playSound(audioElement) { if (sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.play().catch(e => console.error("SFX play error:", e)); } }
         function playSoundWithCallback(audioElement, callback, ...args) { if (sfxEnabled && audioElement) { audioElement.currentTime = 0; let cbEx=false; const exCb=()=>{if(!cbEx){cbEx=true; audioElement.removeEventListener('ended',exCb); if(typeof soundTimeoutId!=='undefined'&&soundTimeoutId)clearTimeout(soundTimeoutId); if(callback)callback(...args);}}; audioElement.addEventListener('ended',exCb); const sDur=(audioElement.duration&&isFinite(audioElement.duration))?audioElement.duration*1000:500; const soundTimeoutId=setTimeout(exCb,sDur+200); audioElement.play().catch(e=>{console.error("SFX play error:", e); exCb();});} else {if(callback)callback(...args);}}
 
-
         settingsBtn.addEventListener('click', () => { playSound(interactionSound); settingsModal.style.display = 'flex'; });
         closeModalBtn.addEventListener('click', () => { playSound(interactionSound); settingsModal.style.display = 'none'; });
         window.addEventListener('click', (event) => { if (event.target === settingsModal) { playSound(interactionSound); settingsModal.style.display = 'none'; } });
@@ -515,6 +524,14 @@
         function switchScreen(screenId) {
             Object.values(screens).forEach(screen => screen.classList.remove("active"));
             screens[screenId].classList.add("active");
+
+            const isStartScreen = screenId === 'start';
+            homeMenuBtnEl.style.display = isStartScreen ? 'flex' : 'none';
+            backBtnEl.style.display = isStartScreen ? 'none' : 'flex';
+
+            if (screenId === 'win') {
+                backBtnEl.style.display = 'none';
+            }
             if (treatYourselfElement) {
                 treatYourselfElement.style.display = (screenId === 'win') ? 'flex' : 'none';
             }
@@ -522,34 +539,35 @@
 
         function showTeamSetup() { playSound(interactionSound); switchScreen("teamSetup"); }
         function goToMainMenu() { playSound(interactionSound); if (treatYourselfElement) treatYourselfElement.style.display = 'none'; if(backgroundMusic.paused) initBackgroundMusic(); switchScreen('start'); }
+        
+        backBtnEl.addEventListener("click", () => { playSound(interactionSound); goToMainMenu(); });
 
         function startGame() {
-            playSoundWithCallback(interactionSound, () => { // Using the start game sound from GTP
+            playSoundWithCallback(interactionSound, () => {
                 gameState.team1.name = document.getElementById("team1-name").value.trim() || "Team 1";
                 gameState.team2.name = document.getElementById("team2-name").value.trim() || "Team 2";
-                 if (gameState.team1.name.length > 15 || gameState.team2.name.length > 15) {
-                    alert("Team names too long (max 15 chars)!"); return;
-                }
-                if (gameState.team1.name === gameState.team2.name && gameState.team1.name !== "Team 1" && gameState.team1.name !== "") {
-                    alert("Team names must be different if customized!"); return;
-                }
-                document.getElementById("team1-name-display").textContent = gameState.team1.name;
-                document.getElementById("team2-name-display").textContent = gameState.team2.name;
-                document.getElementById("team1-bullshit").innerHTML = `<i class="fas fa-exclamation-triangle"></i> Call BS on ${gameState.team2.name}`;
-                document.getElementById("team2-bullshit").innerHTML = `<i class="fas fa-exclamation-triangle"></i> Call BS on ${gameState.team1.name}`;
-                gameState.team1.score = 0; gameState.team2.score = 0; updateScores();
-                switchScreen("game"); newRound();
+                if (gameState.team1.name.length > 15 || gameState.team2.name.length > 15) { alert("Team names too long (max 15 chars)!"); return; }
+                if (gameState.team1.name === gameState.team2.name) { alert("Team names must be different!"); return; }
+                
+                resetGame(false); // false means don't go to setup screen
             });
         }
-
+        
         function newRound() {
-            gameState.currentCategory = categories[Math.floor(Math.random() * categories.length)];
+            let availableCategories = categories.filter(cat => !gameState.usedCategories.includes(cat));
+            if (availableCategories.length === 0) {
+                gameState.usedCategories = [];
+                availableCategories = [...categories];
+            }
+            gameState.currentCategory = availableCategories[Math.floor(Math.random() * availableCategories.length)];
+            gameState.usedCategories.push(gameState.currentCategory);
+            
             document.getElementById("category-display").textContent = gameState.currentCategory;
             clearInterval(gameState.timerInterval); if (timerTickSound) timerTickSound.pause();
-            timerProgressBar.style.transition = 'none'; // Disable transition for reset
+            timerProgressBar.style.transition = 'none';
             timerProgressBar.style.width = "100%"; 
-            void timerProgressBar.offsetWidth; // Force reflow
-            timerProgressBar.style.transition = 'width 0.1s linear'; // Re-enable
+            void timerProgressBar.offsetWidth;
+            timerProgressBar.style.transition = 'width 0.1s linear';
             gameState.timeLeft = 30; gameState.challengedTeamIndex = null; 
             document.getElementById("bullshit-buttons").style.display = "flex";
             document.getElementById("result-buttons").style.display = "none";
@@ -566,10 +584,10 @@
             document.getElementById("team2-card").classList.toggle("active-team", gameState.challengedTeamIndex === 1);
             document.getElementById("bullshit-buttons").style.display = "none";
             clearInterval(gameState.timerInterval); gameState.timeLeft = 30; 
-            timerProgressBar.style.transition = 'none'; // Disable transition for reset
+            timerProgressBar.style.transition = 'none';
             timerProgressBar.style.width = "100%";
-            void timerProgressBar.offsetWidth; // Force reflow
-            timerProgressBar.style.transition = 'width 0.1s linear'; // Re-enable
+            void timerProgressBar.offsetWidth;
+            timerProgressBar.style.transition = 'width 0.1s linear';
             gameState.timerInterval = setInterval(updateTimer, 100); 
             if (sfxEnabled && timerTickSound.src) { timerTickSound.currentTime = 0; timerTickSound.play().catch(e => {}); }
         }
@@ -584,9 +602,12 @@
             }
         }
 
-        function showTimeUpAnimation() { // Renamed to avoid conflict
+        function showTimeUpAnimation() {
             timeUpAnimationEl.style.display = "block";
-            // Animation handles hiding via keyframes
+            timeUpAnimationEl.style.animation = 'none';
+            timeUpAnimationEl.offsetHeight;
+            timeUpAnimationEl.style.animation = null;
+            timeUpAnimationEl.style.animation = 'timeUpPopAnim 1.5s forwards';
         }
 
         function challengeResult(challengedTeamSucceeded) {
@@ -615,35 +636,44 @@
                 storeButtonWrapperEl.insertBefore(treatYourselfElement, document.querySelector('#store-button-wrapper button.btn-info'));
             }
             switchScreen("win");
-            triggerConfetti(); // Changed from createConfetti
+            triggerConfetti();
         }
-        function triggerConfetti() { // Consistent confetti function
+        function triggerConfetti() {
             playSound(confettiSound);
             const confettiCount = 150;
             const colors = ['var(--primary)', 'var(--secondary)', 'var(--success)', 'var(--gold)', 'var(--info)'];
-            document.querySelectorAll('.confetti').forEach(el => el.remove()); // Clear old confetti
+            document.querySelectorAll('.confetti').forEach(el => el.remove());
             for (let i = 0; i < confettiCount; i++) {
                 const confetti = document.createElement('div');
-                confetti.className = 'confetti';
+                confetti.className = 'confetti-piece'; // Changed to match GTP style name
                 confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 confetti.style.left = Math.random() * 100 + 'vw';
                 const animationDuration = Math.random() * 3 + 3;
                 const animationDelay = Math.random() * 2;
-                confetti.style.animation = `fallAndFade ${animationDuration}s ${animationDelay}s linear forwards`; // Use fallAndFade
+                confetti.style.animation = `fallAndFade ${animationDuration}s ${animationDelay}s linear forwards`;
                 document.body.appendChild(confetti);
                 setTimeout(() => confetti.remove(), (animationDuration + animationDelay + 0.5) * 1000);
             }
         }
 
-
-        function resetGame() {
-            playSound(interactionSound);
-            document.getElementById("team1-name").value = gameState.team1.name;
-            document.getElementById("team2-name").value = gameState.team2.name;
+        function resetGame(returnToSetup = true) {
             gameState.team1.score = 0; gameState.team2.score = 0;
-             if (treatYourselfElement) treatYourselfElement.style.display = 'none';
-             if(backgroundMusic.paused) initBackgroundMusic();
-            switchScreen("teamSetup");
+            gameState.usedCategories = []; // Reset used questions for a new game
+            if (returnToSetup) {
+                document.getElementById("team1-name").value = gameState.team1.name;
+                document.getElementById("team2-name").value = gameState.team2.name;
+                if (treatYourselfElement) treatYourselfElement.style.display = 'none';
+                if(backgroundMusic.paused) initBackgroundMusic();
+                switchScreen("teamSetup");
+            } else {
+                 document.getElementById("team1-name-display").textContent = gameState.team1.name;
+                 document.getElementById("team2-name-display").textContent = gameState.team2.name;
+                 document.getElementById("team1-bullshit").innerHTML = `<i class="fas fa-exclamation-triangle"></i> Call BS on ${gameState.team2.name}`;
+                 document.getElementById("team2-bullshit").innerHTML = `<i class="fas fa-exclamation-triangle"></i> Call BS on ${gameState.team1.name}`;
+                 updateScores();
+                 newRound();
+                 switchScreen("game");
+            }
         }
 
         function visitStore() { playSound(interactionSound); window.location.href = '/store';  }

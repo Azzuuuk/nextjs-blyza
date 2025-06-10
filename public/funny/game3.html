@@ -598,9 +598,11 @@
             transition: all 0.3s ease;
             display: flex; justify-content: center; align-items: center;
             z-index: 100;
+            text-decoration: none; /* For <a> tags */
         }
-        .icon-btn#settings-btn { top: 15px; right: 15px; }
-        .icon-btn#back-btn { top: 15px; left: 15px; display: none; /* Initially hidden */ }
+        .icon-btn#settings-btn { top: 1px; right: 1px; }
+        .icon-btn#home-menu-btn { top: 10px; left: 10px; display: flex; /* Initially visible */ }
+        .icon-btn#back-btn { top: 1px; left: 1px; display: none; /* Initially hidden */ }
         .icon-btn:hover { background: rgba(0,0,0, 0.5); transform: scale(1.1) rotate(15deg); box-shadow: 0 0 10px var(--gold); }
         .icon-btn#back-btn:hover { transform: scale(1.1) rotate(-5deg); }
 
@@ -750,6 +752,7 @@
             .tv-screen-container h3 { font-size: 1.4rem; } 
             .treat-yourself-callout { font-size: 0.8rem; padding: 6px 12px; }
              .icon-btn#settings-btn { top: 10px; right: 10px; width: 38px; height: 38px; font-size: 1rem;}
+             .icon-btn#home-menu-btn,
              .icon-btn#back-btn { top: 10px; left: 10px; width: 38px; height: 38px; font-size: 1rem;}
         }
          @media (max-width: 480px) {
@@ -768,6 +771,9 @@
 </head>
 <body>
     <div class="game-container">
+        <a href="/" id="home-menu-btn" class="icon-btn" aria-label="Back to Games List">
+            <i class="fas fa-home"></i>
+        </a>
         <button id="back-btn" class="icon-btn" aria-label="Go Back" style="display: none;">
             <i class="fas fa-arrow-left"></i>
         </button>
@@ -1026,7 +1032,8 @@
 
         // Settings elements
         const settingsBtn = document.getElementById('settings-btn');
-        const backBtn = document.getElementById('back-btn'); // Added back button
+        const homeMenuBtn = document.getElementById('home-menu-btn'); // ADDED
+        const backBtn = document.getElementById('back-btn');
         const settingsModal = document.getElementById('settings-modal');
         const closeModalBtn = document.getElementById('close-modal-btn');
         const bgmVolumeSlider = document.getElementById('bgm-volume-slider');
@@ -1146,7 +1153,12 @@
         function switchScreen(screenId) {
             Object.values(screens).forEach(screen => screen.classList.remove('active'));
             screens[screenId].classList.add('active');
-            backBtn.style.display = (screenId !== 'start') ? 'flex' : 'none';
+            
+            // MODIFIED: Manage visibility of home and back buttons
+            const isStartScreen = (screenId === 'start');
+            backBtn.style.display = isStartScreen ? 'none' : 'flex';
+            homeMenuBtn.style.display = isStartScreen ? 'flex' : 'none';
+            
             settingsBtn.style.display = 'flex'; // Always show settings button
         }
 
@@ -1166,16 +1178,13 @@
         // --- Back Button Logic ---
         backBtn.addEventListener('click', () => {
             playSound(interactionSound);
-            // Go back to start screen, effectively resetting the current game progress
-            if (gameState.currentMedia && gameState.currentMedia.type === 'video') { // Stop videos if playing
+            if (gameState.currentMedia && gameState.currentMedia.type === 'video') {
                 mediaVideoEl.pause();
                 resultVideoEl.pause();
             }
-            Object.values(screens).forEach(screen => screen.classList.remove('active'));
-            screens.start.classList.add('active');
-            backBtn.style.display = 'none'; 
             if (treatYourselfElement) treatYourselfElement.style.display = 'none'; 
             if (backgroundMusic.paused) initBackgroundMusic(); 
+            switchScreen('start'); // Use central function to switch screen and handle buttons
         });
 
 
@@ -1593,16 +1602,15 @@
             switchScreen('start');
         });
        visitStoreBtn.addEventListener('click', () => {
-    playSound(interactionSound);
-    // Change this line to navigate to the /store route oo
-    window.location.href = '/store'; 
-}); 
+            playSound(interactionSound);
+            window.location.href = '/store'; 
+        }); 
 
         // Initial Setup on Load
         document.addEventListener('DOMContentLoaded', () => {
             sfxToggleBtn.classList.toggle('btn-success', gameState.sfxEnabled);
             sfxToggleBtn.classList.toggle('btn-danger', !gameState.sfxEnabled);
-            sfxToggleBtn.textContent = `SFX: ${gameState.sfxEnabled ? 'ON' : 'OFF'}`; // Set initial text
+            sfxToggleBtn.textContent = `SFX: ${gameState.sfxEnabled ? 'ON' : 'OFF'}`;
             bgmVolumeSlider.value = gameState.musicVolume;
             if (modeOptions.length > 0) modeOptions[0].click(); 
             updateTeamRemoveButtonsState();

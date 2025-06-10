@@ -265,7 +265,7 @@
         @keyframes bounce { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-35px) scale(1.1);} }
         #winner-subtext { font-family: "Quicksand", sans-serif; font-size: 1.1rem; color: rgba(242,242,242,0.8); margin-bottom: 20px; }
 
-        button {
+        button, a.icon-btn {
             background: linear-gradient(135deg, var(--primary) 0%, #ff7711 100%);
             color: var(--light); border: 2px solid var(--darker); padding: 15px 25px;
             font-size: 1rem; border-radius: 50px; cursor: pointer;
@@ -274,13 +274,14 @@
             margin: 10px 5px; font-family: "Bungee", cursive; text-shadow: 1px 1px 2px #000;
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             min-width: 180px; flex-shrink: 0;
+            text-decoration: none;
         }
-        button:hover:not(:disabled) {
+        button:hover:not(:disabled), a.icon-btn:hover:not(:disabled) {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--primary);
             background: linear-gradient(135deg, #ff7711 0%, var(--primary) 100%);
         }
-        button:active:not(:disabled) { transform: translateY(-1px) scale(1.02); }
+        button:active:not(:disabled), a.icon-btn:active:not(:disabled) { transform: translateY(-1px) scale(1.02); }
         button:disabled {
             background: rgba(255,255,255,0.1); cursor:not-allowed; opacity:0.6;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2); transform:none; border-color: rgba(0,0,0,0.5);
@@ -294,8 +295,11 @@
 
         .game-over-buttons-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
 
-        .icon-btn { position:absolute; background:rgba(0,0,0,0.3); color:var(--light); border:1px solid var(--gold); border-radius:50%; width:40px; height:40px; font-size:1.1rem; cursor:pointer; transition:all .3s ease; display:flex; justify-content:center; align-items:center; z-index:100; padding:0; margin:0; box-shadow:none; text-shadow:none; }
+        .icon-btn { position: absolute; background: rgba(0,0,0,0.3); color: var(--light); border: 1px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; z-index: 100; padding:0; margin:0; box-shadow:none; text-shadow:none;}
         .icon-btn#settings-btn { top:15px; right:15px; }
+        /* NEW */
+        .icon-btn#back-to-games-btn, .icon-btn#back-to-menu-btn { top:15px; left:15px; }
+        
         .icon-btn:hover { background:rgba(0,0,0,0.5); transform:scale(1.1) rotate(15deg); box-shadow:0 0 10px var(--gold); }
         .icon-btn i { margin:0; }
         .modal { position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(8px); display:none; justify-content:center; align-items:center; }
@@ -335,13 +339,13 @@
             .flag-image { max-height: 150px; }
             .options-container { grid-template-columns: 1fr; }
             .option-btn { font-size: 0.9rem; padding: 12px 18px;}
-            .final-score-display { flex-direction: column; align-items: center; gap: 15px; }
+            .final-score-display { grid-template-columns: 1fr; }
             .score-card { min-width: 80%; max-width: 90%; }
             .win-message { font-size: 2.2rem; }
             .winner-trophy { font-size: 5rem; }
             .modal-content { padding: 20px; }
             .game-over-buttons-container { flex-direction: column; align-items: center;}
-            .game-over-buttons-container button { width: 90%; margin: 5px auto;}
+            .game-over-buttons-container button, .game-over-buttons-container a.icon-btn { width: 90%; margin: 5px auto;}
             .feedback-popup { font-size: 2.2rem; padding: 25px 40px; width: 80%;}
             .place-display-stage::before, .place-display-stage::after { display: none; }
             .place-tv-screen h3 {font-size: 1.3rem;}
@@ -352,7 +356,9 @@
             .team-input input.team-name-input { max-width: 100%;}
             .flag-image { max-height: 120px; }
             .options-container { gap: 10px; }
-            .icon-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1rem; }
+            .icon-btn { top: 10px; width: 35px; height: 35px; font-size: 1rem; }
+            .icon-btn#settings-btn { right: 10px; }
+            .icon-btn#back-to-games-btn, .icon-btn#back-to-menu-btn { left: 10px; }
             .feedback-popup { font-size: 1.8rem; padding: 20px 30px;}
             .instructions li { font-size: 0.9rem;}
             .game-info { font-size: 0.9rem; flex-direction: column; gap: 10px;}
@@ -362,6 +368,15 @@
 </head>
 <body>
     <div class="game-container">
+        <!-- START: NEW BUTTONS -->
+        <a href="/" id="back-to-games-btn" class="icon-btn" aria-label="Back to Games List" title="Back to Games List" style="display: none;">
+            <i class="fas fa-home"></i>
+        </a>
+        <button id="back-to-menu-btn" class="icon-btn" aria-label="Back to Main Menu" title="Back to Main Menu" style="display: none;">
+            <i class="fas fa-home"></i>
+        </button>
+        <!-- END: NEW BUTTONS -->
+
         <img id="corner-logo-static" class="brand-logo" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="position: absolute; top: 20px; left: 20px; max-height: 40px; opacity: 0.7; display: none;">
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
@@ -454,7 +469,7 @@
         const flagData = [ { country: "United States", code: "us", options: ["Canada", "United States", "Mexico", "Brazil"] }, { country: "France", code: "fr", options: ["France", "Belgium", "Netherlands", "Luxembourg"] }, { country: "Japan", code: "jp", options: ["Japan", "China", "South Korea", "Vietnam"] }, { country: "Brazil", code: "br", options: ["Brazil", "Argentina", "Colombia", "Peru"] }, { country: "Australia", code: "au", options: ["Australia", "New Zealand", "Fiji", "Samoa"] }, { country: "Germany", code: "de", options: ["Germany", "Austria", "Switzerland", "Poland"] }, { country: "Italy", code: "it", options: ["Italy", "Spain", "Portugal", "Greece"] }, { country: "South Africa", code: "za", options: ["South Africa", "Nigeria", "Kenya", "Egypt"] }, { country: "India", code: "in", options: ["India", "Pakistan", "Bangladesh", "Sri Lanka"] }, { country: "Canada", code: "ca", options: ["Canada", "United States", "Mexico", "Greenland"] }, { country: "United Kingdom", code: "gb", options: ["United Kingdom", "Ireland", "France", "Iceland"] }, { country: "China", code: "cn", options: ["China", "Japan", "South Korea", "Mongolia"] },
              { country : "Afghanistan", code : "af", options : ["Uzbekistan", "Turkmenistan", "Afghanistan", "Azerbaijan"] }, { country : "Åland Islands", code : "ax", options : ["Finland", "Åland Islands", "Denmark", "Iceland"] }, { country : "Albania", code : "al", options : ["Albania", "Montenegro", "Kosovo", "Serbia"] }, { country : "Algeria", code : "dz", options : ["Pakistan", "Algeria", "Algiers", "Azerbaijan"] }, { country : "American Samoa", code : "as", options : ["Guam", "Nepal", "Ethiopia", "American Samoa"] }, { country : "Andorra", code : "ad", options : ["Moldova", "Andorra", "Chad", "Romania"] }, { country : "Angola", code : "ao", options : ["Andorra", "Mozambique", "Angola", "Afghanistan"] }, { country : "Anguilla", code : "ai", options : ["British Virgin Islands", "Queensland", "Anguilla", "Victoria"] }, { country : "Antarctica", code : "aq", options : ["Cyprus", "Antarctica", "Australia", "United Islands"] }, { country : "Antigua and Barbuda", code : "ag", options : ["Antigua and Barbuda", "Bahamas", "Barbados", "Rocky Islands"] },
              { country : "Argentina", code : "ar", options : ["El Salvador", "Guatemala", "Florentina", "Argentina"] }, { country : "Armenia", code : "am", options : ["Columbia", "Armenia", "Hungary", "Romania"] }, { country : "Aruba", code : "aw", options : ["Aruba", "Fiji", "Cyprus", "Bahamas"] }, { country : "Austria", code : "at", options : ["Austria", "Latvia", "Peru", "Monaco"] }, { country : "Azerbaijan", code : "az", options : ["Baku", "Tajikistan", "Azerbaijan", "Turkmenistan"] }, { country : "Bahamas", code : "bs", options : ["Barbados", "Bahamas", "Saint Lucia", "Dominica"] }, { country : "Bhutan", code : "bt", options : ["Bhutan", "Myanmar", "Sri Lanka", "Mongolia"] }, { country : "Bahrain", code : "bh", options : ["Bahrain", "Qatar", "Kuwait", "Yemen"] }, { country : "Bangladesh", code : "bd", options : ["Sri Lanka", "Bangladesh", "Japan", "Dhaka"] }, { country : "Barbados", code : "bb", options : ["Barbados", "Bahamas", "Andorra", "Dominican Republic"] },
-             { country : "Belarus", code : "by", options : ["Belarus", "Oman", "Turkmenistan", "Kazakasthan"] }, { country : "Belgium", code : "be", options : ["Belgium", "Germany", "Chad", "Italy"] }, { country : "Belize", code : "bz", options : ["Belize", "Costa Rica", "Panama", "Cuba"] }, { country : "Benin", code : "bj", options : ["Benin", "Burkina Faso", "Ghana", "Mali"] }, { country : "Bolivia", code : "bo", options : ["Bolivia", "Mali", "Ghana", "Togo"] }, { country : "Bosnia and Herzegovina", code : "ba", options : ["Bosnia and Herzegovina", "Ukraine", "Croatia", "Serbia"] }, { country : "Botswana", code : "bw", options : ["Botswana", "South Sudan", "Namibia", "Argentina"] }, { country : "Brunei", code : "bn", options : ["Brunei", "Kyrgyztan", "Mongolia", "Cambodia"] }, { country : "Bulgaria", code : "bg", options : ["Bulgaria", "Hungary", "Lithuania", "Madagascar"] }, { country : "Burkina Faso", code : "bf", options : ["Burkina Faso", "Ghana", "Senegal", "Benin"] },
+             { country : "Belarus", code : "by", options : ["Belarus", "Oman", "Turkmenistan", "Kazakasthan"] }, { country : "Belgium", code : "be", options : ["Belgium", "Germany", "Chad", "Italy"] }, { country : "Belize", code : "bz", options : ["Belize", "Costa Rica", "Panama", "Cuba"] }, { country : "Benin", code : "bj", options : ["Benin", "Burkina Faso", "Ghana", "Mali"] }, { country : "Bolivia", code : "bo", options : ["Bolivia", "Mali", "Ghana", "Togo"] }, { country : "Bosnia and Herzegovina", code : "ba", options : ["Bosnia and Herzegovina", "Ukraine", "Croatia", "Serbia"] }, { country : "Botswana", code : "bw", options : ["Botswana", "South Sudan", "Namibia", "Argentina"] }, { country : "Brunei", code : "bn", options : ["Brunei", "Kyrgyztan", "Mongolia", "Cambodia"] }, { country : "Bulgaria", code : "bg", options : ["Bulgaria", "Hungary", "Latvia", "Lithuania"] }, { country : "Burkina Faso", code : "bf", options : ["Burkina Faso", "Ghana", "Senegal", "Benin"] },
              { country : "Burundi", code : "bi", options : ["Burundi", "Comoros", "Malawi", "Mozambique"] }, { country : "Cambodia", code : "kh", options : ["Cambodia", "Thailand", "Laos", "Hong kong"] }, { country : "Cameroon", code : "cm", options : ["Cameroon", "Ghana", "Senegal", "Mali"] }, { country : "Cape Verde", code : "cv", options : ["Cape Verde", "European Union", "Lesotho", "South Australia"] }, { country : "Central African Republic", code : "cf", options : ["Central African Republic", "Republic of Congo", "Burundi", "Burkani Faso"] }, { country : "Chad", code : "td", options : ["Chad", "Romania", "Bulgaria", "Comoros"] }, { country : "Chile", code : "cl", options : ["Chile", "Cuba", "Puerto Rico", "Panama"] }, { country : "Colombia", code : "co", options : ["Colombia", "Venezuela", "Ecuador", "Lithuania"] }, { country : "Comoros", code : "km", options : ["Comoros", "Azerbaijan", "Pakistan", "Cameroon"] }, { country : "Republic of the Congo", code : "cg", options : ["Republic of the Congo", "Comoros", "Trinidad and Tobago", "DR Congo"] },
              { country : "DR Congo", code : "cd", options : ["DR Congo", "Republic of the Congo", "Trinidad and Tobago", "Somalia"] }, { country : "Costa Rica", code : "cr", options : ["Costa Rica", "Cuba", "El Salvador", "Chile"] }, { country : "Côte d'Ivoire", code : "ci", options : ["Côte d'Ivoire", "Ireland", "Italy", "Jamaica"] }, { country : "Croatia", code : "hr", options : ["Croatia", "Serbia", "Czechia", "Panama"] }, { country : "Cuba", code : "cu", options : ["Cuba", "Chile", "Costa Rica", "El Salvador"] }, { country : "Cyprus", code : "cy", options : ["Cyprus", "Antarctica", "Australia", "Samoan Islands"] }, { country : "Czechia", code : "cz", options : ["Czechia", "Croatia", "Serbia", "Panama"] }, { country : "Denmark", code : "dk", options : ["Denmark", "Finalnd", "Norway", "Sweden"] }, { country : "Djibouti", code : "dj", options : ["Djibouti", "Tanzania", "Somalia", "Eritrea"] }, { country : "Dominica", code : "dm", options : ["Dominica", "Ethiopia", "Gabon", "Lesotho"] },
              { country : "Dominican Republic", code : "do", options : ["Dominican Republic", "Panama", "Botswana", "Fiji"] }, { country : "Ecuador", code : "ec", options : ["Ecuador", "Colombia", "Venezuela", "Cambodia"] }, { country : "Egypt", code : "eg", options : ["Egypt", "Iran", "Yemen", "Morocco"] }, { country : "El Salvador", code : "sv", options : ["El Salvador", "Guatemala", "Barbados", "Bahamas"] }, { country : "Equatorial Guinea", code : "gq", options : ["Equatorial Guinea", "Papua New Guinea", "Guam", "Guinea"] }, { country : "Eritrea", code : "er", options : ["Eritrea", "Lesotho", "Rwanda", "Gabon"] }, { country : "Estonia", code : "ee", options : ["Estonia", "Lithuania", "Albania", "Armenia"] }, { country : "Eswatini", code : "sz", options : ["Eswatini", "Botswana", "Djibouti", "South Sudan"] }, { country : "Ethiopia", code : "et", options : ["Ethiopia", "Eritrea", "Cape Verde", "Gambia"] }, { country : "Fiji", code : "fj", options : ["Honduras", "Fiji", "British Virgin Islands", "North New Zealand"] },
@@ -506,6 +521,9 @@
         const wrongAnswerSoundAudioEl = document.getElementById('wrong-answer-sound');
         const winGameSoundAudioEl = document.getElementById('win-game-sound');
         const curtainSoundAudioEl = document.getElementById('curtain-sound');
+        // NEW
+        const backToGamesBtn = document.getElementById('back-to-games-btn');
+        const backToMenuBtn = document.getElementById('back-to-menu-btn');
 
         function playSound(audioElement) { if (gameConfig.sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.volume = 0.7; audioElement.play().catch(e => console.error("SFX error:", e));}}
         function initBackgroundMusic() { if(backgroundMusicAudioEl.paused) {backgroundMusicAudioEl.volume = gameConfig.musicVolume; backgroundMusicAudioEl.play().catch(e => console.log("BGM autoplay failed.", e));} }
@@ -540,7 +558,11 @@
         function switchScreen(screenId) {
             Object.values(screensEl).forEach(s => s.classList.remove('active'));
             screensEl[screenId].classList.add('active');
-            cornerLogoEl.style.display = (screenId !== 'start') ? 'block' : 'none';
+            
+            // NEW: Control visibility of top-left buttons and corner logo
+            backToGamesBtn.style.display = (screenId === 'start') ? 'flex' : 'none';
+            backToMenuBtn.style.display = (screenId === 'game') ? 'flex' : 'none';
+            cornerLogoEl.style.display = (screenId !== 'start' && screenId !== 'game') ? 'block' : 'none';
         }
 
         function selectGameMode() {
@@ -785,6 +807,9 @@
         playAgainGameBtnEl.addEventListener('click', () => { playSound(startGameSoundAudioEl); goToMainMenu(); });
         mainMenuNavBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); goToMainMenu(); });
         visitStoreBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); window.location.href = '/store';  });
+        // NEW
+        backToMenuBtn.addEventListener('click', () => { playSound(interactionSoundAudioEl); goToMainMenu(); });
+
 
         document.addEventListener('DOMContentLoaded', () => {
             sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;

@@ -541,7 +541,6 @@
         /* Settings Icon Button - GTP Style */
         .icon-btn {
             position: absolute;
-            top: 15px; right: 15px;
             background: rgba(0,0,0, 0.3);
             color: var(--light);
             border: 1px solid var(--gold);
@@ -552,18 +551,26 @@
             transition: all 0.3s ease;
             display: flex; justify-content: center; align-items: center;
             z-index: 100;
-            padding: 0; /* Remove padding for icon buttons */
-            margin: 0;  /* Remove margin for icon buttons */
-            box-shadow: none; /* Remove general button shadow */
-            text-shadow: none; /* Remove general button text-shadow */
+            padding: 0;
+            margin: 0;
+            box-shadow: none;
+            text-shadow: none;
+            text-decoration: none; /* For <a> tags */
         }
+        .icon-btn#settings-btn { top: 15px; right: 15px; }
+        .icon-btn#home-menu-btn { top: 15px; left: 15px; display: flex; }
+        .icon-btn#back-btn { top: 15px; left: 15px; display: none; }
+        
         .icon-btn:hover {
             background: rgba(0,0,0, 0.5);
             transform: scale(1.1) rotate(15deg);
             box-shadow: 0 0 10px var(--gold);
         }
+        .icon-btn#back-btn:hover {
+            transform: scale(1.1) rotate(-5deg);
+        }
         .icon-btn i {
-            margin: 0; /* Ensure icon is centered */
+            margin: 0;
         }
 
 
@@ -670,17 +677,20 @@
             .modal-content { padding: 20px; }
             .modal-content h2 { font-size: 1.5rem; }
             .game-over-buttons button { display: block; width: 80%; margin: 10px auto; }
+            .icon-btn { top: 10px; right: 10px; width: 38px; height: 38px; font-size: 1rem; }
+            .icon-btn#home-menu-btn, .icon-btn#back-btn { top: 10px; left: 10px; }
         }
          @media (max-width: 480px) {
-              h1 { font-size: 2rem; } /* GTP H1 size */
+              h1 { font-size: 2rem; }
               .game-container { padding: 15px;}
               .player-avatars { grid-template-columns: repeat(2, 1fr); gap: 8px;}
               .avatar-icon { width: 45px; height: 45px; font-size: 1.6rem;}
-              button { padding: 10px 18px; font-size: 0.8rem; } /* Adjusted general button padding */
+              button { padding: 10px 18px; font-size: 0.8rem; }
               .remove-player-btn { padding: 6px 8px !important; font-size: 0.7rem !important;}
               .instructions li { font-size: 0.85rem; }
               .role-card { width: 200px; height: 260px;}
               .icon-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1rem; }
+              .icon-btn#home-menu-btn, .icon-btn#back-btn { top: 10px; left: 10px; }
               .player-input-wrapper input { padding: 12px 15px; font-size: 0.9rem;}
          }
 
@@ -688,7 +698,12 @@
 </head>
 <body>
     <div class="game-container">
-        <img id="corner-logo-static" class="brand-logo" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="position: absolute; top: 20px; left: 20px; max-height: 40px; opacity: 0.7; display: none;">
+        <a href="/" id="home-menu-btn" class="icon-btn" aria-label="Back to Games List">
+            <i class="fas fa-home"></i>
+        </a>
+        <button id="back-btn" class="icon-btn" aria-label="Go Back">
+            <i class="fas fa-arrow-left"></i>
+        </button>
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
         </button>
@@ -698,7 +713,7 @@
             <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
             <h1>Find The Imposter</h1>
             <div class="instructions">
-                <p>HOW TO PLAY:</p> <!-- Removed <strong> for Bungee font -->
+                <p>HOW TO PLAY:</p>
                 <ul>
                     <li><i class="fas fa-user-secret"></i> One player is randomly chosen as the Imposter</li>
                     <li><i class="fas fa-question-circle"></i> All players get the same question except the Imposter</li>
@@ -738,7 +753,7 @@
                                 <p>Click to Reveal</p>
                             </div>
                             <div class="role-card-back">
-                                <h3 id="player-role">ROLE</h3> <!-- This h3 is styled specifically -->
+                                <h3 id="player-role">ROLE</h3>
                                 <p id="player-question">Your question will appear here.</p>
                             </div>
                         </div>
@@ -780,9 +795,9 @@
             <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
             <h1>Game Over</h1>
             <div class="result-card">
-                <h2 style="margin-bottom: 5px;">Results</h2> <!-- Reduced margin for tighter look -->
+                <h2 style="margin-bottom: 5px;">Results</h2>
                 <div id="imposter-reveal">
-                    <h3 id="result-title-text">Result Title</h3> <!-- Styled specifically -->
+                    <h3 id="result-title-text">Result Title</h3>
                     <div id="imposter-avatar-display">?</div>
                     <p id="imposter-name-reveal-text" style="font-size: 1.2rem; margin-top: -10px; margin-bottom: 15px; font-weight: 600;">Imposter: </p>
                     <p id="imposter-question-reveal-text">Imposter's Question: </p>
@@ -819,35 +834,19 @@
     </div>
 
     <!-- Feedback Pop-up -->
-    <div id="feedback-popup" class="feedback-popup"> <!-- display: none is handled by .show class -->
+    <div id="feedback-popup" class="feedback-popup">
         <span id="feedback-message-text-el"></span>
     </div>
 
     <!-- Audio elements -->
-    <audio id="background-game-music" loop>
-        <source src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="start-game-sound">
-        <source src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="interaction-sound">
-        <source src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" type="audio/wav">
-    </audio>
-    <audio id="card-flip-sound">
-        <source src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" type="audio/wav">
-    </audio>
-    <audio id="vote-cast-sound">
-        <source src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" type="audio/wav">
-    </audio>
-    <audio id="imposter-reveal-correct-sound">
-        <source src="https://static.wixstatic.com/mp3/9ce3e5_76691a6fefcd4536aa403ada111e886a.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="imposter-reveal-incorrect-sound">
-        <source src="https://static.wixstatic.com/mp3/9ce3e5_277f814439064d1bbe5c0342241b23e4.mp3" type="audio/mpeg">
-    </audio>
-     <audio id="confetti-sound">
-        <source src="https://static.wixstatic.com/mp3/9ce3e5_5d7fcfc389734cf7994f5d37de621e3d.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="background-game-music" loop src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3"></audio>
+    <audio id="start-game-sound" src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3"></audio>
+    <audio id="interaction-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
+    <audio id="card-flip-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
+    <audio id="vote-cast-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
+    <audio id="imposter-reveal-correct-sound" src="https://static.wixstatic.com/mp3/9ce3e5_76691a6fefcd4536aa403ada111e886a.mp3"></audio>
+    <audio id="imposter-reveal-incorrect-sound" src="https://static.wixstatic.com/mp3/9ce3e5_277f814439064d1bbe5c0342241b23e4.mp3"></audio>
+    <audio id="confetti-sound" src="https://static.wixstatic.com/mp3/9ce3e5_5d7fcfc389734cf7994f5d37de621e3d.mp3"></audio>
 
     <script>
         // Game state
@@ -859,6 +858,7 @@
             selectedVote: null,
             crewQuestion: "",
             imposterQuestion: "",
+            usedQuestionIndices: [], // ADDED to track used questions
             sfxEnabled: true,
             musicVolume: 0.2,
             minPlayers: 3,
@@ -899,11 +899,12 @@
             voting: document.getElementById('voting-screen'),
             results: document.getElementById('results-screen')
         };
+        const homeMenuBtnEl = document.getElementById('home-menu-btn'); // ADDED
+        const backBtnEl = document.getElementById('back-btn'); // ADDED
         const playerNamesListDiv = document.getElementById('player-names-list');
         const addPlayerBtnEl = document.getElementById('add-player-btn');
         const startGameBtnEl = document.getElementById('start-game-btn');
-        const cornerLogoEl = document.getElementById('corner-logo-static');
-
+        
         const currentPlayerNameDisplayEl = document.getElementById('current-player-name');
         const roleCardEl = document.getElementById('role-card');
         const playerRoleDisplayEl = document.getElementById('player-role');
@@ -919,10 +920,10 @@
         const votingInstructionTextEl = document.getElementById('voting-instruction-text');
 
         const resultTitleTextEl = document.getElementById('result-title-text');
-        const imposterAvatarDisplayEl = document.getElementById('imposter-avatar-display'); // Corrected this variable name to match HTML ID `imposter-avatar-display`
+        const imposterAvatarDisplayEl = document.getElementById('imposter-avatar-display');
         const imposterNameRevealTextEl = document.getElementById('imposter-name-reveal-text');
-        const imposterQuestionRevealTextEl = document.getElementById('imposter-question-reveal-text'); // Corrected this to match HTML ID
-        const resultMessageTextEl = document.getElementById('result-message-text'); // Corrected this to match HTML ID
+        const imposterQuestionRevealTextEl = document.getElementById('imposter-question-reveal-text');
+        const resultMessageTextEl = document.getElementById('result-message-text');
         const mostVotedPlayerTextEl = document.getElementById('most-voted-player-text');
         const actualImposterTextEl = document.getElementById('actual-imposter-text');
         const playAgainBtnEl = document.getElementById('play-again-btn');
@@ -953,7 +954,7 @@
         function playSound(audioElement) {
             if (gameState.sfxEnabled && audioElement) {
                 audioElement.currentTime = 0;
-                audioElement.volume = 0.7; // Consistent volume for SFX
+                audioElement.volume = 0.7;
                 audioElement.play().catch(e => console.error("SFX play error:", e));
             }
         }
@@ -980,25 +981,18 @@
         }
         function initBackgroundMusic() {
             backgroundMusicAudioEl.volume = gameState.musicVolume;
-            backgroundMusicAudioEl.play().then(() => {
-                // console.log("Background music started.");
-            }).catch(e => {
-                console.log("Background music autoplay prevented.", e);
-            });
+            backgroundMusicAudioEl.play().catch(e => console.log("Background music autoplay prevented.", e));
         }
 
         // --- Feedback Pop-up Function ---
-        function showFeedbackMessage(message, type = 'info', duration = 2500) { // Default duration to match GTP
+        function showFeedbackMessage(message, type = 'info', duration = 2500) {
             feedbackMessageTextPopupEl.textContent = message;
             feedbackPopupEl.className = 'feedback-popup';
             if (type) feedbackPopupEl.classList.add(type);
             feedbackPopupEl.classList.add('show');
-            // feedbackPopupEl.style.display = 'block'; // .show class handles display
-
             clearTimeout(feedbackTimeoutId);
             feedbackTimeoutId = setTimeout(() => {
                 feedbackPopupEl.classList.remove('show');
-                // setTimeout(() => { feedbackPopupEl.style.display = 'none'; }, 300); // .show handles display
             }, duration);
         }
 
@@ -1006,7 +1000,7 @@
         function triggerConfetti() {
             playSound(confettiSoundAudioEl);
             const confettiCount = 80;
-            const colors = ['var(--primary)', 'var(--secondary)', 'var(--success)', 'var(--danger)', 'var(--gold)']; // Added gold
+            const colors = ['var(--primary)', 'var(--secondary)', 'var(--success)', 'var(--danger)', 'var(--gold)'];
             for (let i = 0; i < confettiCount; i++) {
                 const confettiPiece = document.createElement('div');
                 confettiPiece.classList.add('confetti-piece');
@@ -1036,16 +1030,10 @@
         revealImposterBtnEl.addEventListener('click', () => { revealImposter(); });
         playAgainBtnEl.addEventListener('click', () => { playSoundWithCallback(startGameSoundAudioEl, playAgain); });
         newGameBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); newGame(); });
-
-        // ### FIX START ###
-        // Corrected the variable names `visitStoreBtn` to `visitStoreBtnEl`
-        // and `interactionSound` to `interactionSoundAudioEl`.
         visitStoreBtnEl.addEventListener('click', () => {
             playSound(interactionSoundAudioEl);
-            // This will navigate to the /store page on your site
             window.location.href = '/store';
         });
-        // ### FIX END ###
 
         settingsBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'flex'; });
         closeModalBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; });
@@ -1055,9 +1043,12 @@
             playSound(interactionSoundAudioEl);
             gameState.sfxEnabled = !gameState.sfxEnabled;
             sfxToggleBtnEl.textContent = `SFX: ${gameState.sfxEnabled ? 'ON' : 'OFF'}`;
-            // Class toggling for ON/OFF state if you want to change button color based on state
             sfxToggleBtnEl.classList.toggle('btn-success', gameState.sfxEnabled);
             sfxToggleBtnEl.classList.toggle('btn-danger', !gameState.sfxEnabled);
+        });
+        backBtnEl.addEventListener('click', () => { // ADDED
+            playSound(interactionSoundAudioEl);
+            newGame(); // newGame function correctly returns to the start screen.
         });
 
 
@@ -1065,21 +1056,23 @@
         function switchScreen(activeScreenId) {
             Object.values(screens).forEach(screen => screen.classList.remove('active'));
             screens[activeScreenId].classList.add('active');
-            cornerLogoEl.style.display = (activeScreenId !== 'start') ? 'block' : 'none';
+            
+            // ADDED: Manage visibility of home and back buttons
+            const isStartScreen = activeScreenId === 'start';
+            homeMenuBtnEl.style.display = isStartScreen ? 'flex' : 'none';
+            backBtnEl.style.display = isStartScreen ? 'none' : 'flex';
         }
 
         function createPlayerInputField(playerNumber) {
             const wrapper = document.createElement('div');
             wrapper.className = 'player-input-wrapper';
-
             const input = document.createElement('input');
             input.type = 'text';
             input.className = 'player-name';
             input.placeholder = `Player ${playerNumber}`;
             wrapper.appendChild(input);
-
             const removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-player-btn btn-danger'; // Added btn-danger for base styling
+            removeBtn.className = 'remove-player-btn btn-danger';
             removeBtn.innerHTML = '<i class="fas fa-times"></i>';
             removeBtn.onclick = function() {
                 playSound(interactionSoundAudioEl);
@@ -1104,9 +1097,7 @@
         function updateAddRemovePlayerButtons() {
             const playerInputWrappers = playerNamesListDiv.querySelectorAll('.player-input-wrapper');
             const playerCount = playerInputWrappers.length;
-
             addPlayerBtnEl.disabled = playerCount >= gameState.maxPlayers;
-
             playerInputWrappers.forEach(wrapper => {
                 const removeBtn = wrapper.querySelector('.remove-player-btn');
                 if (removeBtn) {
@@ -1115,36 +1106,46 @@
             });
         }
 
+        function selectNewQuestion() { // ADDED for non-repeating questions
+            let availableIndices = [];
+            for (let i = 0; i < gameState.questions.length; i++) {
+                if (!gameState.usedQuestionIndices.includes(i)) {
+                    availableIndices.push(i);
+                }
+            }
+            if (availableIndices.length === 0) {
+                gameState.usedQuestionIndices = []; // Reset if all questions are used
+                availableIndices = Array.from(gameState.questions.keys());
+            }
+            const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+            gameState.usedQuestionIndices.push(randomIndex);
+            gameState.crewQuestion = gameState.questions[randomIndex].crew;
+            gameState.imposterQuestion = gameState.questions[randomIndex].imposter;
+        }
 
         function startGame() {
-            // MODIFICATION START: Enforce minimum player names
             const playerInputs = Array.from(playerNamesListDiv.querySelectorAll('.player-name'));
             const enteredNames = playerInputs
                 .map(input => input.value.trim())
-                .filter(name => name !== ''); // Get only the names that have been typed in
+                .filter(name => name !== '');
 
             if (enteredNames.length < gameState.minPlayers) {
                 showFeedbackMessage(`Please enter at least ${gameState.minPlayers} player names!`, 'danger');
                 return;
             }
-
-            // Use only the entered names for the game
             gameState.players = enteredNames;
-            
             if (gameState.players.length > gameState.maxPlayers) {
                 showFeedbackMessage(`Cannot have more than ${gameState.maxPlayers} players.`, 'danger');
                 return;
             }
-
             if (gameState.players.some(name => name.length > 15)) {
                 showFeedbackMessage('Player names are too long (max 15 chars)!', 'danger');
                 return;
             }
-            // MODIFICATION END
 
-            const randomQuestionIndex = Math.floor(Math.random() * gameState.questions.length);
-            gameState.crewQuestion = gameState.questions[randomQuestionIndex].crew;
-            gameState.imposterQuestion = gameState.questions[randomQuestionIndex].imposter;
+            gameState.usedQuestionIndices = []; // Reset used questions for a new game session
+            selectNewQuestion(); // Select first question
+            
             gameState.imposterIndex = Math.floor(Math.random() * gameState.players.length);
             gameState.currentPlayerIndex = 0;
             gameState.playerVotes = {};
@@ -1153,9 +1154,9 @@
             roleCardEl.classList.remove('flipped');
             playerRoleDisplayEl.textContent = "ROLE";
             playerQuestionDisplayEl.textContent = "Your question will appear here.";
-            playerRoleDisplayEl.className = ""; // Reset classes like role-imposter/role-crewmate
+            playerRoleDisplayEl.className = "";
 
-            currentPlayerNameDisplayEl.innerHTML = `<strong>${gameState.players[0]}</strong>`; // Use strong tag
+            currentPlayerNameDisplayEl.innerHTML = `<strong>${gameState.players[0]}</strong>`;
             nextPlayerBtnEl.disabled = true;
             switchScreen('role');
         }
@@ -1164,10 +1165,8 @@
             if (roleCardEl.classList.contains('flipped')) return;
             roleCardEl.classList.add('flipped');
             nextPlayerBtnEl.disabled = false;
-
             const isImposter = gameState.currentPlayerIndex === gameState.imposterIndex;
             playerRoleDisplayEl.textContent = isImposter ? 'IMPOSTER' : 'CREWMATE';
-            // Remove old classes and add new one for color
             playerRoleDisplayEl.classList.remove('role-imposter', 'role-crewmate');
             playerRoleDisplayEl.classList.add(isImposter ? 'role-imposter' : 'role-crewmate');
             playerQuestionDisplayEl.textContent = isImposter ? gameState.imposterQuestion : gameState.crewQuestion;
@@ -1247,14 +1246,11 @@
                 showFeedbackMessage('Please select a player!', 'danger');
                 return;
             }
-            gameState.playerVotes = {}; // Simplified voting: only one vote is cast by the "group"
+            gameState.playerVotes = {};
             gameState.playerVotes[gameState.selectedVote] = (gameState.playerVotes[gameState.selectedVote] || 0) + 1;
-
-            let mostVotedPlayer = gameState.selectedVote; // Since only one vote is tracked
+            let mostVotedPlayer = gameState.selectedVote;
             const imposterName = gameState.players[gameState.imposterIndex];
             const isCorrect = mostVotedPlayer === imposterName;
-
-            // MODIFICATION START: Trigger sound and feedback pop-up simultaneously
             if (isCorrect) {
                 playSound(imposterRevealCorrectSoundAudioEl);
                 showFeedbackMessage('Imposter Found!', 'correct', 3000);
@@ -1263,47 +1259,37 @@
                 playSound(imposterRevealIncorrectSoundAudioEl);
                 showFeedbackMessage('Wrong Guess!', 'incorrect', 3000);
             }
-            // MODIFICATION END
-
             resultTitleTextEl.textContent = isCorrect ? 'Imposter Found!' : 'Wrong Guess!';
             resultTitleTextEl.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
-
             imposterAvatarDisplayEl.textContent = imposterName.charAt(0).toUpperCase();
-            imposterNameRevealTextEl.innerHTML = `Imposter: <strong style="color: var(--danger);">${imposterName}</strong>`; // Highlight imposter name
+            imposterNameRevealTextEl.innerHTML = `Imposter: <strong style="color: var(--danger);">${imposterName}</strong>`;
             imposterQuestionRevealTextEl.textContent = `Imposter's Question: ${gameState.imposterQuestion}`;
             resultMessageTextEl.textContent = isCorrect ?
                 `The group correctly identified ${imposterName} as the Imposter!` :
                 `The group voted for ${mostVotedPlayer}, but the real Imposter was ${imposterName}!`;
             resultMessageTextEl.className = isCorrect ? 'result-correct' : 'result-incorrect';
-
             mostVotedPlayerTextEl.innerHTML = `${mostVotedPlayer} ${isCorrect ? '<strong style="color: var(--success);">(Correctly Identified!)</strong>' : '<strong style="color: var(--danger);">(Oops, not the Imposter!)</strong>'}`;
             actualImposterTextEl.innerHTML = `<strong style="color: var(--danger);">${imposterName}</strong>`;
             switchScreen('results');
         }
 
         function playAgain() {
-            // Reset scores or any other game-specific state for a new round WITH SAME PLAYERS
             gameState.currentPlayerIndex = 0;
             gameState.playerVotes = {};
             gameState.selectedVote = null;
-            // Re-pick questions and imposter
-            const randomQuestionIndex = Math.floor(Math.random() * gameState.questions.length);
-            gameState.crewQuestion = gameState.questions[randomQuestionIndex].crew;
-            gameState.imposterQuestion = gameState.questions[randomQuestionIndex].imposter;
+            selectNewQuestion(); // MODIFIED to get a new, unused question
             gameState.imposterIndex = Math.floor(Math.random() * gameState.players.length);
-
             roleCardEl.classList.remove('flipped');
             playerRoleDisplayEl.textContent = "ROLE";
             playerQuestionDisplayEl.textContent = "Your question will appear here.";
             playerRoleDisplayEl.className = "";
             currentPlayerNameDisplayEl.innerHTML = `<strong id="current-player-name">${gameState.players[0]}</strong>`;
             nextPlayerBtnEl.disabled = true;
-            switchScreen('role'); // Go to role assignment screen
+            switchScreen('role');
         }
 
         function newGame() {
-            // Full reset to start screen
-            gameState.players = []; // Clear players for new input
+            gameState.players = [];
             playerNamesListDiv.innerHTML = '';
             for (let i = 0; i < gameState.minPlayers; i++) {
                 playerNamesListDiv.appendChild(createPlayerInputField(i + 1));
@@ -1317,14 +1303,11 @@
             sfxToggleBtnEl.classList.toggle('btn-success', gameState.sfxEnabled);
             sfxToggleBtnEl.classList.toggle('btn-danger', !gameState.sfxEnabled);
             bgmVolumeSliderEl.value = gameState.musicVolume;
-            // initBackgroundMusic(); // Moved to first interaction to comply with browser autoplay policies
-
             playerNamesListDiv.innerHTML = '';
             for (let i = 0; i < gameState.minPlayers; i++) {
                 playerNamesListDiv.appendChild(createPlayerInputField(i + 1));
             }
             updateAddRemovePlayerButtons();
-
             switchScreen('start');
         });
 

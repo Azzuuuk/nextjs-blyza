@@ -233,7 +233,7 @@
 
 
         /* Buttons - 5SF Style */
-        button {
+        button, a.icon-btn {
             background: linear-gradient(135deg, var(--primary) 0%, #ff7711 100%);
             color: var(--light); border: 2px solid var(--darker); padding: 15px 25px;
             font-size: 1rem; border-radius: 50px; cursor: pointer;
@@ -242,13 +242,14 @@
             margin: 10px 5px; font-family: "Bungee", cursive; text-shadow: 1px 1px 2px #000;
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             min-width: 180px; flex-shrink: 0;
+            text-decoration: none;
         }
-        button:hover:not(:disabled) {
+        button:hover:not(:disabled), a.icon-btn:hover:not(:disabled) {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--primary);
             background: linear-gradient(135deg, #ff7711 0%, var(--primary) 100%);
         }
-        button:active:not(:disabled) { transform: translateY(-1px) scale(1.02); }
+        button:active:not(:disabled), a.icon-btn:active:not(:disabled) { transform: translateY(-1px) scale(1.02); }
         button:disabled {
             background: rgba(255,255,255,0.1); cursor:not-allowed; opacity:0.6;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2); transform:none; border-color: rgba(0,0,0,0.5);
@@ -313,8 +314,10 @@
 
 
         /* Settings Icon, Modal, Confetti - 5SF Style */
-        .icon-btn { position:absolute; background:rgba(0,0,0,0.3); color:var(--light); border:1px solid var(--gold); border-radius:50%; width:40px; height:40px; font-size:1.1rem; cursor:pointer; transition:all .3s ease; display:flex; justify-content:center; align-items:center; z-index:100; padding:0; margin:0; box-shadow:none; text-shadow:none; }
-        .icon-btn#settings-btn { top:15px; right:15px; }
+        .icon-btn { position: absolute; background: rgba(0,0,0,0.3); color: var(--light); border: 1px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; z-index: 100; padding:0; margin:0; box-shadow:none; text-shadow:none;}
+        .icon-btn#settings-btn { top: 15px; right: 15px; }
+        /* NEW */
+        .icon-btn#back-to-games-btn, .icon-btn#back-to-menu-btn { top:15px; left:15px; }
         .icon-btn:hover { background:rgba(0,0,0,0.5); transform:scale(1.1) rotate(15deg); box-shadow:0 0 10px var(--gold); }
         .icon-btn i { margin:0; }
         .modal { position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(8px); display:none; justify-content:center; align-items:center; }
@@ -344,7 +347,7 @@
             .score-display { flex-direction: column; align-items: center; gap: 15px; }
             .score-card { min-width: 80%; max-width: 90%; }
             .action-buttons { gap: 10px; }
-            button { padding: 12px 22px; font-size: 0.9rem; min-width: 160px; }
+            button, a.icon-btn { padding: 12px 22px; font-size: 0.9rem; min-width: 160px; }
             .win-message-text { font-size: 2.2rem; }
             .winner-trophy-icon { font-size: 5rem; }
             .modal-content { padding: 20px; }
@@ -363,7 +366,8 @@
               .letters-display { font-size: 2.5em; letter-spacing: 5px; padding: 15px;}
               .letters-display span { margin: 0 3px; padding: 3px 8px;}
               .action-buttons .team-btn { min-width: calc(90% - 10px); margin: 5px; }
-              .icon-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1rem; }
+              .icon-btn { top: 10px; right: 10px; left: 10px; width: 35px; height: 35px; font-size: 1rem; }
+              .icon-btn#settings-btn { left: auto; } /* NEW: keep settings button on the right */
               .feedback-popup { font-size: 1.8rem; padding: 20px 30px;}
               .instructions { padding: 15px;}
               .instructions li { font-size: 0.9rem;}
@@ -373,6 +377,15 @@
 </head>
 <body>
     <div class="game-container">
+        <!-- START: NEW BUTTONS -->
+        <a href="/" id="back-to-games-btn" class="icon-btn" aria-label="Back to Games List" title="Back to Games List" style="display: none;">
+            <i class="fas fa-home"></i>
+        </a>
+        <button id="back-to-menu-btn" class="icon-btn" aria-label="Back to Main Menu" title="Back to Main Menu" style="display: none;">
+            <i class="fas fa-home"></i>
+        </button>
+        <!-- END: NEW BUTTONS -->
+        
         <img id="corner-logo-static" class="brand-logo" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="position: absolute; top: 20px; left: 20px; max-height: 40px; opacity: 0.7; display: none;">
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
@@ -550,6 +563,10 @@
         const storeButtonWrapperEl = document.getElementById("store-button-wrapper");
         let treatYourselfElement = null;
         const visitStoreBtnEl = document.getElementById('visit-store-btn');
+        
+        // NEW: Navigation buttons
+        const backToGamesBtn = document.getElementById("back-to-games-btn");
+        const backToMenuBtn = document.getElementById("back-to-menu-btn");
 
 
         // Settings Modal Elements
@@ -638,6 +655,8 @@
             playSound(interactionSoundAudioEl);
             window.location.href = '/store'; 
         });
+        // NEW
+        backToMenuBtn.addEventListener('click', () => { playSound(interactionSoundAudioEl); goToMainMenu(); });
 
 
         // --- Game Functions ---
@@ -657,7 +676,12 @@
         function switchScreen(screenId) {
             Object.values(screens).forEach(screen => screen.classList.remove('active-screen', 'active'));
             screens[screenId].classList.add('active-screen', 'active');
-            cornerLogoEl.style.display = (screenId !== 'start') ? 'block' : 'none';
+            
+            // NEW: Control visibility of top-left buttons and corner logo
+            backToGamesBtn.style.display = (screenId === 'start') ? 'flex' : 'none';
+            backToMenuBtn.style.display = (screenId === 'game') ? 'flex' : 'none';
+            cornerLogoEl.style.display = (screenId !== 'start' && screenId !== 'game') ? 'block' : 'none';
+
              if (treatYourselfElement) {
                 treatYourselfElement.style.display = (screenId === 'gameOver') ? 'flex' : 'none';
             }

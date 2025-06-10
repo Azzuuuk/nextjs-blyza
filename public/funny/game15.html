@@ -19,6 +19,7 @@
             --dark: #1a1c20;
             --darker: #0f1012;
             --info: #4ECDC4;
+            --gold: #FFD700;
         }
 
         /* Game's existing animations */
@@ -48,7 +49,6 @@
         /* Styles for Blyza specific elements (modal, popups, settings, logo) */
         body {
             font-family: 'Quicksand', sans-serif; /* Base font for Blyza elements */
-             /* Tailwind handles body bg, but keep this for reference if needed */
         }
         .game-title-blyza { /* For H1 if we want to use Blyza font */
             font-family: "Luckiest Guy", cursive;
@@ -66,31 +66,35 @@
             max-height: 70px; /* Adjust as needed */
         }
 
+         /* Universal icon button style for top corners */
         .icon-btn {
-            position: fixed; /* Changed to fixed for consistent placement */
-            top: 20px;
-            right: 20px;
-            background: var(--dark); /* Darker background for Blyza elements */
+            position: absolute;
+            background: rgba(0, 0, 0, 0.3);
             color: var(--light);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--gold);
             border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            font-size: 1.2rem;
+            width: 40px;
+            height: 40px;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000; /* Ensure it's above game board */
+            z-index: 100;
             padding: 0;
             margin: 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: none;
+            text-shadow: none;
+            text-decoration: none;
         }
         .icon-btn:hover {
             background: var(--darker);
             transform: scale(1.1);
         }
+        /* Positioning for specific icon buttons */
+        #settings-btn { top: 15px; right: 15px; }
+        #back-to-games-btn { top: 15px; left: 15px; }
 
         .modal {
             position: fixed;
@@ -196,7 +200,9 @@
         /* Responsive adjustments for Blyza elements */
         @media (max-width: 640px) { /* Tailwind's sm breakpoint */
             .brand-logo-prominent { max-height: 50px; margin-bottom: 10px;}
-            .icon-btn { width: 40px; height: 40px; font-size: 1rem; top:15px; right:15px;}
+            .icon-btn { width: 35px; height: 35px; font-size: 1rem; top:10px; }
+            #settings-btn { right: 10px; }
+            #back-to-games-btn { left: 10px; }
             .modal-content { padding: 20px; width: 90%;}
             .modal-content h2 { font-size: 1.5rem; margin-bottom: 20px; }
             .feedback-popup { font-size: 1.5rem; padding: 20px 30px; width: 85%; }
@@ -205,6 +211,12 @@
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center py-8">
+    <!-- START: NEW BUTTON -->
+    <a href="/" id="back-to-games-btn" class="icon-btn" aria-label="Back to Games List" title="Back to Games List">
+        <i class="fas fa-home"></i>
+    </a>
+    <!-- END: NEW BUTTON -->
+
     <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
         <i class="fas fa-cog"></i>
     </button>
@@ -283,7 +295,7 @@
             let gameOver = false;
             let wordLength = 5;
             
-            const slangWords = { /* ... [Your existing slangWords object] ... */
+            const slangWords = {
                 3: ['MOG', 'LIT', 'CAP', 'SUS', 'BET', 'MID', 'DAB', 'DAP', 'FAM', 'NIP', 'TEA', 'YAP', 'LOL', 'AFK', 'OMG', 'WTF',  'IRL', 'FYP', 'BFF', 'SMH' , 'FTW', 'POV', 'BAE' , 'RIP', 'HMU', 'ILY', 'WYD', 'KYS', 'MVP', 'GYM', 'KSI', 'MEN', 'CEO', 'BOP', 'SIS', 'HOE', 'DIP', 'DTF', 'ICK', 'UNC', 'GAS'],
                 4: ['RIZZ','CLAP', 'DRIP', 'YEET', 'SIMP', 'VIBE', 'FLEX', 'GOAT', 'FOMO', 'NSFW', 'ROFL', 'STFU', 'YOLO', 'TYSM', 'LMAO', 'OOTD', 'GTFO', 'MILF', 'MAGA', 'ASMR' , 'BYOB', 'STAN', 'SLAY', 'CHAD', 'FIRE', 'DOPE', 'SALT' , 'SHIP',  'BETA' , 'BAIT' , 'FLOP' , 'KING' , 'SWAG', 'WOKE','DEAD', 'MOOD', 'THOT', 'RENT', 'BAKA', 'TATE', 'NOOB', 'RAGE', 'FEET', 'PAUL', 'YASS', 'EBOY', 'DANK','DRAG', 'WEAK','SMOL','GYAT', 'AURA', 'BRAT', 'CAKE', 'CHAT', 'OHIO'],
                 5: ['SUSSY', 'CLOUT', 'BASED', 'GRIND', 'VIBES', 'RATIO', 'GLAZE', 'FANUM', 'KAREN', 'SIGMA', 'TOXIC', 'BROKE', 'TRUMP','TRASH', 'GOOFY', 'PUSSY', 'BITCH', 'MUTED', 'ZESTY', 'SPICY', 'TROLL', 'PRANK', 'SALTY', 'NATTY', 'PRIME' , 'BEAST', 'SHOOK', 'WOMEN', 'CURRY' , 'INDIA', 'SPEED', 'EGIRL' , 'FINNA', 'YIKES', 'SNACK','IYKYK','BUNDA', 'BASIC', 'FACTS', 'FURRY', 'GUCCI', 'HELLA', 'BREAD', 'MEWING'],
@@ -335,7 +347,7 @@
                 }
             }
             function playSoundWithCallback(audioElement, callback, ...args) {
-                if (sfxEnabled && audioElement) { /* ... (same as previous example) ... */ 
+                if (sfxEnabled && audioElement) {
                     audioElement.currentTime = 0;
                     let callbackExecuted = false;
                     const executeCallback = () => {
@@ -373,7 +385,7 @@
 
             // --- Blyza Feedback Pop-up Functions ---
             let feedbackTimeout;
-            function showFeedbackMessage(message, type = '', duration = 2500) { /* ... (same as previous example) ... */ 
+            function showFeedbackMessage(message, type = '', duration = 2500) {
                 feedbackMessageTextEl.textContent = message;
                 feedbackPopup.className = 'feedback-popup'; 
                 if (type) feedbackPopup.classList.add(type);
@@ -387,7 +399,7 @@
             }
 
             // --- Blyza Confetti Function ---
-            function triggerConfetti() { /* ... (same as previous example) ... */ 
+            function triggerConfetti() { 
                 const confettiCount = 100;
                 const colors = ['var(--primary)', 'var(--secondary)', 'var(--success)', 'var(--info)', '#FFD700', '#FF69B4'];
                 for (let i = 0; i < confettiCount; i++) {

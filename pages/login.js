@@ -1,8 +1,11 @@
+// pages/login.js
+
 import { useState } from 'react';
-import { auth } from '/firebaseconfig';
+import { auth } from '/firebaseconfig'; // Keep your existing path
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import { signInWithGooglePopup } from '../lib/authUtils'; // Import the new Google sign-in function
 
 export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -10,10 +13,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const router = useRouter();
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true); // Set loading true
     try {
       if (isSignUp) {
         await createUserWithEmailAndPassword(auth, email, password);
@@ -23,6 +28,23 @@ export default function LoginPage() {
       router.push('/store');
     } catch (err) {
       setError(err.message);
+      console.error("Email/Password Auth Error:", err.message);
+    } finally {
+      setLoading(false); // Set loading false
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setLoading(true); // Set loading true
+    try {
+      await signInWithGooglePopup();
+      router.push('/store');
+    } catch (err) {
+      setError(err.message); // Display error message from authUtils
+      console.error("Google Sign-in Error:", err.message);
+    } finally {
+      setLoading(false); // Set loading false
     }
   };
 
@@ -56,14 +78,14 @@ export default function LoginPage() {
           padding: '40px',
           boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1)',
           textAlign: 'center',
-          position: 'relative', // This is important for the button's position
+          position: 'relative',
           overflow: 'hidden',
           border: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
 
-          {/* ### ADDED THIS BUTTON ### */}
+          {/* Back to Home Button */}
           <button
-            onClick={() => router.push('/')} // Navigates to the home page
+            onClick={() => router.push('/')}
             aria-label="Back to Home"
             style={{
               position: 'absolute',
@@ -178,36 +200,109 @@ export default function LoginPage() {
               </div>
             )}
 
-            <button type="submit" style={{
+            <button type="submit" disabled={loading} style={{
               background: 'linear-gradient(135deg, #FF8833 0%, #ff7711 100%)',
               color: '#F2F2F2',
               border: 'none',
               padding: '15px 30px',
               fontSize: '1.1rem',
               borderRadius: '12px',
-              cursor: 'pointer',
+              cursor: loading ? 'not-allowed' : 'pointer',
               fontWeight: '600',
               transition: 'all 0.3s ease',
               boxShadow: '0 5px 15px rgba(0, 0, 0, 0.2)',
-              margin: '10px 5px',
+              margin: '10px auto', /* Changed from '10px 5px' to '10px auto' */
               fontFamily: '"Quicksand", sans-serif',
               width: '100%',
-              maxWidth: '300px'
+              maxWidth: '300px',
+              opacity: loading ? 0.7 : 1,
             }}
               onMouseOver={(e) => {
-                e.currentTarget.style.background = 'linear-gradient(135deg, #ff7711 0%, #FF8833 100%)';
-                e.currentTarget.style.transform = 'translateY(-3px)';
-                e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.3)';
+                if (!loading) {
+                  e.currentTarget.style.background = 'linear-gradient(135deg, #ff7711 0%, #FF8833 100%)';
+                  e.currentTarget.style.transform = 'translateY(-3px)';
+                  e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.3)';
+                }
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.background = 'linear-gradient(135deg, #FF8833 0%, #ff7711 100%)';
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
+                if (!loading) {
+                  e.currentTarget.style.background = 'linear-gradient(135deg, #FF8833 0%, #ff7711 100%)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
+                }
               }}
             >
-              {isSignUp ? 'Create Account' : 'Login'} <i className={`fas ${isSignUp ? 'fa-user-plus' : 'fa-sign-in-alt'}`} style={{ marginLeft: '8px' }}></i>
+              {loading ? 'Processing...' : (isSignUp ? 'Create Account' : 'Login')} <i className={`fas ${isSignUp ? 'fa-user-plus' : 'fa-sign-in-alt'}`} style={{ marginLeft: '8px' }}></i>
             </button>
           </form>
+
+          {/* Divider with "OR" */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '30px 0',
+            color: 'rgba(242, 242, 242, 0.5)',
+            fontSize: '1rem',
+            fontWeight: 'bold',
+          }}>
+            <hr style={{
+              flexGrow: 1,
+              border: 'none',
+              borderTop: '1px solid rgba(242, 242, 242, 0.2)',
+              margin: '0 15px',
+            }} />
+            OR
+            <hr style={{
+              flexGrow: 1,
+              border: 'none',
+              borderTop: '1px solid rgba(242, 242, 242, 0.2)',
+              margin: '0 15px',
+            }} />
+          </div>
+
+          {/* Google Sign-in Button */}
+          <button
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            style={{
+              background: '#4285F4', // Google brand color
+              color: '#F2F2F2',
+              border: 'none',
+              padding: '15px 30px',
+              fontSize: '1.1rem',
+              borderRadius: '12px',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              fontWeight: '600',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 5px 15px rgba(0, 0, 0, 0.2)',
+              margin: '10px auto', /* Changed from '10px 5px' to '10px auto' */
+              fontFamily: '"Quicksand", sans-serif',
+              width: '100%',
+              maxWidth: '300px',
+              opacity: loading ? 0.7 : 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onMouseOver={(e) => {
+              if (!loading) {
+                e.currentTarget.style.background = '#357ae8';
+                e.currentTarget.style.transform = 'translateY(-3px)';
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.3)';
+              }
+            }}
+            onMouseOut={(e) => {
+              if (!loading) {
+                e.currentTarget.style.background = '#4285F4';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
+              }
+            }}
+          >
+            <i className="fab fa-google" style={{ marginRight: '10px' }}></i>
+            {loading ? 'Signing in...' : 'Sign in with Google'}
+          </button>
 
           <div style={{ marginTop: '30px', color: 'rgba(242, 242, 242, 0.7)' }}>
             {isSignUp ? 'Already have an account?' : 'Need an account?'}{' '}

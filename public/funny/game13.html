@@ -225,7 +225,7 @@
 
 
         /* Buttons - 5SF Style */
-        button {
+        button, a.icon-btn {
             background: linear-gradient(135deg, var(--primary) 0%, #ff7711 100%);
             color: var(--light); border: 2px solid var(--darker); padding: 15px 25px;
             font-size: 1rem; border-radius: 50px; cursor: pointer;
@@ -234,13 +234,14 @@
             margin: 10px 5px; font-family: "Bungee", cursive; text-shadow: 1px 1px 2px #000;
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             min-width: 180px; flex-shrink: 0;
+            text-decoration: none;
         }
-        button:hover:not(:disabled) {
+        button:hover:not(:disabled), a.icon-btn:hover:not(:disabled) {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--primary);
             background: linear-gradient(135deg, #ff7711 0%, var(--primary) 100%);
         }
-        button:active:not(:disabled) { transform: translateY(-1px) scale(1.02); }
+        button:active:not(:disabled), a.icon-btn:active:not(:disabled) { transform: translateY(-1px) scale(1.02); }
         button:disabled {
             background: rgba(255,255,255,0.1); cursor:not-allowed; opacity:0.6;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2); transform:none; border-color: rgba(0,0,0,0.5);
@@ -314,6 +315,7 @@
         /* Settings Icon, Modal, Confetti - 5SF Style */
         .icon-btn { position:absolute; background:rgba(0,0,0,0.3); color:var(--light); border:1px solid var(--gold); border-radius:50%; width:40px; height:40px; font-size:1.1rem; cursor:pointer; transition:all .3s ease; display:flex; justify-content:center; align-items:center; z-index:100; padding:0; margin:0; box-shadow:none; text-shadow:none; }
         .icon-btn#settings-btn { top:15px; right:15px; } /* Adjusted from PP's 20px */
+        .icon-btn#back-to-games-btn, .icon-btn#back-to-menu-btn { top:15px; left:15px; } /* NEW */
         .icon-btn:hover { background:rgba(0,0,0,0.5); transform:scale(1.1) rotate(15deg); box-shadow:0 0 10px var(--gold); }
         .icon-btn i { margin:0; }
         .modal { position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(8px); display:none; justify-content:center; align-items:center; }
@@ -343,7 +345,7 @@
             .captain-display { font-size: 1rem; padding: 12px; max-width: 90%;}
             .guess-buttons { gap: 10px; } /* inherits .button-controls-area column direction on small screens if needed */
             .guess-buttons button { width: 80%; max-width: 300px; }
-            button { padding: 12px 22px; font-size: 0.9rem; min-width: 160px; }
+            button, a.icon-btn { padding: 12px 22px; font-size: 0.9rem; min-width: 160px; }
             .win-message-text, .win-message { font-size: 2.2rem; }
             .winner-trophy-icon, .winner-trophy { font-size: 5rem; }
             .modal-content { padding: 20px; }
@@ -360,7 +362,8 @@
               .password-display { font-size: 1.3em; }
                .password-display span { font-size: 0.6em; }
               .guess-buttons button { width: calc(90% - 10px); margin: 5px; } /* Allow side-by-side for guess buttons if desired */
-              .icon-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1rem; }
+              .icon-btn { top: 10px; right: 10px; left: 10px; width: 35px; height: 35px; font-size: 1rem; }
+              .icon-btn#settings-btn { left: auto; } /* Ensure settings btn stays right */
               .feedback-popup { font-size: 1.8rem; padding: 20px 30px;}
               .instructions { padding: 15px;}
               .instructions p { font-size: 0.9rem;}
@@ -369,6 +372,15 @@
 </head>
 <body>
     <div class="game-container">
+        <!-- START: NEW BUTTONS -->
+        <a href="/" id="back-to-games-btn" class="icon-btn" aria-label="Back to Games List" title="Back to Games List" style="display: none;">
+            <i class="fas fa-th-home"></i>
+        </a>
+        <button id="back-to-menu-btn" class="icon-btn" aria-label="Back to Main Menu" title="Back to Main Menu" style="display: none;">
+            <i class="fas fa-home"></i>
+        </button>
+        <!-- END: NEW BUTTONS -->
+
         <img id="corner-logo-static" class="brand-logo" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="position: absolute; top: 20px; left: 20px; max-height: 40px; opacity: 0.7; display: none;">
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
@@ -519,8 +531,8 @@
                 { name: "Team 2", score: 0 }
             ],
             currentPassword: "",
-            // winningScore: 5, // Moved to gameConfig
             roundNumber: 0,
+            usedPasswords: [], // NEW: To track used passwords
         };
 
         // DOM elements
@@ -552,6 +564,10 @@
         const storeButtonWrapperEl = document.getElementById("store-button-wrapper"); // From 5SF
         let treatYourselfElement = null; // From 5SF
         const visitStoreBtn = document.getElementById("visit-store-btn");
+        
+        // NEW: Navigation buttons
+        const backToGamesBtn = document.getElementById("back-to-games-btn");
+        const backToMenuBtn = document.getElementById("back-to-menu-btn");
         
 
         // Audio and Settings Elements (from 5SF)
@@ -588,6 +604,7 @@
         team2GuessBtn.addEventListener("click", () => { playSound(interactionSoundAudioEl); handleGuess(1); });
         mainMenuBtn.addEventListener("click", () => { playSound(interactionSoundAudioEl); goToMainMenu(); });
         visitStoreBtn.addEventListener("click", () => { playSound(interactionSoundAudioEl); visitStore(); });
+        backToMenuBtn.addEventListener("click", () => { playSound(interactionSoundAudioEl); goToMainMenu(); }); // NEW
 
 
         // --- Settings Modal Logic (from 5SF) ---
@@ -622,7 +639,12 @@
         function switchScreen(screenId) {
             Object.values(screens).forEach(screen => screen.classList.remove('active-screen', 'active'));
             screens[screenId].classList.add('active-screen', 'active');
-            cornerLogoEl.style.display = (screenId !== 'start') ? 'block' : 'none'; // From 5SF
+
+            // NEW: Control visibility of top-left buttons and corner logo
+            backToGamesBtn.style.display = (screenId === 'start') ? 'flex' : 'none';
+            backToMenuBtn.style.display = (screenId === 'game') ? 'flex' : 'none';
+            cornerLogoEl.style.display = (screenId !== 'start' && screenId !== 'game') ? 'block' : 'none'; // Show on team/win screens
+
              if (treatYourselfElement) { // From 5SF
                 treatYourselfElement.style.display = (screenId === 'win') ? 'flex' : 'none';
             }
@@ -651,6 +673,7 @@
             gameState.teams[0].score = 0;
             gameState.teams[1].score = 0;
             gameState.roundNumber = 0;
+            gameState.usedPasswords = []; // NEW: Reset used passwords for new game
             
             startNewRound();
             switchScreen("game");
@@ -658,7 +681,18 @@
 
         function startNewRound() {
             gameState.roundNumber++;
-            gameState.currentPassword = passwords[Math.floor(Math.random() * passwords.length)];
+            
+            // NEW: Logic to select a unique password
+            let availablePasswords = passwords.filter(p => !gameState.usedPasswords.includes(p));
+            if (availablePasswords.length === 0) {
+                console.warn("All passwords have been used! Resetting list.");
+                gameState.usedPasswords = [];
+                availablePasswords = passwords;
+            }
+            const randomIndex = Math.floor(Math.random() * availablePasswords.length);
+            gameState.currentPassword = availablePasswords[randomIndex];
+            gameState.usedPasswords.push(gameState.currentPassword);
+            // END: New password logic
 
             passwordDisplayEl.innerHTML = `${gameState.currentPassword} <span>(Captains only! Don't let team see!)</span>`;
             

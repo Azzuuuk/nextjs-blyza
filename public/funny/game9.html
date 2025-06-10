@@ -158,7 +158,7 @@
             border-color: var(--primary);
             box-shadow: 0 0 20px rgba(255,136,51,0.3), 0 0 10px var(--gold),
                         inset 0 0 10px rgba(255,136,51,0.1);
-            transform: scale(1.05); background: rgba(var(--primary-rgb,255,136,51),0.1);
+            transform: scale(1.05); background: rgba(255,136,51,0.1);
         }
         .team-name { /* Team name on card */
             font-family: "Bungee", cursive; font-weight: normal; font-size: 1.4rem;
@@ -249,7 +249,7 @@
         /* Time Up Animation Pop-up - Styled like Feedback Pop-up */
         .time-up-popup {
             position: fixed; top: 50%; left: 50%;
-            background-color: rgba(var(--danger-rgb, 255,75,43), 0.97); /* Use danger color */
+            background-color: rgba(255,75,43, 0.97); /* Use danger color */
             color: white; padding: 30px 50px; border-radius: 20px; font-size: 2.8rem;
             font-family: "Luckiest Guy", cursive; text-align: center; z-index: 2000;
             box-shadow: 0 15px 40px rgba(0,0,0,0.7);
@@ -257,35 +257,85 @@
             /* Animation directly on class, similar to feedback popup */
             border: 3px solid var(--gold); /* Gold border for consistency */
             animation: timeUpPopAnim 1.5s forwards; /* Specific animation */
+            display: none; /* Start hidden */
         }
         @keyframes timeUpPopAnim{
             0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}
             20%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
             80%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
-            100%{opacity:0;transform:translate(-50%,-50%) scale(.7); display: none;} /* Hide at end */
+            100%{opacity:0;transform:translate(-50%,-50%) scale(.7)}
         }
 
 
-        /* Settings Icon, Modal, Confetti - GTP Style */
-        .icon-btn { position:absolute; background:rgba(0,0,0,0.3); color:var(--light); border:1px solid var(--gold); border-radius:50%; width:40px; height:40px; font-size:1.1rem; cursor:pointer; transition:all .3s ease; display:flex; justify-content:center; align-items:center; z-index:100; padding:0; margin:0; box-shadow:none; text-shadow:none; }
-        .icon-btn#settings-btn { top:15px; right:15px; }
-        .icon-btn:hover { background:rgba(0,0,0,0.5); transform:scale(1.1) rotate(15deg); box-shadow:0 0 10px var(--gold); }
-        .icon-btn i { margin:0; }
-        .modal { position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(8px); display:none; justify-content:center; align-items:center; }
-        .modal-content { background-color:var(--darker); margin:auto; padding:30px; border:2px solid var(--gold); border-radius:15px; width:80%; max-width:450px; box-shadow:0 10px 30px rgba(0,0,0,0.6),0 0 20px var(--primary); position:relative; color:var(--light); }
-        .modal-content h2 { font-family:"Bungee",cursive; color:var(--primary); text-align:center; margin-bottom:25px; font-size:1.8rem; }
-        .setting-item { margin-bottom:20px; display:flex; flex-direction:column; }
-        .setting-item label { margin-bottom:8px; font-weight:600; font-size:0.9rem;}
-        input[type=range] { -webkit-appearance:none; width:100%; background:transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; height:20px; width:20px; border-radius:50%; background:var(--primary); cursor:pointer; margin-top:-7px; box-shadow:0 0 8px var(--primary); }
-        input[type=range]::-moz-range-thumb { height:20px; width:20px; border-radius:50%; background:var(--primary); cursor:pointer; border:none; box-shadow:0 0 8px var(--primary); }
-        input[type=range]::-webkit-slider-runnable-track { width:100%; height:6px; cursor:pointer; background:rgba(255,255,255,0.2); border-radius:3px; border:1px solid rgba(0,0,0,0.2); }
-        input[type=range]::-moz-range-track { width:100%; height:6px; cursor:pointer; background:rgba(255,255,255,0.2); border-radius:3px; border:1px solid rgba(0,0,0,0.2); }
-        .close-modal-btn { color:#aaa; position:absolute; top:15px; right:20px; font-size:28px; font-weight:bold; cursor:pointer; }
-        .close-modal-btn:hover, .close-modal-btn:focus { color:var(--light); text-decoration:none; }
+        /* Icon Buttons (Home, Back, Settings) */
+       .icon-btn {
+            position: absolute;
+            background: rgba(0,0,0, 0.3); color: var(--light);
+            border: 1px solid var(--gold); border-radius: 50%;
+            width: 40px; height: 40px; font-size: 1.1rem;
+            cursor: pointer; transition: all 0.3s ease;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 100; padding: 0; margin: 0;
+            box-shadow: none; text-shadow: none;
+            text-decoration: none; /* For <a> tags */
+        }
+        .icon-btn#settings-btn { top: 15px; right: 15px; display : flex; }
+        .icon-btn#home-menu-btn { top: 15px; left: 15px; display: flex; }
+        .icon-btn#back-btn { top: 15px; left: 15px; display: flex; }
+        .icon-btn:hover {
+            background: rgba(0,0,0, 0.5); transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 0 10px var(--gold);
+        }
+        .icon-btn#back-btn:hover { transform: scale(1.1) rotate(-5deg); }
+        .icon-btn i { margin: 0; }
+
+        /* Modal Styles - GTP Style */
+         .modal {
+            position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; overflow: auto;
+            background-color: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: var(--darker); margin: auto; padding: 30px;
+            border: 2px solid var(--gold); border-radius: 15px;
+            width: 80%; max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px var(--primary);
+            position: relative; color: var(--light);
+        }
+        .modal-content h2 {
+            font-family: "Bungee", cursive; color: var(--primary);
+            text-align: center; margin-bottom: 25px; font-size: 1.8rem;
+        }
+        .setting-item { margin-bottom: 20px; display: flex; flex-direction: column; }
+        .setting-item label { margin-bottom: 8px; font-weight: 600; font-size: 0.9rem;}
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+          -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
+          background: var(--primary); cursor: pointer; margin-top: -7px;
+          box-shadow: 0 0 8px var(--primary);
+        }
+        input[type=range]::-moz-range-thumb {
+          height: 20px; width: 20px; border-radius: 50%; background: var(--primary);
+          cursor: pointer; border: none; box-shadow: 0 0 8px var(--primary);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+          width: 100%; height: 6px; cursor: pointer; background: rgba(255,255,255,0.2);
+          border-radius: 3px; border: 1px solid rgba(0,0,0,0.2);
+        }
+        input[type=range]::-moz-range-track {
+          width: 100%; height: 6px; cursor: pointer; background: rgba(255,255,255,0.2);
+          border-radius: 3px; border: 1px solid rgba(0,0,0,0.2);
+        }
+        .close-modal-btn {
+            color: #aaa; position: absolute; top: 15px; right: 20px;
+            font-size: 28px; font-weight: bold; cursor: pointer;
+        }
+        .close-modal-btn:hover, .close-modal-btn:focus { color: var(--light); text-decoration: none; }
+        
+        /* Confetti Styles */
         .confetti-piece { position:fixed; width:10px; height:20px; background-color:var(--primary); opacity:0; animation-timing-function:linear; animation-fill-mode:forwards; pointer-events:none; z-index:3000; }
         @keyframes fallAndFade { 0%{transform:translateY(-20vh) rotate(0deg); opacity:1;} 100%{transform:translateY(120vh) rotate(720deg); opacity:0;} }
-
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -305,6 +355,8 @@
             .game-over-buttons-container .game-over-button-wrapper { width: 90%; margin: 5px auto;}
             .game-over-buttons-container .game-over-button-wrapper button { width: 100%;}
             .time-up-popup { font-size: 2.2rem; padding: 25px 40px; width: 80%;}
+            .icon-btn { top: 10px; right: 10px; width: 38px; height: 38px; font-size: 1rem; }
+            .icon-btn#home-menu-btn, .icon-btn#back-btn { top: 10px; left: 10px; }
         }
          @media (max-width: 480px) {
               h1 { font-size: 2rem; }
@@ -314,15 +366,19 @@
               .question-display-area { font-size: 1.3em; }
               .timer-display-area { font-size: 3.5em; }
               button { width: 85%; margin: 8px auto; padding: 12px 18px;}
-              .result-buttons-container button { width: 45%; } /* Allow side-by-side for result buttons */
-              .icon-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1rem; }
+              .result-buttons-container button { width: 45%; }
               .time-up-popup { font-size: 1.8rem; padding: 20px 30px;}
          }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <img id="corner-logo-static" class="brand-logo" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="position: absolute; top: 20px; left: 20px; max-height: 40px; opacity: 0.7; display: none;">
+        <a href="/" id="home-menu-btn" class="icon-btn" aria-label="Back to Games List">
+            <i class="fas fa-home"></i>
+        </a>
+        <button id="back-btn" class="icon-btn" aria-label="Go Back" style="display: none;">
+            <i class="fas fa-arrow-left"></i>
+        </button>
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
         </button>
@@ -334,7 +390,7 @@
             <div class="instructions">
                 <p><strong>HOW TO PLAY:</strong></p>
                 <p>Teams take turns. One player gets a "Name 3..." question. Press 'Start Timer' to reveal the question and begin the 5-second countdown!</p>
-                <p>If they name 3 correct items before time runs out, click <strong style="color: var(--success)">PASS (+1)</strong> for their team. If they fail, click <strong style="color: var(--danger)">FAIL (+1 Other Team)</strong>. First team to 5 points wins!</p>
+                <p>If they name 3 correct items before time runs out, click <strong>PASS (+1)</strong> for their team. If they fail, click <strong>FAIL (+1 Other Team)</strong>. First team to 5 points wins!</p>
             </div>
             <button id="setup-teams-btn" class="btn-primary">Start Setup <i class="fas fa-users"></i></button>
         </div>
@@ -398,7 +454,6 @@
                      <button id="main-menu-nav-btn" class="btn-secondary"><i class="fas fa-home"></i> Main Menu</button>
                 </div>
                 <div class="game-over-button-wrapper" id="store-button-wrapper">
-                     <!-- "Treat Yourself" callout will be inserted here by JS -->
                      <button id="visit-store-btn" class="btn-info"><i class="fas fa-store"></i> Visit Store</button>
                 </div>
             </div>
@@ -424,43 +479,25 @@
     <!-- Time Up Pop-up -->
     <div id="time-up-popup-element" class="time-up-popup" style="display:none;">TIME UP!</div>
 
-
-    <!-- Audio elements -->
     <audio id="background-game-music" loop src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3"></audio>
     <audio id="start-game-sound" src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3"></audio>
     <audio id="interaction-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
     <audio id="timer-start-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
-    <audio id="timer-tick-sound" loop src=""></audio> <!-- Keep if you find a good tick sound -->
+    <audio id="timer-tick-sound" loop src=""></audio>
     <audio id="timer-up-sound" src="https://static.wixstatic.com/mp3/9ce3e5_16ac679126354f7db8a0f93c9f4fa7a1.wav"></audio>
     <audio id="pass-sound" src="https://static.wixstatic.com/mp3/9ce3e5_76691a6fefcd4536aa403ada111e886a.mp3"></audio>
     <audio id="fail-sound" src="https://static.wixstatic.com/mp3/9ce3e5_277f814439064d1bbe5c0342241b23e4.mp3"></audio>
     <audio id="confetti-sound" src="https://static.wixstatic.com/mp3/9ce3e5_5d7fcfc389734cf7994f5d37de621e3d.mp3"></audio>
 
     <script>
-        const gameConfig = {
-            sfxEnabled: true,
-            musicVolume: 0.2,
-            winningScore: 5,
-            timerDuration: 5,
-        };
-
-        const gameState = {
-            team1: { name: "Team 1", score: 0 },
-            team2: { name: "Team 2", score: 0 },
-            currentQuestion: "",
-            questionTextToReveal: "",
-            currentTeam: 1,
-            timerInterval: null,
-            timeLeft: gameConfig.timerDuration,
-        };
-
-        const categories = [
-            "friends that are not funny", "people you wouldn't trust", "objects you can swallow", "things you can't do in a church", "things men have that women don't", "people you can knock out", "types of diseases", "people you find unattractive", "people you find attractive", "presidents", "capital cities", "countries in Europe", "countries in Asia", "of your favourite websites", "types of milk", "different crimes", "items in your bathroom", "ethnicities", "halloween cosplays", "things that you rub", "things smaller than your nose", "F1 teams", "currencies", "different Apple products", "sports without a ball", "Airlines", "different phobias", "mario characters", "female celebrities", "male celebrities", "designer brands", "types of trees", "animated characters", "football teams", "brands of water", "brands of chocolates", "types of cheese", "things you can't live without", "south american countries", "different seas", "periodic elements", "characters from the show Friends", "animals you could beat up", "flavours of milkshake", "types of pasta", "members of one direction", "mobile games", "different planets", "states in the USA", "things that are yellow", "female musicians", "male musicians", "types of milk", "types of seasoning", "band instruments", "things that are purple", "things that are soft", "types of fish", "types of haircuts", "types of coffee drinks", "monuments", "pre downloaded phone apps", "types of jewellery", "different languages", "things you wear under your clothes", "things in a cinema", "things you do before sleeping", "animals sounds", "things that green", "things you wouldn't want to find in your house"
-        ];
-
-        // DOM elements
+        const gameConfig = { sfxEnabled: true, musicVolume: 0.2, winningScore: 5, timerDuration: 5 };
+        const gameState = { team1: { name: "Team 1", score: 0 }, team2: { name: "Team 2", score: 0 }, currentQuestion: "", questionTextToReveal: "", currentTeam: 1, timerInterval: null, timeLeft: gameConfig.timerDuration, usedQuestions: [] };
+        const categories = [ "friends that are not funny", "people you wouldn't trust", "objects you can swallow", "things you can't do in a church", "things men have that women don't", "people you can knock out", "types of diseases", "people you find unattractive", "people you find attractive", "presidents", "capital cities", "countries in Europe", "countries in Asia", "of your favourite websites", "types of milk", "different crimes", "items in your bathroom", "ethnicities", "halloween cosplays", "things that you rub", "things smaller than your nose", "F1 teams", "currencies", "different Apple products", "sports without a ball", "Airlines", "different phobias", "mario characters", "female celebrities", "male celebrities", "designer brands", "types of trees", "animated characters", "football teams", "brands of water", "brands of chocolates", "types of cheese", "things you can't live without", "south american countries", "different seas", "periodic elements", "characters from the show Friends", "animals you could beat up", "flavours of milkshake", "types of pasta", "members of one direction", "mobile games", "different planets", "states in the USA", "things that are yellow", "female musicians", "male musicians", "types of milk", "types of seasoning", "band instruments", "things that are purple", "things that are soft", "types of fish", "types of haircuts", "types of coffee drinks", "monuments", "pre downloaded phone apps", "types of jewellery", "different languages", "things you wear under your clothes", "things in a cinema", "things you do before sleeping", "animals sounds", "things that green", "things you wouldn't want to find in your house" ];
+        
         const screens = { start: document.getElementById("start-screen"), teamSetup: document.getElementById("team-setup-screen"), game: document.getElementById("game-screen"), win: document.getElementById("win-screen") };
-        const cornerLogoEl = document.getElementById('corner-logo-static');
+        const homeMenuBtnEl = document.getElementById('home-menu-btn');
+        const backBtnEl = document.getElementById('back-btn');
+        const settingsBtnEl = document.getElementById('settings-btn');
         const setupTeamsBtnEl = document.getElementById("setup-teams-btn");
         const team1NameInputEl = document.getElementById("team1-name-input");
         const team2NameInputEl = document.getElementById("team2-name-input");
@@ -484,7 +521,6 @@
         const team2CardDisplayEl = document.getElementById("team2-card-display");
         const winMessageContentEl = document.getElementById("win-message-content");
         const timeUpPopupElement = document.getElementById("time-up-popup-element");
-        const settingsBtnEl = document.getElementById('settings-btn');
         const settingsModalEl = document.getElementById('settings-modal');
         const closeModalBtnEl = document.getElementById('close-modal-btn');
         const bgmVolumeSliderEl = document.getElementById('bgm-volume-slider');
@@ -499,18 +535,35 @@
         const failSoundAudioEl = document.getElementById('fail-sound');
         const confettiSoundAudioEl = document.getElementById('confetti-sound');
 
-        // --- Sound Functions ---
         function playSound(audioElement) { if (gameConfig.sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.volume = 0.7; audioElement.play().catch(e => console.error("SFX error:", e));}}
         function playSoundWithCallback(audioElement, callback, ...args) { if (gameConfig.sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.volume = 0.7; let cbEx = false; const exCb = () => { if (!cbEx) { cbEx = true; audioElement.removeEventListener('ended', exCb); if(typeof soundTimeoutId!=='undefined' && soundTimeoutId) clearTimeout(soundTimeoutId); if(callback) callback(...args); }}; audioElement.addEventListener('ended', exCb); const sDur = (audioElement.duration&&isFinite(audioElement.duration))?audioElement.duration*1000:500; const soundTimeoutId=setTimeout(exCb,sDur+200); audioElement.play().catch(e=>{console.error("SFX error:",e);exCb();});} else {if(callback)callback(...args);}}
         function initBackgroundMusic() { backgroundMusicAudioEl.volume = gameConfig.musicVolume; backgroundMusicAudioEl.play().catch(e => console.log("BGM autoplay failed.", e)); }
 
-        // --- Event listeners ---
+        function switchScreen(screenId) {
+            Object.values(screens).forEach(screen => screen.classList.remove('active-screen', 'active'));
+            screens[screenId].classList.add('active-screen', 'active');
+            
+            const isStartScreen = screenId === 'start';
+            homeMenuBtnEl.style.display = isStartScreen ? 'flex' : 'none';
+            backBtnEl.style.display = isStartScreen ? 'none' : 'flex';
+            if (screenId === 'win') {
+                backBtnEl.style.display = 'none';
+            }
+            if (treatYourselfElement) {
+                treatYourselfElement.style.display = (screenId === 'win') ? 'flex' : 'none';
+            }
+        }
+
+        function goToMainMenu() {
+            if (treatYourselfElement) treatYourselfElement.style.display = 'none';
+            if (backgroundMusicAudioEl.paused) initBackgroundMusic();
+            switchScreen('start');
+        }
+
         setupTeamsBtnEl.addEventListener("click", () => { playSound(interactionSoundAudioEl); switchScreen('teamSetup'); });
-        beginGameBtnEl.addEventListener("click", () => {
-            if(backgroundMusicAudioEl.paused) initBackgroundMusic();
-            playSoundWithCallback(startGameSoundAudioEl, startGame);
-        });
-        startTimerRevealBtnEl.addEventListener("click", handleStartTimer); // Removed playSound here, it's in handleStartTimer
+        backBtnEl.addEventListener("click", () => { playSound(interactionSoundAudioEl); goToMainMenu(); });
+        beginGameBtnEl.addEventListener("click", () => { if(backgroundMusicAudioEl.paused) initBackgroundMusic(); playSoundWithCallback(startGameSoundAudioEl, startGame); });
+        startTimerRevealBtnEl.addEventListener("click", handleStartTimer);
         passResultBtnEl.addEventListener("click", () => { playSound(passSoundAudioEl); handleResult(true); });
         failResultBtnEl.addEventListener("click", () => { playSound(failSoundAudioEl); handleResult(false); });
         playAgainGameBtnEl.addEventListener("click", () => { playSoundWithCallback(startGameSoundAudioEl, resetGame); });
@@ -521,38 +574,23 @@
         closeModalBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; });
         window.addEventListener('click', (event) => { if (event.target === settingsModalEl) { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; } });
         bgmVolumeSliderEl.addEventListener('input', (e) => { gameConfig.musicVolume = parseFloat(e.target.value); backgroundMusicAudioEl.volume = gameConfig.musicVolume; });
-        sfxToggleBtnEl.addEventListener('click', () => {
-            playSound(interactionSoundAudioEl);
-            gameConfig.sfxEnabled = !gameConfig.sfxEnabled;
-            sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
-            sfxToggleBtnEl.classList.toggle('btn-success', gameConfig.sfxEnabled);
-            sfxToggleBtnEl.classList.toggle('btn-danger', !gameConfig.sfxEnabled);
-        });
-
-        // --- Functions ---
-        function switchScreen(screenId) {
-            Object.values(screens).forEach(screen => screen.classList.remove('active-screen', 'active'));
-            screens[screenId].classList.add('active-screen', 'active');
-            cornerLogoEl.style.display = (screenId !== 'start') ? 'block' : 'none';
-             if (treatYourselfElement) {
-                treatYourselfElement.style.display = (screenId === 'win') ? 'flex' : 'none';
-            }
-        }
-        function goToMainMenu() { if (treatYourselfElement) treatYourselfElement.style.display = 'none'; if(backgroundMusicAudioEl.paused) initBackgroundMusic(); switchScreen('start'); }
+        sfxToggleBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); gameConfig.sfxEnabled = !gameConfig.sfxEnabled; sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; sfxToggleBtnEl.classList.toggle('btn-success', gameConfig.sfxEnabled); sfxToggleBtnEl.classList.toggle('btn-danger', !gameConfig.sfxEnabled); });
 
         function startGame() {
             gameState.team1.name = team1NameInputEl.value.trim() || "Team 1";
             gameState.team2.name = team2NameInputEl.value.trim() || "Team 2";
-             if (gameState.team1.name.length > 15 || gameState.team2.name.length > 15) {
-                alert("Team names too long (max 15 chars)!"); return;
-            }
-            if (gameState.team1.name === gameState.team2.name && gameState.team1.name !== "Team 1" && gameState.team1.name !== "") {
-                alert("Team names must be different if customized!"); return;
-            }
+            if (gameState.team1.name.length > 15 || gameState.team2.name.length > 15) { alert("Team names too long (max 15 chars)!"); return; }
+            if (gameState.team1.name === gameState.team2.name) { alert("Team names must be different!"); return; }
+            resetGame();
+        }
+
+        function resetGame() {
             gameState.team1.score = 0; gameState.team2.score = 0;
             gameState.currentTeam = 1; gameState.timeLeft = gameConfig.timerDuration;
+            gameState.usedQuestions = []; // Reset used questions for a new game
             updateTeamDisplays();
             prepareTurn();
+            if (treatYourselfElement) treatYourselfElement.style.display = 'none';
             switchScreen('game');
         }
 
@@ -566,12 +604,19 @@
         }
 
         function prepareTurn() {
-            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+            let availableCategories = categories.filter(cat => !gameState.usedQuestions.includes(cat));
+            if (availableCategories.length === 0) { // All questions used, reset the pool
+                gameState.usedQuestions = [];
+                availableCategories = [...categories];
+            }
+            const randomCategory = availableCategories[Math.floor(Math.random() * availableCategories.length)];
+            gameState.usedQuestions.push(randomCategory); // Mark as used for this session
+            
             gameState.questionTextToReveal = `Name 3 ${randomCategory}...`;
-            questionDisplayTextEl.innerHTML = `<span class="question-hidden-text">Press Start Timer...</span>`; // Use span for styling
+            questionDisplayTextEl.innerHTML = `<span class="question-hidden-text">Press Start Timer...</span>`;
             gameState.timeLeft = gameConfig.timerDuration;
             timerDisplayTextEl.textContent = gameState.timeLeft;
-            timerDisplayTextEl.style.color = 'var(--light)'; // Reset timer color
+            timerDisplayTextEl.style.color = 'var(--light)';
             startTimerRevealBtnEl.style.display = "inline-flex";
             startTimerRevealBtnEl.disabled = false;
             resultButtonsDivEl.style.display = "none";
@@ -580,14 +625,13 @@
         }
 
         function handleStartTimer() {
-            if (gameState.timerInterval) return; // Prevent multiple starts
-            playSound(timerStartSoundAudioEl); // Play sound when timer actually starts
+            if (gameState.timerInterval) return;
+            playSound(timerStartSoundAudioEl);
             startTimerRevealBtnEl.style.display = "none";
-            questionDisplayTextEl.textContent = gameState.questionTextToReveal; // Reveal question
+            questionDisplayTextEl.textContent = gameState.questionTextToReveal;
             gameState.timeLeft = gameConfig.timerDuration;
             timerDisplayTextEl.textContent = gameState.timeLeft;
-            timerDisplayTextEl.style.color = 'var(--danger)'; // Timer color to danger
-            // if (timerTickSoundAudioEl.src) timerTickSoundAudioEl.play();
+            timerDisplayTextEl.style.color = 'var(--danger)';
             gameState.timerInterval = setInterval(updateTimer, 1000);
         }
 
@@ -598,7 +642,6 @@
                 clearInterval(gameState.timerInterval);
                 gameState.timerInterval = null;
                 timerDisplayTextEl.textContent = 0;
-                // if (timerTickSoundAudioEl.src) timerTickSoundAudioEl.pause();
                 playSound(timerUpSoundAudioEl);
                 showTimeUpAnimation();
                 resultButtonsDivEl.style.display = "flex";
@@ -608,25 +651,22 @@
 
         function showTimeUpAnimation() {
             timeUpPopupElement.style.display = "block";
-            // The animation will handle hiding it via keyframes
-            // setTimeout(() => { timeUpPopupElement.style.display = "none"; }, 1500); // Kept old for reference if anim fails
+            timeUpPopupElement.style.animation = 'none';
+            timeUpPopupElement.offsetHeight; /* trigger reflow */
+            timeUpPopupElement.style.animation = null; 
+            timeUpPopupElement.style.animation = 'timeUpPopAnim 1.5s forwards';
         }
 
         function handleResult(passed) {
              clearInterval(gameState.timerInterval);
              gameState.timerInterval = null;
-             // if (timerTickSoundAudioEl.src) timerTickSoundAudioEl.pause();
              resultButtonsDivEl.style.display = "none";
-
             if (passed) {
-                if (gameState.currentTeam === 1) gameState.team1.score++;
-                else gameState.team2.score++;
+                if (gameState.currentTeam === 1) gameState.team1.score++; else gameState.team2.score++;
             } else {
-                if (gameState.currentTeam === 1) gameState.team2.score++;
-                else gameState.team1.score++;
+                if (gameState.currentTeam === 1) gameState.team2.score++; else gameState.team1.score++;
             }
             updateTeamDisplays();
-
             if (gameState.team1.score >= gameConfig.winningScore || gameState.team2.score >= gameConfig.winningScore) {
                 showWinScreen();
             } else {
@@ -637,7 +677,6 @@
         }
 
         function showWinScreen() {
-            playSound(confettiSoundAudioEl);
             const winner = gameState.team1.score >= gameConfig.winningScore ? gameState.team1.name : gameState.team2.name;
             winMessageContentEl.textContent = `${winner} Wins!`;
              if (!treatYourselfElement) {
@@ -646,33 +685,9 @@
                 treatYourselfElement.innerHTML = `<span>Treat Yourself!</span> <i class="fas fa-arrow-down"></i>`;
                 storeButtonWrapperEl.insertBefore(treatYourselfElement, visitStoreBtnEl);
             }
-            switchScreen('win'); // This will now also handle treatYourself display
+            switchScreen('win');
             triggerConfetti();
-        }
-         function triggerConfetti() {
-            const confettiCount = 100;
-            const colors = ['var(--primary)', 'var(--secondary)', 'var(--success)', 'var(--gold)', 'var(--info)'];
-            for (let i = 0; i < confettiCount; i++) {
-                const piece = document.createElement('div');
-                piece.classList.add('confetti-piece');
-                piece.style.left = Math.random() * 100 + 'vw';
-                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                const animDur = Math.random() * 3 + 2;
-                piece.style.animationName = 'fallAndFade';
-                piece.style.animationDuration = animDur + 's';
-                piece.style.animationDelay = Math.random() * 1 + 's';
-                document.body.appendChild(piece);
-                setTimeout(() => piece.remove(), (animDur + parseFloat(piece.style.animationDelay || 0)) * 1000 + 500);
-            }
-        }
-
-        function resetGame() {
-            // Names are already in inputs or gameState, just go to team setup to confirm/start
-            // team1NameInputEl.value = gameState.team1.name; // Not needed if going to team setup directly
-            // team2NameInputEl.value = gameState.team2.name;
-            if (treatYourselfElement) treatYourselfElement.style.display = 'none';
-            if(backgroundMusicAudioEl.paused) initBackgroundMusic();
-            switchScreen('teamSetup');
+            playSound(confettiSoundAudioEl);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -680,7 +695,6 @@
             sfxToggleBtnEl.classList.toggle('btn-success',gameConfig.sfxEnabled);
             sfxToggleBtnEl.classList.toggle('btn-danger',!gameConfig.sfxEnabled);
             bgmVolumeSliderEl.value = gameConfig.musicVolume;
-            initBackgroundMusic();
             switchScreen('start');
         });
     </script>

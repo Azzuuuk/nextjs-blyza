@@ -29,6 +29,10 @@
             padding: 0;
         }
 
+        html {
+            overflow-x: hidden;
+        }
+
         body {
             font-family: 'Quicksand', sans-serif;
             background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
@@ -37,7 +41,7 @@
             padding: 20px;
             line-height: 1.6;
             position: relative;
-            overflow-x: hidden;
+        
         }
 
         body::before {
@@ -389,6 +393,7 @@
     </div>
 
     <div class="games-grid">
+        <!-- All your game-card divs go here... -->
         <!-- Guess The Price -->
         <div class="game-card" data-category="Social & Deception">
             <span class="category-tag">Social & Deception</span>
@@ -682,6 +687,22 @@
             });
         });
     });
+
+    // START: Added code to make cards clickable
+    // --- Make entire game card clickable ---
+    gameCards.forEach(card => {
+        card.addEventListener('click', (event) => {
+            // Find the actual link element within the card
+            const link = card.querySelector('.game-title a');
+
+            // If a link exists, programmatically click it.
+            // This reuses the 'handleLinkWithSound' function perfectly.
+            if (link) {
+                link.click();
+            }
+        });
+    });
+    // END: Added code to make cards clickable
 
     // --- Game Links Sound & Navigation ---
     const gameLinks = document.querySelectorAll('.game-card .game-title a');

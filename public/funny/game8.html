@@ -223,46 +223,29 @@
         }
         .choice-btn { /* Inherits general button styling */
             flex: 1; max-width: 300px; /* Control max width */
-            /* Specific overrides if needed, but mostly uses main button style */
         }
         .choice-btn i { margin-right: 10px; font-size: 1.3em; }
-        /* .selected, .correct, .incorrect states handled by general button/:disabled styles + JS class toggling */
-        .choice-btn.selected { /* Specific selected visual if different from hover */
+        .choice-btn.selected {
             box-shadow: 0 0 20px var(--primary), 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2);
-            transform: translateY(-3px) scale(1.08) !important; /* More emphasis */
+            transform: translateY(-3px) scale(1.08) !important;
         }
 
         /* Results Screen Styling */
-                /* Results Screen Styling */
         .result-display-area {
-            /* background: rgba(255,255,255,0.05); */ /* Original, keeping for reference */
-            background: var(--dark); /* Match GTP stage style for revealed content */
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 25px;
-            border: 3px solid var(--gold); /* Match GTP stage style */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,0,0,0.3); /* Match GTP stage */
-            display: flex; /* Added for centering */
-            flex-direction: column; /* Stack image and text */
-            align-items: center; /* Center horizontally */
-            justify-content: center; /* Center vertically if there's extra space */
-            min-height: 350px; /* Ensure enough space for the image */
+            background: var(--dark);
+            padding: 25px; border-radius: 20px; margin-bottom: 25px;
+            border: 3px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 350px;
         }
-        #result-image-content { /* Ensure the image itself behaves for centering */
-            max-height: 300px; /* Control max height within the area */
-            max-width: 95%;   /* Prevent overflow if image is very wide */
-            object-fit: contain;
-            border-radius: 12px;
-            margin-bottom: 15px; /* Space between image and text below it */
-            display: block; /* Already block, good for layout */
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            border: 2px solid rgba(255,255,255,0.2);
+        #result-image-content {
+            max-height: 300px; max-width: 95%; object-fit: contain;
+            border-radius: 12px; margin-bottom: 15px; display: block;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.2);
         }
-        #inline-answer-feedback {
-            margin-top: 15px;
-            text-align: center; /* Ensure text below image is centered */
-        }
-        .inline-answer-text { font-size: 1.6rem; font-weight: bold; margin-bottom: 5px; font-family: "Bungee", cursive;} /* Adjusted margin */
+        #inline-answer-feedback { margin-top: 15px; text-align: center; }
+        .inline-answer-text { font-size: 1.6rem; font-weight: bold; margin-bottom: 5px; font-family: "Bungee", cursive;}
         .inline-feedback-text { font-size: 1.2rem; font-weight: 600; }
         .answer-siblings-text { color: var(--success); }
         .answer-dating-text { color: var(--danger); }
@@ -355,19 +338,32 @@
         .btn-secondary:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--secondary); }
         .btn-info { background: linear-gradient(135deg, var(--info) 0%, #3eb7af 100%); }
         .btn-info:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--info); }
-        /* Apply danger to dating button specifically if needed, or use btn-danger class */
         #dating-btn.choice-btn { background: linear-gradient(135deg, var(--danger) 0%, #ff416c 100%); }
         #dating-btn.choice-btn:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--danger); }
         #siblings-btn.choice-btn { background: linear-gradient(135deg, var(--success) 0%, #00a890 100%);}
         #siblings-btn.choice-btn:hover:not(:disabled) {box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--success); }
 
 
-
-        /* Settings Icon Button, Modal, Feedback Pop-up, Confetti - GTP Style */
-        .icon-btn { position: absolute; background: rgba(0,0,0,0.3); color: var(--light); border: 1px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; z-index: 100; padding:0; margin:0; box-shadow:none; text-shadow:none;}
+        /* Icon Buttons (Home, Back, Settings) */
+        .icon-btn {
+            position: absolute; background: rgba(0,0,0,0.3); color: var(--light);
+            border: 1px solid var(--gold); border-radius: 50%; width: 40px; height: 40px;
+            font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease;
+            display: flex; justify-content: center; align-items: center; z-index: 100;
+            padding: 0; margin: 0; box-shadow: none; text-shadow: none;
+            text-decoration: none; /* For <a> tags */
+        }
         .icon-btn#settings-btn { top: 15px; right: 15px; }
-        .icon-btn:hover { background: rgba(0,0,0,0.5); transform: scale(1.1) rotate(15deg); box-shadow: 0 0 10px var(--gold); }
+        .icon-btn#home-menu-btn { top: 15px; left: 15px; display: flex; }
+        .icon-btn#back-btn { top: 15px; left: 15px; display: none; }
+        .icon-btn:hover {
+            background: rgba(0,0,0,0.5); transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 0 10px var(--gold);
+        }
+        .icon-btn#back-btn:hover { transform: scale(1.1) rotate(-5deg); }
         .icon-btn i { margin: 0; }
+        
+        /* Modal Styles - GTP Style */
         .modal { position: fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(8px); display:none; justify-content:center; align-items:center; }
         .modal-content { background-color:var(--darker); margin:auto; padding:30px; border:2px solid var(--gold); border-radius:15px; width:80%; max-width:450px; box-shadow:0 10px 30px rgba(0,0,0,0.6),0 0 20px var(--primary); position:relative; color:var(--light); }
         .modal-content h2 { font-family:"Bungee",cursive; color:var(--primary); text-align:center; margin-bottom:25px; font-size:1.8rem; }
@@ -380,11 +376,15 @@
         input[type=range]::-moz-range-track { width:100%; height:6px; cursor:pointer; background:rgba(255,255,255,0.2); border-radius:3px; border:1px solid rgba(0,0,0,0.2); }
         .close-modal-btn { color:#aaa; position:absolute; top:15px; right:20px; font-size:28px; font-weight:bold; cursor:pointer; }
         .close-modal-btn:hover, .close-modal-btn:focus { color:var(--light); text-decoration:none; }
+        
+        /* Feedback Pop-up - GTP Style */
         .feedback-popup { position:fixed; top:50%; left:50%; background-color:rgba(15,16,18,0.97); color:white; padding:30px 50px; border-radius:20px; font-size:2.8rem; font-family:"Luckiest Guy",cursive; text-align:center; z-index:2000; box-shadow:0 15px 40px rgba(0,0,0,0.7); opacity:0; transform:translate(-50%,-50%) scale(0.7); transition:opacity .3s ease-in-out,transform .3s ease-in-out; pointer-events:none; border:3px solid var(--gold); display:none; }
         .feedback-popup.show { opacity:1; transform:translate(-50%,-50%) scale(1); pointer-events:auto; display:block; }
         .feedback-popup.correct { color:var(--success); border-color:var(--success); text-shadow:0 0 15px var(--success); }
         .feedback-popup.incorrect { color:var(--danger); border-color:var(--danger); text-shadow:0 0 15px var(--danger); }
         .feedback-popup.info { color:var(--info); border-color:var(--info); text-shadow:0 0 15px var(--info); }
+        
+        /* Confetti Styles */
         .confetti-piece { position:fixed; width:10px; height:20px; background-color:var(--primary); opacity:0; animation-timing-function:linear; animation-fill-mode:forwards; pointer-events:none; z-index:3000; }
         @keyframes fallAndFade { 0%{transform:translateY(-20vh) rotate(0deg); opacity:1;} 100%{transform:translateY(120vh) rotate(720deg); opacity:0;} }
 
@@ -398,7 +398,7 @@
             .choice-buttons-container { flex-direction: column; align-items: center; gap: 12px; }
             .choice-btn { width: 90%; max-width: 350px; font-size: 1.1rem; padding: 12px 18px; }
             .game-info { flex-direction: column; gap: 8px; font-size: 1rem; padding: 12px; }
-            .score-card-item, .score-display-container .score-card-item { max-width: 90%; }
+            .score-card-item { max-width: 90%; }
             .win-message-text { font-size: 2.2rem; }
             .winner-trophy-icon { font-size: 5rem; }
             .feedback-popup { font-size: 2rem; padding: 25px 35px; width: 90%;}
@@ -407,15 +407,16 @@
             .game-over-buttons-container .game-over-button-wrapper { width: 90%; margin: 5px auto;}
             .game-over-buttons-container .game-over-button-wrapper button { width: 100%;}
             .media-stage-container::before, .media-stage-container::after { display: none; }
+            .icon-btn { top: 10px; right: 10px; width: 38px; height: 38px; font-size: 1rem; }
+            .icon-btn#home-menu-btn, .icon-btn#back-btn { top: 10px; left: 10px; }
         }
         @media (max-width: 480px) {
-            h1 { font-size: 2rem; }
+            h1 { font-size: 1.8rem; }
             .instructions li { font-size: 0.9rem; }
             button { padding: 12px 20px; font-size: 0.9rem; }
             .media-stage-container { padding: 15px; }
             .tv-screen-wrapper { border-width: 5px; padding: 5px; min-height: 250px;}
             .media-content-image { max-height: 230px; }
-            .icon-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1rem; }
             .team-input-wrapper input { padding: 12px 15px; font-size: 1rem;}
             .remove-team-btn { padding: 7px 10px !important; font-size: 0.8rem !important;}
         }
@@ -423,7 +424,12 @@
 </head>
 <body>
     <div class="game-container">
-        <img id="corner-logo-static" class="brand-logo" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="position: absolute; top: 20px; left: 20px; max-height: 40px; opacity: 0.7; display: none;">
+        <a href="/" id="home-menu-btn" class="icon-btn" aria-label="Back to Games List">
+            <i class="fas fa-home"></i>
+        </a>
+        <button id="back-btn" class="icon-btn" aria-label="Go Back" style="display: none;">
+            <i class="fas fa-arrow-left"></i>
+        </button>
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
         </button>
@@ -497,17 +503,15 @@
         <!-- Results Screen -->
         <div id="results-screen" class="screen">
             <h1>Round Result</h1>
-            <div class="result-display-area"> <!-- Can reuse stage styling if image is primary focus -->
-                 <img id="result-image-content" src="" alt="Result photo" class="media-content-image" style="display: block; opacity:1;"> <!-- Make sure it's visible -->
+            <div class="result-display-area">
+                 <img id="result-image-content" src="" alt="Result photo" class="media-content-image" style="display: block; opacity:1;">
                 <div id="inline-answer-feedback" style="margin-top:15px;">
                     <p class="inline-answer-text" id="actual-answer-text"></p>
                     <p class="inline-feedback-text" id="player-guess-feedback-text"></p>
                 </div>
             </div>
             <div id="score-display-container-results" class="score-display-container"></div>
-            <div id="detailed-feedback-area-multiplayer" style="margin-top: 15px; text-align:left; font-size: 1.1rem; line-height:1.7;">
-                <!-- Multiplayer individual results here -->
-            </div>
+            <div id="detailed-feedback-area-multiplayer" style="margin-top: 15px; text-align:left; font-size: 1.1rem; line-height:1.7;"></div>
             <button id="next-round-btn" class="btn-primary">Next Round <i class="fas fa-arrow-right"></i></button>
         </div>
 
@@ -527,7 +531,6 @@
                      <button id="main-menu-btn" class="btn-secondary"><i class="fas fa-home"></i> Main Menu</button>
                 </div>
                 <div class="game-over-button-wrapper" id="store-button-wrapper">
-                    <!-- "Treat Yourself" callout will be inserted here by JS -->
                     <button id="visit-store-btn" class="btn-info"><i class="fas fa-store"></i> Visit Store</button>
                 </div>
             </div>
@@ -551,11 +554,10 @@
     </div>
 
     <!-- Feedback Pop-up -->
-    <div id="feedback-popup" class="feedback-popup"> <!-- display:none handled by .show -->
+    <div id="feedback-popup" class="feedback-popup">
         <span id="feedback-message-text-el"></span>
     </div>
 
-    <!-- Audio elements -->
     <audio id="background-game-music" loop src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3"></audio>
     <audio id="start-game-sound" src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3"></audio>
     <audio id="interaction-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
@@ -565,86 +567,34 @@
     <audio id="confetti-sound" src="https://static.wixstatic.com/mp3/9ce3e5_5d7fcfc389734cf7994f5d37de621e3d.mp3"></audio>
 
     <script>
-        const gameConfig = {
-            totalRounds: 5,
-            sfxEnabled: true,
-            musicVolume: 0.2,
-            minTeams: 2,
-            maxTeams: 4
-        };
-
-        const gameState = {
-            gameMode: 'single',
-            players: [],
-            scores: {},
-            currentRound: 0,
-            currentPlayerIndexInRound: 0,
-            roundPlayerChoices: {},
-            singlePlayerChoice: null,
-            currentMedia: null,
-            mediaItems: [ /* Ensure your media items are here */
-                 { url: "https://static.wixstatic.com/media/9ce3e5_2a4bf1da960443c9b30108c5fb6db7db~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_4ff037154c604c6e8302e195b3aa2346~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_338937bc52754c6cba2ab324ad24f66a~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_ee1311e3f2c649c5bb92a8cc33a2cdc6~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_18a5fdf7fd534413bd83bd0311676ce0~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_d5f4aacfa0c747c1a9d6e5b23c3dbaa7~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_6d273f451e46464fb8c199101eb1cd5e~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_5d5191182b064159a8f7d4fc971f828b~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_cdbcb9884c664be8bb5b41447dec31fe~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_493688d1afe749019ca019a7053bdcd2~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_7d66e4a893e24874982d6229a05b41f3~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_39e3debd6a424f7ca2545707a4601ae4~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_570a72fd7392406db23a982f5a30f1cf~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_6b40aceaf91344438e0732c587a6ec5a~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_f875d76e6ba84544ac383938cc20af32~mv2.jpg", description: "??", isDating: true },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_fd1dab053f0c4fb6a1f8b7ef1997a2b0~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_9b631479f9bd4bbbb1bd43f1dc44eeb2~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_70ce3be7d82340fba5be9415f1fd9252~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_8ccaec12c1724f159b30a543a249668c~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_a66add3ba32a464abe2500589cb0a000~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_e836809728a44c35853d5c0d3e65cef2~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_a760321c0463461bae00abf096d334e9~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_2199e9755c144209a775f6d39a6d54d7~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_5f0d3e0a61f3447d916bde690dd016dc~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_a750f1c249264c208358458dbf75497e~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_f278a6277e68453b85e22ed79ddee9d8~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_76096dcd416344cab64edc8a0896267d~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_c9e389ac5ad640d89f4126804eaf33b0~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_585c7fbd66ff48c5a0427b9388201f80~mv2.jpg", description: "??", isDating: false },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_d8b26a6fcf3b4676aa583aa5b268ddaf~mv2.jpg", description: "??", isDating: false },
-            ],
-            usedItems: []
-        };
-
-        // DOM elements
+        const gameConfig = { totalRounds: 5, sfxEnabled: true, musicVolume: 0.2, minTeams: 2, maxTeams: 4 };
+        const gameState = { gameMode: 'single', players: [], scores: {}, currentRound: 0, currentPlayerIndexInRound: 0, roundPlayerChoices: {}, singlePlayerChoice: null, currentMedia: null, mediaItems: [ { url: "https://static.wixstatic.com/media/9ce3e5_2a4bf1da960443c9b30108c5fb6db7db~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_4ff037154c604c6e8302e195b3aa2346~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_338937bc52754c6cba2ab324ad24f66a~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_ee1311e3f2c649c5bb92a8cc33a2cdc6~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_18a5fdf7fd534413bd83bd0311676ce0~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_d5f4aacfa0c747c1a9d6e5b23c3dbaa7~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_6d273f451e46464fb8c199101eb1cd5e~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_5d5191182b064159a8f7d4fc971f828b~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_cdbcb9884c664be8bb5b41447dec31fe~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_493688d1afe749019ca019a7053bdcd2~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_7d66e4a893e24874982d6229a05b41f3~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_39e3debd6a424f7ca2545707a4601ae4~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_570a72fd7392406db23a982f5a30f1cf~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_6b40aceaf91344438e0732c587a6ec5a~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_f875d76e6ba84544ac383938cc20af32~mv2.jpg", description: "??", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_fd1dab053f0c4fb6a1f8b7ef1997a2b0~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_9b631479f9bd4bbbb1bd43f1dc44eeb2~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_70ce3be7d82340fba5be9415f1fd9252~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_8ccaec12c1724f159b30a543a249668c~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_a66add3ba32a464abe2500589cb0a000~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_e836809728a44c35853d5c0d3e65cef2~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_a760321c0463461bae00abf096d334e9~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_2199e9755c144209a775f6d39a6d54d7~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_5f0d3e0a61f3447d916bde690dd016dc~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_a750f1c249264c208358458dbf75497e~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_f278a6277e68453b85e22ed79ddee9d8~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_76096dcd416344cab64edc8a0896267d~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_c9e389ac5ad640d89f4126804eaf33b0~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_585c7fbd66ff48c5a0427b9388201f80~mv2.jpg", description: "??", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_d8b26a6fcf3b4676aa583aa5b268ddaf~mv2.jpg", description: "??", isDating: false }, ], usedItems: [] };
+        
         const screens = { start: document.getElementById('start-screen'), game: document.getElementById('game-screen'), results: document.getElementById('results-screen'), gameOver: document.getElementById('game-over-screen')};
-        const cornerLogoEl = document.getElementById('corner-logo-static');
+        const homeMenuBtnEl = document.getElementById('home-menu-btn');
+        const backBtnEl = document.getElementById('back-btn');
+        const settingsBtnEl = document.getElementById('settings-btn');
         const modeOptionsEl = document.querySelectorAll('.mode-option');
         const teamInputsContainerEl = document.getElementById('team-inputs-container');
         const teamNamesListEl = document.getElementById('team-names-list');
         const addTeamBtnEl = document.getElementById('add-team-btn');
         const startGameBtnEl = document.getElementById('start-game-btn');
-
         const roundInfoTextEl = document.getElementById('round-info-text');
         const scoreInfoTextEl = document.getElementById('score-info-text');
         const turnIndicatorEl = document.getElementById('turn-indicator');
         const roundNumberTextEl = document.getElementById('round-number-text');
         const currentScoreTextEl = document.getElementById('current-score-text');
-
         const mediaCurtainLeftEl = document.getElementById('media-curtain-left');
         const mediaCurtainRightEl = document.getElementById('media-curtain-right');
         const mediaImageContentEl = document.getElementById('media-image-content');
         const siblingsBtnEl = document.getElementById('siblings-btn');
         const datingBtnEl = document.getElementById('dating-btn');
-
         const resultImageContentEl = document.getElementById('result-image-content');
         const actualAnswerTextEl = document.getElementById('actual-answer-text');
         const playerGuessFeedbackTextEl = document.getElementById('player-guess-feedback-text');
         const scoreDisplayContainerResultsEl = document.getElementById('score-display-container-results');
         const detailedFeedbackAreaMultiplayerEl = document.getElementById('detailed-feedback-area-multiplayer');
         const nextRoundBtnEl = document.getElementById('next-round-btn');
-
         const finalWinMessageTextEl = document.getElementById('final-win-message-text');
         const finalMessageDetailsEl = document.getElementById('final-message-details');
         const finalScoresDisplayAreaEl = document.getElementById('final-scores-display-area');
@@ -653,13 +603,10 @@
         const playAgainBtnEl = document.getElementById('play-again-btn');
         const mainMenuBtnEl = document.getElementById('main-menu-btn');
         const visitStoreBtnEl = document.getElementById('visit-store-btn');
-
-        const settingsBtnEl = document.getElementById('settings-btn');
         const settingsModalEl = document.getElementById('settings-modal');
         const closeModalBtnEl = document.getElementById('close-modal-btn');
         const bgmVolumeSliderEl = document.getElementById('bgm-volume-slider');
         const sfxToggleBtnEl = document.getElementById('sfx-toggle-btn');
-
         const backgroundMusicAudioEl = document.getElementById('background-game-music');
         const startGameSoundAudioEl = document.getElementById('start-game-sound');
         const interactionSoundAudioEl = document.getElementById('interaction-sound');
@@ -667,46 +614,48 @@
         const wrongAnswerSoundAudioEl = document.getElementById('wrong-answer-sound');
         const curtainSoundAudioEl = document.getElementById('curtain-sound');
         const confettiSoundAudioEl = document.getElementById('confetti-sound');
-
         const feedbackPopupEl = document.getElementById('feedback-popup');
         const feedbackMessageTextPopupEl = document.getElementById('feedback-message-text-el');
         let feedbackTimeoutId;
 
-        // --- Sound & UI Functions ---
         function playSound(audioElement) { if (gameConfig.sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.volume = 0.7; audioElement.play().catch(e => console.error("SFX error:", e));}}
         function playSoundWithCallback(audioElement, callback, ...args) { if (gameConfig.sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.volume = 0.7; let cbEx = false; const exCb = () => { if (!cbEx) { cbEx = true; audioElement.removeEventListener('ended', exCb); if(typeof soundTimeoutId!=='undefined' && soundTimeoutId) clearTimeout(soundTimeoutId); if(callback) callback(...args); }}; audioElement.addEventListener('ended', exCb); const sDur = (audioElement.duration&&isFinite(audioElement.duration))?audioElement.duration*1000:500; const soundTimeoutId=setTimeout(exCb,sDur+200); audioElement.play().catch(e=>{console.error("SFX error:",e);exCb();});} else {if(callback)callback(...args);}}
         function initBackgroundMusic() { backgroundMusicAudioEl.volume = gameConfig.musicVolume; backgroundMusicAudioEl.play().catch(e => console.log("BGM autoplay failed.", e)); }
         function showFeedbackMessage(message, type = 'info', duration = 2500) { feedbackMessageTextPopupEl.textContent = message; feedbackPopupEl.className = 'feedback-popup'; if (type) feedbackPopupEl.classList.add(type); feedbackPopupEl.classList.add('show'); clearTimeout(feedbackTimeoutId); feedbackTimeoutId = setTimeout(() => { feedbackPopupEl.classList.remove('show'); }, duration); }
         function triggerConfetti() { playSound(confettiSoundAudioEl); const confCount = 100; const clrs = ['var(--primary)','var(--secondary)','var(--success)','var(--gold)','var(--info)']; for (let i=0; i<confCount; i++) { const piece=document.createElement('div'); piece.classList.add('confetti-piece'); piece.style.left=Math.random()*100+'vw'; piece.style.backgroundColor=clrs[Math.floor(Math.random()*clrs.length)]; const animDur=Math.random()*3+2; piece.style.animationName='fallAndFade'; piece.style.animationDuration=animDur+'s'; piece.style.animationDelay=Math.random()*1+'s'; document.body.appendChild(piece); setTimeout(()=>piece.remove(),(animDur+parseFloat(piece.style.animationDelay||0))*1000+500);}}
-        function switchScreen(screenId) { Object.values(screens).forEach(s=>s.classList.remove('active')); screens[screenId].classList.add('active'); cornerLogoEl.style.display = (screenId !== 'start') ? 'block' : 'none'; if (treatYourselfElement) { treatYourselfElement.style.display = (screenId === 'gameOver') ? 'flex' : 'none';}}
+        
+        function switchScreen(screenId) {
+            Object.values(screens).forEach(s=>s.classList.remove('active'));
+            screens[screenId].classList.add('active');
+            
+            const isStartScreen = screenId === 'start';
+            homeMenuBtnEl.style.display = isStartScreen ? 'flex' : 'none';
+            backBtnEl.style.display = isStartScreen ? 'none' : 'flex';
 
-        function openMediaCurtains() {
-            mediaCurtainLeftEl.classList.add('open');
-            mediaCurtainRightEl.classList.add('open');
-            mediaImageContentEl.classList.add('visible');
-            playSound(curtainSoundAudioEl);
-        }
-        function closeMediaCurtains() {
-            mediaCurtainLeftEl.classList.remove('open');
-            mediaCurtainRightEl.classList.remove('open');
-            mediaImageContentEl.classList.remove('visible');
-            mediaImageContentEl.src = ""; // Clear src to prevent flicker
+            if (screenId === 'gameOver') {
+                backBtnEl.style.display = 'none';
+            }
+             if (treatYourselfElement) {
+                treatYourselfElement.style.display = (screenId === 'gameOver') ? 'flex' : 'none';
+            }
         }
 
-        // --- Settings ---
+        function openMediaCurtains() { mediaCurtainLeftEl.classList.add('open'); mediaCurtainRightEl.classList.add('open'); mediaImageContentEl.classList.add('visible'); playSound(curtainSoundAudioEl); }
+        function closeMediaCurtains() { mediaCurtainLeftEl.classList.remove('open'); mediaCurtainRightEl.classList.remove('open'); mediaImageContentEl.classList.remove('visible'); mediaImageContentEl.src = ""; }
+
+        backBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); mainMenu(); });
         settingsBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'flex'; });
         closeModalBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; });
         window.addEventListener('click', (e) => { if (e.target === settingsModalEl) { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; } });
         bgmVolumeSliderEl.addEventListener('input', (e) => { gameConfig.musicVolume = parseFloat(e.target.value); backgroundMusicAudioEl.volume = gameConfig.musicVolume; });
         sfxToggleBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); gameConfig.sfxEnabled = !gameConfig.sfxEnabled; sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled?'ON':'OFF'}`; sfxToggleBtnEl.classList.toggle('btn-success',gameConfig.sfxEnabled); sfxToggleBtnEl.classList.toggle('btn-danger',!gameConfig.sfxEnabled); });
-
-        // --- Start & Team Setup ---
+        
         modeOptionsEl.forEach(opt => { opt.addEventListener('click', function(){ playSound(interactionSoundAudioEl); modeOptionsEl.forEach(o=>o.classList.remove('selected')); this.classList.add('selected'); gameState.gameMode=this.dataset.mode; teamInputsContainerEl.style.display = gameState.gameMode==='multi'?'block':'none'; if(gameState.gameMode==='multi')updateTeamAddRemoveButtons();});});
         addTeamBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); const teamCount = teamNamesListEl.querySelectorAll('.team-input-wrapper').length; if (teamCount < gameConfig.maxTeams) { const wr = document.createElement('div'); wr.className='team-input-wrapper'; wr.innerHTML=`<input type="text" class="team-name-input" placeholder="Team ${teamCount+1}"><button class="remove-team-btn btn-danger"><i class="fas fa-times"></i></button>`; wr.querySelector('.remove-team-btn').onclick = function(){ playSound(interactionSoundAudioEl); this.parentElement.remove(); updateTeamAddRemoveButtons(); }; teamNamesListEl.appendChild(wr); updateTeamAddRemoveButtons(); } else { showFeedbackMessage(`Max ${gameConfig.maxTeams} teams.`, 'info');}});
         function updateTeamAddRemoveButtons() { const trs = teamNamesListEl.querySelectorAll('.team-input-wrapper'); const tc = trs.length; addTeamBtnEl.disabled = tc>=gameConfig.maxTeams; trs.forEach(tr => { const rb = tr.querySelector('.remove-team-btn'); if(rb)rb.disabled=tc<=gameConfig.minTeams; });}
-        startGameBtnEl.addEventListener('click', () => { if(backgroundMusicAudioEl.paused)initBackgroundMusic(); playSoundWithCallback(startGameSoundAudioEl, startGame);});
+        
+        startGameBtnEl.addEventListener('click', () => { if(backgroundMusicAudioEl.paused)initBackgroundMusic(); playSoundWithCallback(startGameSoundAudioEl, startGame); });
 
-        // --- Game Flow ---
         function startGame() {
             gameState.currentRound = 0; gameState.usedItems = []; gameState.scores = {};
             if (gameState.gameMode === 'single') { gameState.players = ['You']; }
@@ -718,17 +667,14 @@
 
         function setupRound() {
             closeMediaCurtains();
-            gameState.currentRound++;
-            gameState.singlePlayerChoice = null; gameState.roundPlayerChoices = {}; gameState.currentPlayerIndexInRound = 0;
+            gameState.currentRound++; gameState.singlePlayerChoice = null; gameState.roundPlayerChoices = {}; gameState.currentPlayerIndexInRound = 0;
             let availItems = gameState.mediaItems.filter(item => !gameState.usedItems.includes(item.url));
             if (availItems.length === 0) { gameState.usedItems = []; availItems = [...gameState.mediaItems]; }
             gameState.currentMedia = availItems[Math.floor(Math.random() * availItems.length)];
             gameState.usedItems.push(gameState.currentMedia.url);
-
             roundNumberTextEl.textContent = gameState.currentRound;
             if (gameState.gameMode === 'single') { scoreInfoTextEl.style.display = 'block'; currentScoreTextEl.textContent = gameState.scores['You']; turnIndicatorEl.style.display = 'none'; }
             else { scoreInfoTextEl.style.display = 'none'; turnIndicatorEl.style.display = 'block'; updateTurnIndicator(); }
-
             mediaImageContentEl.src = gameState.currentMedia.url;
             [siblingsBtnEl, datingBtnEl].forEach(btn => { btn.classList.remove('selected'); btn.disabled = false; });
             switchScreen('game');
@@ -743,45 +689,21 @@
         function makeChoice(choice) {
             playSound(interactionSoundAudioEl);
             const currentPlayerName = gameState.gameMode === 'multi' ? gameState.players[gameState.currentPlayerIndexInRound] : 'You';
+            [siblingsBtnEl, datingBtnEl].forEach(btn => btn.classList.remove('selected'));
             const targetButton = choice === 'siblings' ? siblingsBtnEl : datingBtnEl;
-
-            // Deselect if already selected by this player
-            if (targetButton.classList.contains('selected') && (gameState.gameMode === 'single' || targetButton.dataset.playerOwner === currentPlayerName)) {
-                targetButton.classList.remove('selected');
-                if (gameState.gameMode === 'single') gameState.singlePlayerChoice = null;
-                else delete gameState.roundPlayerChoices[currentPlayerName];
-                return; // Allow deselection and re-selection
-            }
-
-            // Clear previous selections for this player if any
-            [siblingsBtnEl, datingBtnEl].forEach(btn => {
-                if (btn.dataset.playerOwner === currentPlayerName) { // Only clear this player's previous selection
-                    btn.classList.remove('selected');
-                    delete btn.dataset.playerOwner;
-                }
-            });
-
             targetButton.classList.add('selected');
-            if (gameState.gameMode === 'multi') targetButton.dataset.playerOwner = currentPlayerName;
-
-
             if (gameState.gameMode === 'single') {
                 gameState.singlePlayerChoice = choice;
-                [siblingsBtnEl, datingBtnEl].forEach(btn => btn.disabled = true); // Disable both after selection
-                setTimeout(() => processAndShowResults(), 700); // Short delay then process
-            } else { // Multiplayer
+                [siblingsBtnEl, datingBtnEl].forEach(btn => btn.disabled = true);
+                setTimeout(() => processAndShowResults(), 700);
+            } else {
                 gameState.roundPlayerChoices[currentPlayerName] = choice;
                 showFeedbackMessage(`${currentPlayerName} chose ${choice}.`, 'info', 1500);
-
                 if (gameState.currentPlayerIndexInRound < gameState.players.length - 1) {
                     gameState.currentPlayerIndexInRound++;
                     updateTurnIndicator();
-                    [siblingsBtnEl, datingBtnEl].forEach(btn => {
-                        btn.classList.remove('selected'); // Clear selection for next player
-                        btn.disabled = false; // Re-enable for next player
-                        delete btn.dataset.playerOwner;
-                    });
-                } else { // All players in multiplayer round have chosen
+                    [siblingsBtnEl, datingBtnEl].forEach(btn => btn.classList.remove('selected'));
+                } else {
                     [siblingsBtnEl, datingBtnEl].forEach(btn => btn.disabled = true);
                     setTimeout(() => processAndShowResults(), 700);
                 }
@@ -794,7 +716,6 @@
             resultImageContentEl.src = gameState.currentMedia.url;
             const actualRelationship = gameState.currentMedia.isDating ? "dating" : "siblings";
             let mainFeedbackMsg = ""; let mainFeedbackType = "info";
-
             actualAnswerTextEl.className = actualRelationship === "siblings" ? "inline-answer-text answer-siblings-text" : "inline-answer-text answer-dating-text";
             actualAnswerTextEl.innerHTML = `<i class="fas ${actualRelationship === 'siblings' ? 'fa-users' : 'fa-heart'}"></i> They are ${actualRelationship === "siblings" ? "Siblings" : "Dating"}!`;
 
@@ -806,13 +727,9 @@
                 playerGuessFeedbackTextEl.className = isCorrect ? "inline-feedback-text feedback-correct-text" : "inline-feedback-text feedback-incorrect-text";
             } else {
                 const correctPlayersThisRound = [];
-                detailedFeedbackAreaMultiplayerEl.innerHTML = '<h4>Individual Guesses:</h4>';
                 gameState.players.forEach(player => {
-                    const playerChoice = gameState.roundPlayerChoices[player];
-                    if (playerChoice === undefined) { detailedFeedbackAreaMultiplayerEl.innerHTML += `<p><strong>${player}:</strong> No guess submitted.</p>`; return; }
-                    const isCorrect = playerChoice === actualRelationship;
-                    if (isCorrect) { gameState.scores[player]++; correctPlayersThisRound.push(player); }
-                     detailedFeedbackAreaMultiplayerEl.innerHTML += `<p><strong>${player}</strong> guessed: ${playerChoice} (${isCorrect ? '<span style="color:var(--success);">Correct!</span>' : '<span style="color:var(--danger);">Incorrect.</span>'})</p>`;
+                    const choice = gameState.roundPlayerChoices[player];
+                    if (choice === actualRelationship) { gameState.scores[player]++; correctPlayersThisRound.push(player); }
                 });
                 if (correctPlayersThisRound.length === gameState.players.length) { mainFeedbackMsg = "Everyone got it right!"; mainFeedbackType = "correct"; playSound(correctAnswerSoundAudioEl); }
                 else if (correctPlayersThisRound.length > 0) { mainFeedbackMsg = `${correctPlayersThisRound.join(', ')} got it right!`; mainFeedbackType = "correct"; playSound(correctAnswerSoundAudioEl); }
@@ -827,17 +744,24 @@
 
         function updateScoreDisplayOnResults() {
             scoreDisplayContainerResultsEl.innerHTML = '';
+            detailedFeedbackAreaMultiplayerEl.innerHTML = '';
             if (gameState.gameMode === 'single') {
                 const scCard = document.createElement('div'); scCard.className = 'score-card-item';
                 const prog = (gameState.scores['You'] / gameConfig.totalRounds) * 100;
                 scCard.innerHTML = `<h4>Your Current Score</h4><div class="score-value-text">${gameState.scores['You']}/${gameConfig.totalRounds}</div><div class="progress-bar-element"><div class="progress-fill-element" style="width:${prog}%"></div></div>`;
                 scoreDisplayContainerResultsEl.appendChild(scCard);
             } else {
+                detailedFeedbackAreaMultiplayerEl.innerHTML = '<h4>Individual Guesses:</h4>';
                 gameState.players.forEach(p => {
                     const scCard = document.createElement('div'); scCard.className = 'score-card-item';
                     const score = gameState.scores[p]; const prog = (score / gameConfig.totalRounds) * 100;
                     scCard.innerHTML = `<h4>${p}</h4><div class="score-value-text">${score}</div><div class="progress-bar-element"><div class="progress-fill-element" style="width:${prog}%"></div></div>`;
                     scoreDisplayContainerResultsEl.appendChild(scCard);
+                    const choice = gameState.roundPlayerChoices[p];
+                    if (choice !== undefined && choice !== null) {
+                        const isCorrect = choice === (gameState.currentMedia.isDating ? "dating" : "siblings");
+                        detailedFeedbackAreaMultiplayerEl.innerHTML += `<p><strong>${p}</strong> guessed: ${choice} (${isCorrect ? '<span style="color:var(--success);">Correct!</span>' : '<span style="color:var(--danger);">Incorrect.</span>'})</p>`;
+                    } else { detailedFeedbackAreaMultiplayerEl.innerHTML += `<p><strong>${p}</strong> did not guess.</p>`; }
                 });
             }
         }
@@ -845,7 +769,7 @@
         nextRoundBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); if (gameState.currentRound >= gameConfig.totalRounds) { showGameOver(); } else { setupRound(); }});
 
         function showGameOver() {
-             triggerConfetti();
+            triggerConfetti();
             finalScoresDisplayAreaEl.innerHTML = '';
             if (gameState.gameMode === 'single') {
                 const score = gameState.scores['You'];
@@ -856,31 +780,37 @@
                 finalScoresDisplayAreaEl.appendChild(fsc);
             } else {
                 let highScore = -1; Object.values(gameState.scores).forEach(s=>{if(Number(s)>highScore)highScore=Number(s);});
-                const winners = gameState.players.filter(p=>(Number(gameState.scores[p])||0)===highScore && highScore>=0); // Winners must have score >= 0
-                if(winners.length===1 && highScore > 0){finalWinMessageTextEl.textContent=`${winners[0]} Wins!`;} // Only declare winner if score > 0
+                const winners = gameState.players.filter(p=>(Number(gameState.scores[p])||0)===highScore && highScore>=0);
+                if(winners.length===1 && highScore > 0){finalWinMessageTextEl.textContent=`${winners[0]} Wins!`;}
                 else if(winners.length>1 && highScore > 0){finalWinMessageTextEl.textContent="It's a Tie!";}
-                else{finalWinMessageTextEl.textContent="Game Over!";} // If all scores 0 or less
+                else{finalWinMessageTextEl.textContent="Game Over!";}
                 finalMessageDetailsEl.textContent="Final scores below.";
-                gameState.players.forEach(p=>{const sc=document.createElement('div');sc.className=`score-card-item ${winners.includes(p) && highScore > 0 ?'winner-glow':''}`;sc.innerHTML=`<h4>${p}</h4><div class="score-value-text">${gameState.scores[p]}</div>`;finalScoresDisplayAreaEl.appendChild(sc);});
+                gameState.players.sort((a,b)=>(gameState.scores[b]||0)-(gameState.scores[a]||0)).forEach(p=>{const sc=document.createElement('div');sc.className=`score-card-item ${winners.includes(p) && highScore > 0 ?'winner-glow':''}`;sc.innerHTML=`<h4>${p}</h4><div class="score-value-text">${gameState.scores[p]}</div>`;finalScoresDisplayAreaEl.appendChild(sc);});
             }
-             if (!treatYourselfElement) {
-                treatYourselfElement = document.createElement('div');
-                treatYourselfElement.className = 'treat-yourself-callout';
-                treatYourselfElement.innerHTML = `<span>Treat Yourself!</span> <i class="fas fa-arrow-down"></i>`;
-                storeButtonWrapperEl.insertBefore(treatYourselfElement, visitStoreBtnEl);
-            }
+            if (!treatYourselfElement) { treatYourselfElement = document.createElement('div'); treatYourselfElement.className = 'treat-yourself-callout'; treatYourselfElement.innerHTML = `<span>Treat Yourself!</span> <i class="fas fa-arrow-down"></i>`; storeButtonWrapperEl.insertBefore(treatYourselfElement, visitStoreBtnEl); }
             switchScreen('gameOver');
         }
 
         playAgainBtnEl.addEventListener('click', () => { playSoundWithCallback(startGameSoundAudioEl, startGame);});
-        mainMenuBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); teamNamesListEl.innerHTML = `<div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 1"><button class="remove-team-btn btn-danger" disabled><i class="fas fa-times"></i></button></div><div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 2"><button class="remove-team-btn btn-danger" disabled><i class="fas fa-times"></i></button></div>`; updateTeamAddRemoveButtons(); if(modeOptionsEl.length>0)modeOptionsEl[0].click(); if (treatYourselfElement) treatYourselfElement.style.display = 'none'; if(backgroundMusicAudioEl.paused) initBackgroundMusic(); switchScreen('start');});
+        mainMenuBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); mainMenu(); });
         visitStoreBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); window.location.href = '/store'; });
 
+        function mainMenu() {
+            teamNamesListEl.innerHTML = `<div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 1"><button class="remove-team-btn btn-danger" disabled><i class="fas fa-times"></i></button></div><div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 2"><button class="remove-team-btn btn-danger" disabled><i class="fas fa-times"></i></button></div>`;
+            updateTeamAddRemoveButtons();
+            if(modeOptionsEl.length>0)modeOptionsEl[0].click();
+            if (treatYourselfElement) treatYourselfElement.style.display = 'none';
+            if(backgroundMusicAudioEl.paused) initBackgroundMusic();
+            switchScreen('start');
+        }
+        
         document.addEventListener('DOMContentLoaded', () => {
             sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
             sfxToggleBtnEl.classList.toggle('btn-success',gameConfig.sfxEnabled); sfxToggleBtnEl.classList.toggle('btn-danger',!gameConfig.sfxEnabled);
-            bgmVolumeSliderEl.value = gameConfig.musicVolume; initBackgroundMusic();
-            if(modeOptionsEl.length>0)modeOptionsEl[0].click(); updateTeamAddRemoveButtons(); switchScreen('start');
+            bgmVolumeSliderEl.value = gameConfig.musicVolume;
+            if(modeOptionsEl.length>0)modeOptionsEl[0].click();
+            updateTeamAddRemoveButtons();
+            switchScreen('start');
         });
     </script>
     <script>

@@ -1,8 +1,11 @@
+// pages/store.js
+
 import { useEffect, useState, useRef } from 'react';
 import Head from 'next/head';
 import { auth } from '/firebaseconfig'; 
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useRouter } from 'next/router';
+import { Analytics } from '@vercel/analytics/react'; // Import Vercel Analytics
 
 // Product data with added logoUrl
 const products = [
@@ -284,6 +287,7 @@ export default function StorePage() {
           ))}
         </div>
       </div>
+      <Analytics /> {/* Vercel Analytics component for the store page */}
     </>
   );
 }

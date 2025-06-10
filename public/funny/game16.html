@@ -364,7 +364,7 @@
             color: rgba(242,242,242,0.8); margin-bottom: 20px;
         }
 
-        button {
+        button, a.icon-btn {
             background: linear-gradient(135deg, var(--primary) 0%, #ff7711 100%);
             color: var(--light); border: 2px solid var(--darker); padding: 15px 25px;
             font-size: 1rem; border-radius: 50px; cursor: pointer;
@@ -373,13 +373,14 @@
             margin: 10px 5px; font-family: "Bungee", cursive; text-shadow: 1px 1px 2px #000;
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             min-width: 180px; flex-shrink: 0;
+            text-decoration: none;
         }
-        button:hover:not(:disabled) {
+        button:hover:not(:disabled), a.icon-btn:hover:not(:disabled) {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--primary);
             background: linear-gradient(135deg, #ff7711 0%, var(--primary) 100%);
         }
-        button:active:not(:disabled) { transform: translateY(-1px) scale(1.02); }
+        button:active:not(:disabled), a.icon-btn:active:not(:disabled) { transform: translateY(-1px) scale(1.02); }
         button:disabled {
             background: rgba(255,255,255,0.1); cursor:not-allowed; opacity:0.6;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2); transform:none; border-color: rgba(0,0,0,0.5);
@@ -401,8 +402,11 @@
         @keyframes bounceArrow { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
 
 
-        .icon-btn { position:absolute; background:rgba(0,0,0,0.3); color:var(--light); border:1px solid var(--gold); border-radius:50%; width:40px; height:40px; font-size:1.1rem; cursor:pointer; transition:all .3s ease; display:flex; justify-content:center; align-items:center; z-index:100; padding:0; margin:0; box-shadow:none; text-shadow:none; }
+        .icon-btn { position: absolute; background: rgba(0,0,0,0.3); color: var(--light); border: 1px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; z-index: 100; padding:0; margin:0; box-shadow:none; text-shadow:none;}
         .icon-btn#settings-btn { top:15px; right:15px; }
+        /* NEW */
+        .icon-btn#back-to-games-btn, .icon-btn#back-to-menu-btn { top:15px; left:15px; }
+
         .icon-btn:hover { background:rgba(0,0,0,0.5); transform:scale(1.1) rotate(15deg); box-shadow:0 0 10px var(--gold); }
         .icon-btn i { margin:0; }
         .modal { position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(8px); display:none; justify-content:center; align-items:center; }
@@ -449,14 +453,14 @@
             .options-container { grid-template-areas: "opt1" "opt2" "opt3"; grid-template-columns: 1fr; }
             .option-btn:nth-child(3) { justify-self: stretch; width: 100%; max-width: none; }
             .option-btn { font-size: 0.9rem; padding: 12px 18px;}
-            .score-display { flex-direction: column; align-items: center; gap: 15px; }
+            .score-display { grid-template-columns: 1fr; }
             .score-card { min-width: 80%; max-width: 90%; }
             .win-message { font-size: 2.2rem; }
             .winner-trophy { font-size: 5rem; }
             .modal-content { padding: 20px; }
             .game-over-buttons-container { flex-direction: column; align-items: center;}
             .game-over-buttons-container .game-over-button-wrapper { width: 90%; margin: 5px auto;}
-            .game-over-buttons-container .game-over-button-wrapper button { width: 100%;}
+            .game-over-buttons-container .game-over-button-wrapper button, .game-over-buttons-container .game-over-button-wrapper a.icon-btn { width: 100%;}
             .feedback-popup { font-size: 2.2rem; padding: 25px 40px; width: 80%;}
             .place-display-stage::before, .place-display-stage::after { display: none; }
             .place-tv-screen h3 {font-size: 1.3rem;}
@@ -470,7 +474,9 @@
             .option-btn { width: 100%; margin: 5px 0; }
             .options-container { gap: 10px; }
              .option-btn:nth-child(3) { max-width: 100%; }
-            .icon-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1rem; }
+            .icon-btn { top: 10px; width: 35px; height: 35px; font-size: 1rem; }
+            .icon-btn#settings-btn { right: 10px; }
+            .icon-btn#back-to-games-btn, .icon-btn#back-to-menu-btn { left: 10px; }
             .feedback-popup { font-size: 1.8rem; padding: 20px 30px;}
             .instructions li { font-size: 0.9rem;}
             .game-info { font-size: 0.9rem;}
@@ -481,6 +487,15 @@
 </head>
 <body>
     <div class="game-container">
+        <!-- START: NEW BUTTONS -->
+        <a href="/" id="back-to-games-btn" class="icon-btn" aria-label="Back to Games List" title="Back to Games List" style="display: none;">
+            <i class="fas fa-home"></i>
+        </a>
+        <button id="back-to-menu-btn" class="icon-btn" aria-label="Back to Main Menu" title="Back to Main Menu" style="display: none;">
+            <i class="fas fa-home"></i>
+        </button>
+        <!-- END: NEW BUTTONS -->
+
         <img id="corner-logo-static" class="brand-logo" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="position: absolute; top: 20px; left: 20px; max-height: 40px; opacity: 0.7; display: none;">
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
@@ -591,7 +606,7 @@
         const gameState = {
             players: [], currentRound: 1, scores: {}, gameMode: 'single', currentPlace: null,
             currentPlayerIndex: 0, usedPlaces: [], currentGuess: null,
-            places: [ /* Places array from previous script */
+            places: [ /* Places array remains unchanged */
                  { image: "https://static.wixstatic.com/media/9ce3e5_09dcc3d095064b768a85d0a90d8d84f5~mv2.jpg", correctAnswer: "Baku, Azerbaijan", options: ["Baku, Azerbaijan", "Tbilisi, Georgia", "Astana, Kazakasthan"], description: "This vibrant capital city is known for its modern Flame Towers and the ancient walled Old City." },
                  { image: "https://static.wixstatic.com/media/9ce3e5_f2ec9180c645479f8956038166065254~mv2.jpeg", correctAnswer: "Berlin, Germany", options: ["Prague, Czechia", "Berlin, Germany", "Vienna, Austria"], description: "A city steeped in history, it boasts iconic landmarks like the Brandenburg Gate." },
                  { image: "https://static.wixstatic.com/media/9ce3e5_7e5c4a438e734b4aa5dae6078edcdf53~mv2.jpg", correctAnswer: "Amsterdam, Netherlands", options: ["Copenhagen, Denmark", "Bruges, Belgium", "Amsterdam, Netherlands"], description: "Famous for its intricate canal system, historic gabled houses, and vibrant artistic heritage." },
@@ -678,6 +693,9 @@
         const wrongAnswerSoundAudioEl = document.getElementById('wrong-answer-sound');
         const winGameSoundAudioEl = document.getElementById('win-game-sound');
         const curtainSoundAudioEl = document.getElementById('curtain-sound');
+        // NEW
+        const backToGamesBtn = document.getElementById('back-to-games-btn');
+        const backToMenuBtn = document.getElementById('back-to-menu-btn');
 
 
         function playSound(audioElement) { if (gameConfig.sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.volume = 0.7; audioElement.play().catch(e => console.error("SFX error:", e));}}
@@ -703,8 +721,7 @@
 
             clearTimeout(feedbackTimeoutHandle);
             // The CSS animation will handle hiding the popup.
-            // We just need to ensure the 'show' class is removed if we want to re-trigger.
-             feedbackTimeoutHandle = setTimeout(() => {
+            feedbackTimeoutHandle = setTimeout(() => {
                  feedbackPopupEl.classList.remove('show');
              }, duration - 100); // Remove class slightly before animation ends to allow re-triggering
         }
@@ -741,12 +758,19 @@
         });
         mainMenuNavBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); goToMainMenu(); });
         visitStoreBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); window.location.href = '/store';  });
+        // NEW
+        backToMenuBtn.addEventListener('click', () => { playSound(interactionSoundAudioEl); goToMainMenu(); });
 
 
         function switchScreen(screenId) {
             Object.values(screensEl).forEach(s => s.classList.remove('active'));
             screensEl[screenId].classList.add('active');
-            cornerLogoEl.style.display = (screenId !== 'start') ? 'block' : 'none';
+            
+            // NEW: Control visibility of top-left buttons and corner logo
+            backToGamesBtn.style.display = (screenId === 'start') ? 'flex' : 'none';
+            backToMenuBtn.style.display = (screenId === 'game') ? 'flex' : 'none';
+            cornerLogoEl.style.display = (screenId !== 'start' && screenId !== 'game') ? 'block' : 'none';
+
             if (treatYourselfElement) {
                 treatYourselfElement.style.display = (screenId === 'gameOver') ? 'flex' : 'none';
             }
@@ -819,7 +843,6 @@
 
             optionsContainerEl.innerHTML = ''; revealAnswerBtnEl.style.display = 'none';
             const shuffledOptions = [...gameState.currentPlace.options].sort(() => Math.random() - 0.5);
-            // Ensure only 3 options are displayed
             const displayOptions = shuffledOptions.slice(0, 3);
             displayOptions.forEach(optionText => {
                 const optionBtn = document.createElement('button');
@@ -829,7 +852,7 @@
                 optionsContainerEl.appendChild(optionBtn);
             });
             gameState.currentGuess = null;
-            nextRoundBtnEl.disabled = true; // Disable until round is processed
+            nextRoundBtnEl.disabled = true;
 
             setTimeout(() => {
                 if (curtainSoundAudioEl) playSound(curtainSoundAudioEl);
@@ -844,15 +867,14 @@
         function handleOptionSelect(event) {
             const selectedButton = event.currentTarget; gameState.currentGuess = selectedButton.dataset.option;
             document.querySelectorAll('#options-container-div .option-btn').forEach(btn => {
-                btn.disabled = true; // Disable all options
-                // btn.style.cursor = 'default'; // Already handled by :disabled
-                if (btn !== selectedButton) { // Reset icon for non-selected
+                btn.disabled = true;
+                if (btn !== selectedButton) {
                     btn.querySelector('i').className = 'far fa-circle';
                 }
             });
             selectedButton.querySelector('i').className = 'fas fa-check-circle';
             revealAnswerBtnEl.style.display = 'inline-flex';
-            revealAnswerBtnEl.disabled = false; // Enable reveal button
+            revealAnswerBtnEl.disabled = false;
         }
 
         function revealAnswer() {
@@ -861,44 +883,36 @@
             const guessedCorrectly = gameState.currentGuess === gameState.currentPlace.correctAnswer;
 
             optionButtons.forEach(btn => {
-                // Keep all buttons disabled after reveal to prevent further interaction
                 btn.disabled = true;
-                // Apply visual styles based on correctness
                 if (btn.dataset.option === gameState.currentPlace.correctAnswer) {
                     btn.classList.add('correct');
                     btn.querySelector('i').className = 'fas fa-check-circle';
                 } else if (btn.dataset.option === gameState.currentGuess && !guessedCorrectly) {
                     btn.classList.add('incorrect');
                     btn.querySelector('i').className = 'fas fa-times-circle';
-                } else {
-                    // For options that were neither selected nor correct, ensure they are visually distinct if needed
-                    // The 'disabled-option' class might not be strictly necessary if :disabled covers it
-                    // btn.classList.add('disabled-option'); // This was making them look too faded, default disabled is fine
                 }
             });
 
-            // FIX: Call feedback popup here
             if (guessedCorrectly) {
                 playSound(correctAnswerSoundAudioEl);
                 const currentPlayerName = gameState.gameMode === 'single' ? 'You' : gameState.players[gameState.currentPlayerIndex];
                 gameState.scores[currentPlayerName]++;
-                showFeedbackPopupMessage('Correct!', 'correct-feedback', 2000); // Increased duration
+                showFeedbackPopupMessage('Correct!', 'correct-feedback', 2000);
             } else {
                 playSound(wrongAnswerSoundAudioEl);
-                showFeedbackPopupMessage('Incorrect!', 'incorrect-feedback', 2000); // Increased duration
+                showFeedbackPopupMessage('Incorrect!', 'incorrect-feedback', 2000);
             }
 
             setTimeout(() => {
                 switchScreen('results');
                 showResultsScreenUI();
-                // revealAnswerBtnEl.disabled = false; // Not needed, button is on game screen
                 nextRoundBtnEl.disabled = false;
-            }, 2000); // Matched duration to feedback popup
+            }, 2000);
         }
 
         function showResultsScreenUI() {
             resultPlaceImageDisplayEl.src = gameState.currentPlace.image;
-            resultPlaceImageDisplayEl.classList.add('visible'); // <<< EDITED: This line makes the image appear
+            resultPlaceImageDisplayEl.classList.add('visible');
             correctAnswerTextEl.textContent = gameState.currentPlace.correctAnswer;
             placeDescriptionTextEl.textContent = gameState.currentPlace.description;
             guessResultsContainerEl.innerHTML = '';
@@ -987,7 +1001,6 @@
                    storeButtonWrapperEl.insertBefore(treatYourselfElement, visitStoreBtnEl);
                 }
             }
-             // Ensure treat yourself is visible on game over
              if (treatYourselfElement) treatYourselfElement.style.display = 'flex';
         }
 

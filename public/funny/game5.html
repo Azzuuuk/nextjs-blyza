@@ -235,7 +235,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         .reveal-box-clickable:hover {
-            background: rgba(var(--gold-rgb, 255,215,0), 0.15);
+            background: rgba(255,215,0, 0.15);
             border-color: var(--primary);
             transform: scale(1.03);
         }
@@ -429,7 +429,7 @@
         .btn-info:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--info); }
 
 
-        /* Settings Icon Button - GTP Style */
+        /* Icon Buttons (Home, Back, Settings) */
         .icon-btn {
             position: absolute;
             background: rgba(0,0,0, 0.3); color: var(--light);
@@ -438,14 +438,19 @@
             cursor: pointer; transition: all 0.3s ease;
             display: flex; justify-content: center; align-items: center;
             z-index: 100; padding: 0; margin: 0;
-            box-shadow: none; text-shadow: none; /* Remove general button styles */
+            box-shadow: none; text-shadow: none;
+            text-decoration: none; /* For <a> tags */
         }
         .icon-btn#settings-btn { top: 15px; right: 15px; }
+        .icon-btn#home-menu-btn { top: 15px; left: 15px; display: flex; }
+        .icon-btn#back-btn { top: 15px; left: 15px; display: none; }
         .icon-btn:hover {
             background: rgba(0,0,0, 0.5); transform: scale(1.1) rotate(15deg);
             box-shadow: 0 0 10px var(--gold);
         }
+        .icon-btn#back-btn:hover { transform: scale(1.1) rotate(-5deg); }
         .icon-btn i { margin: 0; }
+
 
         /* Modal Styles - GTP Style */
         .modal {
@@ -542,6 +547,8 @@
             .game-over-buttons-container { flex-direction: column; align-items: center;}
             .game-over-buttons-container .game-over-button-wrapper { width: 90%; margin: 5px auto;}
             .game-over-buttons-container .game-over-button-wrapper button { width: 100%;}
+            .icon-btn { top: 10px; right: 10px; width: 38px; height: 38px; font-size: 1rem; }
+            .icon-btn#home-menu-btn, .icon-btn#back-btn { top: 10px; left: 10px; }
         }
         @media (max-width: 480px) {
             .game-container { padding: 20px; }
@@ -552,7 +559,6 @@
             #team-names-container { grid-template-columns: 1fr; gap: 15px; }
             .team-input-item input { padding: 12px 18px; font-size: 1rem;}
             button { padding: 12px 20px; font-size: 0.9rem; }
-            .icon-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1rem; }
             .image-display-area, .result-display-area { min-height: 250px; padding: 15px;}
             .mystery-image-element { max-height: 200px;}
             .reveal-box-clickable { height: 180px; max-width: 250px;}
@@ -565,7 +571,12 @@
 </head>
 <body>
     <div class="game-container">
-        <img id="corner-logo-static" class="brand-logo" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="position: absolute; top: 20px; left: 20px; max-height: 40px; opacity: 0.7; display: none;">
+        <a href="/" id="home-menu-btn" class="icon-btn" aria-label="Back to Games List">
+            <i class="fas fa-home"></i>
+        </a>
+        <button id="back-btn" class="icon-btn" aria-label="Go Back" style="display: none;">
+            <i class="fas fa-arrow-left"></i>
+        </button>
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
         </button>
@@ -638,16 +649,14 @@
             </div>
             <p id="result-feedback-text"></p>
             <div id="interstitial-score-display-area" class="score-display-area"></div>
-            <div class="action-buttons-container" id="point-awarding-buttons-container" style="margin-top: 20px;">
-                <!-- Point awarding buttons will be added here by JS -->
-            </div>
+            <div class="action-buttons-container" id="point-awarding-buttons-container" style="margin-top: 20px;"></div>
             <button id="next-turn-logic-btn" class="btn-primary" style="display:none;">Next Turn <i class="fas fa-arrow-right"></i></button>
         </div>
 
         <!-- Game Over Screen -->
         <div id="game-over-screen" class="screen">
             <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
-            <h1>Box of Lies</h1> <!-- Or Sniff The Liar if you prefer -->
+            <h1>Box of Lies</h1>
             <div class="win-message-text" id="final-win-message">Team Wins!</div>
             <div class="winner-trophy-icon">🏆</div>
             <div id="winner-message-details">Congratulations!</div>
@@ -661,7 +670,6 @@
                     <button id="new-game-menu-btn" class="btn-secondary"><i class="fas fa-home"></i> Main Menu</button>
                  </div>
                 <div class="game-over-button-wrapper" id="store-button-wrapper">
-                     <!-- "Treat Yourself" callout will be inserted here by JS -->
                     <button id="visit-store-btn" class="btn-info"><i class="fas fa-store"></i> Visit Store</button>
                 </div>
             </div>
@@ -685,11 +693,10 @@
     </div>
 
     <!-- Feedback Pop-up -->
-    <div id="feedback-popup" class="feedback-popup"> <!-- display:none handled by .show class -->
+    <div id="feedback-popup" class="feedback-popup">
         <span id="feedback-message-text-el"></span>
     </div>
 
-    <!-- Audio elements -->
     <audio id="background-game-music" loop src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3"></audio>
     <audio id="start-game-sound" src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3"></audio>
     <audio id="interaction-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
@@ -700,57 +707,13 @@
     <audio id="confetti-sound" src="https://static.wixstatic.com/mp3/9ce3e5_5d7fcfc389734cf7994f5d37de621e3d.mp3"></audio>
 
     <script>
-        const gameConfig = {
-            sfxEnabled: true,
-            musicVolume: 0.2,
-            winningScore: 3,
-        };
-
-        const gameState = {
-            teams: ["Team 1", "Team 2"],
-            describerTeamIndex: 0,
-            guesserTeamIndex: 1,
-            scores: [0, 0],
-            currentImage: null,
-            totalTurns: 0,
-            guesserChoseTruth: null,
-            images: [
-                 { url: "https://static.wixstatic.com/media/9ce3e5_23bd5849bda04d99bc548b0ff86e64fb~mv2.png", description: "a rubber duck with a knife" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_0985da6afa124100b4bad870460d4bb0~mv2.png", description: "a cat wearing a shark costume on a Roomba" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_1037fe8225ab4eb5a292c6984197cf62~mv2.png", description: "a dog wearing a graduation cap" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_f348a1f4bb79471d999607fdb6c7bb2e~mv2.png", description: "a squirrel waterskiing" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_99ba15752a3b482fb851ef36d629b8b9~mv2.png", description: "a slice of pizza on a pineapple" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_308cbf0b2a5444edbdf74df7bdc26c38~mv2.png", description: "a banana dressed as Elvis Presley" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_52c77a32a78d4507a60970e253aab286~mv2.png", description: "a T-Rex trying to make a bed" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_bbe729aed2644a759c5ef0e6cb4d7034~mv2.png", description: "a pug in a hotdog bun" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_b8868e7c3df0402db19ece5f38cb2069~mv2.png", description: "a donut doing yoga" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_6ef91f2d8bff4f66b0fec72a08868c28~mv2.png", description: "a potato couch" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_43ee231f261c4aa1a16057bb4e6f8eb8~mv2.png", description: "a cat DJing at a party" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_05c2c4a69823410aa7bfc0c3fb066399~mv2.png", description: "a broccoli gangster with a gun" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_c9a00c9e1e0b46b6832e32ecbba3fd78~mv2.png", description: "a sloth riding a turtle" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_caff18b6a3844434a38fedd70421c65f~mv2.png", description: "a pickle playing a guitar" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_ac6eb450bbcf41f2a9c4ae1cff297f6e~mv2.png", description: "a hamburger with teeth" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_cc857eedcc284b32bc280e92e21888ab~mv2.png", description: "a cloud raining french fries" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_0cf19941a84b45ddb5dac34a23af1b65~mv2.png", description: "a snail with a disco ball shell" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_5b7ef4b012074b8ab405ac5781fd018c~mv2.png", description: "a penguin on a surfboard" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_27883fbc67a04f73bfd9da3ce04676d1~mv2.png", description: "a piece of toast skydiving" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_ff40bd468d5a458f86f6e6dcaf767292~mv2.png", description: "a flamingo doing ballet" },
-                 { url: "https://static.wixstatic.com/media/9ce3e5_f5c8e66eca3a445e82bed62971caf967~mv2.png", description: "an avocado as a superhero" }
-            ],
-            usedImages: []
-        };
-
-        // DOM elements
-        const screens = {
-            start: document.getElementById('start-screen'),
-            game: document.getElementById('game-screen'),
-            results: document.getElementById('results-screen'),
-            gameOver: document.getElementById('game-over-screen')
-        };
-        const cornerLogoEl = document.getElementById('corner-logo-static');
+        const gameConfig = { sfxEnabled: true, musicVolume: 0.2, winningScore: 3, };
+        const gameState = { teams: ["Team 1", "Team 2"], describerTeamIndex: 0, guesserTeamIndex: 1, scores: [0, 0], currentImage: null, totalTurns: 0, guesserChoseTruth: null, images: [ { url: "https://static.wixstatic.com/media/9ce3e5_23bd5849bda04d99bc548b0ff86e64fb~mv2.png", description: "a rubber duck with a knife" }, { url: "https://static.wixstatic.com/media/9ce3e5_0985da6afa124100b4bad870460d4bb0~mv2.png", description: "a cat wearing a shark costume on a Roomba" }, { url: "https://static.wixstatic.com/media/9ce3e5_1037fe8225ab4eb5a292c6984197cf62~mv2.png", description: "a dog wearing a graduation cap" }, { url: "https://static.wixstatic.com/media/9ce3e5_f348a1f4bb79471d999607fdb6c7bb2e~mv2.png", description: "a squirrel waterskiing" }, { url: "https://static.wixstatic.com/media/9ce3e5_99ba15752a3b482fb851ef36d629b8b9~mv2.png", description: "a slice of pizza on a pineapple" }, { url: "https://static.wixstatic.com/media/9ce3e5_308cbf0b2a5444edbdf74df7bdc26c38~mv2.png", description: "a banana dressed as Elvis Presley" }, { url: "https://static.wixstatic.com/media/9ce3e5_52c77a32a78d4507a60970e253aab286~mv2.png", description: "a T-Rex trying to make a bed" }, { url: "https://static.wixstatic.com/media/9ce3e5_bbe729aed2644a759c5ef0e6cb4d7034~mv2.png", description: "a pug in a hotdog bun" }, { url: "https://static.wixstatic.com/media/9ce3e5_b8868e7c3df0402db19ece5f38cb2069~mv2.png", description: "a donut doing yoga" }, { url: "https://static.wixstatic.com/media/9ce3e5_6ef91f2d8bff4f66b0fec72a08868c28~mv2.png", description: "a potato couch" }, { url: "https://static.wixstatic.com/media/9ce3e5_43ee231f261c4aa1a16057bb4e6f8eb8~mv2.png", description: "a cat DJing at a party" }, { url: "https://static.wixstatic.com/media/9ce3e5_05c2c4a69823410aa7bfc0c3fb066399~mv2.png", description: "a broccoli gangster with a gun" }, { url: "https://static.wixstatic.com/media/9ce3e5_c9a00c9e1e0b46b6832e32ecbba3fd78~mv2.png", description: "a sloth riding a turtle" }, { url: "https://static.wixstatic.com/media/9ce3e5_caff18b6a3844434a38fedd70421c65f~mv2.png", description: "a pickle playing a guitar" }, { url: "https://static.wixstatic.com/media/9ce3e5_ac6eb450bbcf41f2a9c4ae1cff297f6e~mv2.png", description: "a hamburger with teeth" }, { url: "https://static.wixstatic.com/media/9ce3e5_cc857eedcc284b32bc280e92e21888ab~mv2.png", description: "a cloud raining french fries" }, { url: "https://static.wixstatic.com/media/9ce3e5_0cf19941a84b45ddb5dac34a23af1b65~mv2.png", description: "a snail with a disco ball shell" }, { url: "https://static.wixstatic.com/media/9ce3e5_5b7ef4b012074b8ab405ac5781fd018c~mv2.png", description: "a penguin on a surfboard" }, { url: "https://static.wixstatic.com/media/9ce3e5_27883fbc67a04f73bfd9da3ce04676d1~mv2.png", description: "a piece of toast skydiving" }, { url: "https://static.wixstatic.com/media/9ce3e5_ff40bd468d5a458f86f6e6dcaf767292~mv2.png", description: "a flamingo doing ballet" }, { url: "https://static.wixstatic.com/media/9ce3e5_f5c8e66eca3a445e82bed62971caf967~mv2.png", description: "an avocado as a superhero" } ], usedImages: [] };
+        const screens = { start: document.getElementById('start-screen'), game: document.getElementById('game-screen'), results: document.getElementById('results-screen'), gameOver: document.getElementById('game-over-screen') };
+        const homeMenuBtnEl = document.getElementById('home-menu-btn');
+        const backBtnEl = document.getElementById('back-btn');
         const teamNameInputEls = document.querySelectorAll('.team-name-input');
         const startGameBtnEl = document.getElementById('start-game-btn');
-
         const currentTurnNumberDisplayEl = document.getElementById('current-turn-number-display');
         const team1ScoreDisplayEl = document.getElementById('team1-score-display');
         const team2ScoreDisplayEl = document.getElementById('team2-score-display');
@@ -760,29 +723,24 @@
         const guesserInstructionTextEl = document.getElementById('guesser-instruction-text');
         const truthChoiceBtnEl = document.getElementById('truth-choice-btn');
         const lieChoiceBtnEl = document.getElementById('lie-choice-btn');
-
         const resultImageDisplayEl = document.getElementById('result-image-display');
         const interstitialScoreDisplayAreaEl = document.getElementById('interstitial-score-display-area');
         const resultFeedbackTextEl = document.getElementById('result-feedback-text');
         const pointAwardingButtonsContainerEl = document.getElementById('point-awarding-buttons-container');
         const nextTurnLogicBtnEl = document.getElementById('next-turn-logic-btn');
-
         const finalWinMessageEl = document.getElementById('final-win-message');
         const winnerMessageDetailsEl = document.getElementById('winner-message-details');
         const finalScoresDisplayAreaEl = document.getElementById('final-scores-display-area');
-        const storeButtonWrapperEl = document.getElementById("store-button-wrapper"); // For Treat Yourself
+        const storeButtonWrapperEl = document.getElementById("store-button-wrapper");
         let treatYourselfElement = null;
         const playAgainGameBtnEl = document.getElementById('play-again-game-btn');
         const newGameMenuBtnEl = document.getElementById('new-game-menu-btn');
         const visitStoreBtnEl = document.getElementById('visit-store-btn');
-
-
         const settingsBtnEl = document.getElementById('settings-btn');
         const settingsModalEl = document.getElementById('settings-modal');
         const closeModalBtnEl = document.getElementById('close-modal-btn');
         const bgmVolumeSliderEl = document.getElementById('bgm-volume-slider');
         const sfxToggleBtnEl = document.getElementById('sfx-toggle-btn');
-
         const backgroundMusicAudioEl = document.getElementById('background-game-music');
         const startGameSoundAudioEl = document.getElementById('start-game-sound');
         const interactionSoundAudioEl = document.getElementById('interaction-sound');
@@ -791,138 +749,57 @@
         const pointAwardedCorrectSoundAudioEl = document.getElementById('point-awarded-correct-sound');
         const pointAwardedIncorrectSoundAudioEl = document.getElementById('point-awarded-incorrect-sound');
         const confettiSoundAudioEl = document.getElementById('confetti-sound');
-
         const feedbackPopupEl = document.getElementById('feedback-popup');
         const feedbackMessageTextPopupEl = document.getElementById('feedback-message-text-el');
         let feedbackTimeoutId;
 
-        // --- Sound Functions ---
-        function playSound(audioElement) {
-            if (gameConfig.sfxEnabled && audioElement) {
-                audioElement.currentTime = 0;
-                audioElement.volume = 0.7;
-                audioElement.play().catch(e => console.error("SFX play error:", e));
+        function playSound(audioElement) { if (gameConfig.sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.volume = 0.7; audioElement.play().catch(e => console.error("SFX play error:", e)); } }
+        function playSoundWithCallback(audioElement, callback, ...args) { if (gameConfig.sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.volume = 0.7; let callbackExecuted = false; const executeCallback = () => { if (!callbackExecuted) { callbackExecuted = true; audioElement.removeEventListener('ended', executeCallback); if (typeof soundTimeoutId !== 'undefined' && soundTimeoutId) clearTimeout(soundTimeoutId); if (callback) callback(...args); } }; audioElement.addEventListener('ended', executeCallback); const soundDurationMs = (audioElement.duration && isFinite(audioElement.duration)) ? audioElement.duration * 1000 : 500; const soundTimeoutId = setTimeout(executeCallback, soundDurationMs + 200); audioElement.play().catch(e => { console.error("SFX play error:", e); executeCallback(); }); } else { if (callback) callback(...args); } }
+        function initBackgroundMusic() { backgroundMusicAudioEl.volume = gameConfig.musicVolume; backgroundMusicAudioEl.play().catch(e => console.log("BGM autoplay failed.", e)); }
+        function showFeedbackMessage(message, type = 'info', duration = 2500) { feedbackMessageTextPopupEl.textContent = message; feedbackPopupEl.className = 'feedback-popup'; if (type) feedbackPopupEl.classList.add(type); feedbackPopupEl.classList.add('show'); clearTimeout(feedbackTimeoutId); feedbackTimeoutId = setTimeout(() => { feedbackPopupEl.classList.remove('show'); }, duration); }
+        function triggerConfetti() { playSound(confettiSoundAudioEl); const confettiCount = 100; const colors = ['var(--primary)', 'var(--secondary)', 'var(--success)', 'var(--gold)', 'var(--info)']; for (let i = 0; i < confettiCount; i++) { const confettiPiece = document.createElement('div'); confettiPiece.classList.add('confetti-piece'); confettiPiece.style.left = Math.random() * 100 + 'vw'; confettiPiece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; const animDuration = Math.random() * 3 + 2; confettiPiece.style.animationName = 'fallAndFade'; confettiPiece.style.animationDuration = animDuration + 's'; confettiPiece.style.animationDelay = Math.random() * 1 + 's'; document.body.appendChild(confettiPiece); setTimeout(() => confettiPiece.remove(), (animDuration + parseFloat(confettiPiece.style.animationDelay || 0)) * 1000 + 500); } }
+
+        function switchScreen(screenId) {
+            Object.values(screens).forEach(screen => screen.classList.remove('active'));
+            screens[screenId].classList.add('active');
+            
+            const isStartScreen = screenId === 'start';
+            homeMenuBtnEl.style.display = isStartScreen ? 'flex' : 'none';
+            backBtnEl.style.display = isStartScreen ? 'none' : 'flex';
+            if (screenId === 'gameOver') { // Also hide back button on final game over screen
+                 backBtnEl.style.display = 'none';
+            }
+
+            if (treatYourselfElement) {
+                treatYourselfElement.style.display = (screenId === 'gameOver') ? 'flex' : 'none';
             }
         }
-        function playSoundWithCallback(audioElement, callback, ...args) {
-            if (gameConfig.sfxEnabled && audioElement) {
-                audioElement.currentTime = 0;
-                audioElement.volume = 0.7;
-                let callbackExecuted = false;
-                const executeCallback = () => {
-                    if (!callbackExecuted) {
-                        callbackExecuted = true;
-                        audioElement.removeEventListener('ended', executeCallback);
-                        if (typeof soundTimeoutId !== 'undefined' && soundTimeoutId) clearTimeout(soundTimeoutId);
-                        if (callback) callback(...args);
-                    }
-                };
-                audioElement.addEventListener('ended', executeCallback);
-                const soundDurationMs = (audioElement.duration && isFinite(audioElement.duration)) ? audioElement.duration * 1000 : 500;
-                const soundTimeoutId = setTimeout(executeCallback, soundDurationMs + 200);
-                audioElement.play().catch(e => { console.error("SFX play error:", e); executeCallback(); });
-            } else {
-                if (callback) callback(...args);
-            }
-        }
-        function initBackgroundMusic() {
-            backgroundMusicAudioEl.volume = gameConfig.musicVolume;
-            backgroundMusicAudioEl.play().catch(e => {
-                console.log("Background music autoplay failed.", e);
-            });
-        }
-
-        // --- Feedback Pop-up ---
-        function showFeedbackMessage(message, type = 'info', duration = 2500) { // Match GTP duration
-            feedbackMessageTextPopupEl.textContent = message;
-            feedbackPopupEl.className = 'feedback-popup';
-            if (type) feedbackPopupEl.classList.add(type);
-            feedbackPopupEl.classList.add('show');
-            // feedbackPopupEl.style.display = 'block'; // .show class handles display
-
-            clearTimeout(feedbackTimeoutId);
-            feedbackTimeoutId = setTimeout(() => {
-                feedbackPopupEl.classList.remove('show');
-                // setTimeout(() => { feedbackPopupEl.style.display = 'none'; }, 300); // .show handles display
-            }, duration);
-        }
-
-        // --- Confetti ---
-        function triggerConfetti() {
-            playSound(confettiSoundAudioEl);
-            const confettiCount = 100; // Match GTP
-            const colors = ['var(--primary)', 'var(--secondary)', 'var(--success)', 'var(--gold)', 'var(--info)']; // Added gold
-            for (let i = 0; i < confettiCount; i++) {
-                const confettiPiece = document.createElement('div');
-                confettiPiece.classList.add('confetti-piece');
-                confettiPiece.style.left = Math.random() * 100 + 'vw';
-                confettiPiece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                const animDuration = Math.random() * 3 + 2; // Match GTP
-                confettiPiece.style.animationName = 'fallAndFade';
-                confettiPiece.style.animationDuration = animDuration + 's';
-                confettiPiece.style.animationDelay = Math.random() * 1 + 's'; // Match GTP
-                document.body.appendChild(confettiPiece);
-                setTimeout(() => confettiPiece.remove(), (animDuration + parseFloat(confettiPiece.style.animationDelay || 0)) * 1000 + 500);
-            }
-        }
-
-        // --- Event listeners ---
-        startGameBtnEl.addEventListener('click', () => {
-            if(backgroundMusicAudioEl.paused) initBackgroundMusic();
-            playSoundWithCallback(startGameSoundAudioEl, startGame);
-        });
+        
+        backBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); newGame(); });
+        startGameBtnEl.addEventListener('click', () => { if(backgroundMusicAudioEl.paused) initBackgroundMusic(); playSoundWithCallback(startGameSoundAudioEl, startGame); });
         revealBoxElement.addEventListener('click', () => { playSound(imageRevealSoundAudioEl); handleRevealImage(); });
         truthChoiceBtnEl.addEventListener('click', () => { playSound(guessMadeSoundAudioEl); handleGuesserChoice(true); });
         lieChoiceBtnEl.addEventListener('click', () => { playSound(guessMadeSoundAudioEl); handleGuesserChoice(false);  });
         nextTurnLogicBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); nextTurn(); });
         playAgainGameBtnEl.addEventListener('click', () => { playSoundWithCallback(startGameSoundAudioEl, playAgain); });
         newGameMenuBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); newGame(); });
-        visitStoreBtnEl.addEventListener('click', () => {
-            playSound(interactionSoundAudioEl);
-            window.location.href = '/store'; 
-        });
-
+        visitStoreBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); window.location.href = '/store'; });
         settingsBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'flex'; });
         closeModalBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; });
         window.addEventListener('click', (event) => { if (event.target === settingsModalEl) { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; } });
         bgmVolumeSliderEl.addEventListener('input', (e) => { gameConfig.musicVolume = parseFloat(e.target.value); backgroundMusicAudioEl.volume = gameConfig.musicVolume; });
-        sfxToggleBtnEl.addEventListener('click', () => {
-            playSound(interactionSoundAudioEl);
-            gameConfig.sfxEnabled = !gameConfig.sfxEnabled;
-            sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
-            sfxToggleBtnEl.classList.toggle('btn-success', gameConfig.sfxEnabled);
-            sfxToggleBtnEl.classList.toggle('btn-danger', !gameConfig.sfxEnabled);
-        });
-
-        // --- Functions ---
-        function switchScreen(screenId) {
-            Object.values(screens).forEach(screen => screen.classList.remove('active'));
-            screens[screenId].classList.add('active');
-            cornerLogoEl.style.display = (screenId !== 'start') ? 'block' : 'none';
-            if (treatYourselfElement) { // Hide treat yourself if not on results screen
-                treatYourselfElement.style.display = (screenId === 'gameOver') ? 'flex' : 'none';
-            }
-        }
+        sfxToggleBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); gameConfig.sfxEnabled = !gameConfig.sfxEnabled; sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; sfxToggleBtnEl.classList.toggle('btn-success', gameConfig.sfxEnabled); sfxToggleBtnEl.classList.toggle('btn-danger', !gameConfig.sfxEnabled); });
 
         function startGame() {
             gameState.teams[0] = teamNameInputEls[0].value.trim() || "Team 1";
             gameState.teams[1] = teamNameInputEls[1].value.trim() || "Team 2";
-
-            if (gameState.teams[0].length > 15 || gameState.teams[1].length > 15) {
-                showFeedbackMessage("Team names too long (max 15 chars)!", "danger");
-                return;
-            }
-            if (gameState.teams[0] === gameState.teams[1] && gameState.teams[0] !== "Team 1" && gameState.teams[0] !== "") {
-                 showFeedbackMessage("Team names must be different!", "danger");
-                 return;
-            }
-
+            if (gameState.teams[0].length > 15 || gameState.teams[1].length > 15) { showFeedbackMessage("Team names too long (max 15 chars)!", "danger"); return; }
+            if (gameState.teams[0] === gameState.teams[1]) { showFeedbackMessage("Team names must be different!", "danger"); return; }
             gameState.describerTeamIndex = 0;
             gameState.guesserTeamIndex = 1;
             gameState.scores = [0, 0];
             gameState.usedImages = [];
             gameState.totalTurns = 0;
-
             switchScreen('game');
             setupTurn();
         }
@@ -934,19 +811,14 @@
             team2ScoreDisplayEl.textContent = gameState.scores[1];
             currentPlayerRoleTextEl.textContent = `${gameState.teams[gameState.describerTeamIndex]}'s turn to DESCRIBE`;
             currentPlayerRoleTextEl.style.color = gameState.describerTeamIndex === 0 ? 'var(--primary)' : 'var(--secondary)';
-
             revealBoxElement.style.display = 'flex';
             mysteryImageElement.style.display = 'none';
             mysteryImageElement.src = '';
             guesserInstructionTextEl.style.display = 'none';
             truthChoiceBtnEl.disabled = true;
             lieChoiceBtnEl.disabled = true;
-
             let availableImages = gameState.images.filter(image => !gameState.usedImages.includes(image.url));
-            if (availableImages.length === 0) { // Reshuffle if all images used
-                gameState.usedImages = [];
-                availableImages = [...gameState.images];
-            }
+            if (availableImages.length === 0) { gameState.usedImages = []; availableImages = [...gameState.images]; }
             const randomIndex = Math.floor(Math.random() * availableImages.length);
             gameState.currentImage = availableImages[randomIndex];
             gameState.usedImages.push(gameState.currentImage.url);
@@ -957,7 +829,6 @@
             mysteryImageElement.src = gameState.currentImage.url;
             mysteryImageElement.alt = gameState.currentImage.description;
             mysteryImageElement.style.display = 'block';
-
             guesserInstructionTextEl.innerHTML = `${gameState.teams[gameState.guesserTeamIndex]}, is <strong>${gameState.teams[gameState.describerTeamIndex]}</strong> telling the TRUTH or LYING?`;
             guesserInstructionTextEl.style.display = 'block';
             truthChoiceBtnEl.disabled = false;
@@ -974,64 +845,31 @@
         function showInterstitialResults() {
             switchScreen('results');
             resultImageDisplayEl.src = gameState.currentImage.url;
-            resultImageDisplayEl.style.display = 'block'; // Make sure it's block for layout
-            resultFeedbackTextEl.innerHTML = `
-                The image was: <strong>${gameState.currentImage.description}</strong>. <br>
-                ${gameState.teams[gameState.guesserTeamIndex]} guessed that ${gameState.teams[gameState.describerTeamIndex]} told the
-                <strong>${gameState.guesserChoseTruth ? "TRUTH" : "LIE"}</strong>.
-                <br><br>
-                Describer (${gameState.teams[gameState.describerTeamIndex]}), was the guesser correct?
-            `;
+            resultImageDisplayEl.style.display = 'block';
+            resultFeedbackTextEl.innerHTML = `The image was: <strong>${gameState.currentImage.description}</strong>. <br> ${gameState.teams[gameState.guesserTeamIndex]} guessed that ${gameState.teams[gameState.describerTeamIndex]} told the <strong>${gameState.guesserChoseTruth ? "TRUTH" : "LIE"}</strong>. <br><br> Describer (${gameState.teams[gameState.describerTeamIndex]}), was the guesser correct?`;
             updateInterstitialScoreDisplay();
-            nextTurnLogicBtnEl.style.display = 'none'; // Hide until point awarded
-            pointAwardingButtonsContainerEl.innerHTML = `
-                <button id="guesser-correct-btn" class="btn-success">
-                    <i class="fas fa-user-check"></i> Guesser was CORRECT!
-                </button>
-                <button id="guesser-wrong-btn" class="btn-danger">
-                    <i class="fas fa-user-times"></i> Guesser was WRONG!
-                </button>
-            `;
-            document.getElementById('guesser-correct-btn').onclick = () => {
-                // Guesser was correct, point to guesser's team
-                showFeedbackMessage(`${gameState.teams[gameState.guesserTeamIndex]} gets a point!`, 'correct', 2500);
-                playSound(pointAwardedCorrectSoundAudioEl);
-                awardPointAndProceed(gameState.guesserTeamIndex);
-            };
-            document.getElementById('guesser-wrong-btn').onclick = () => {
-                // Guesser was wrong, point to describer's team
-                showFeedbackMessage(`${gameState.teams[gameState.describerTeamIndex]} gets a point!`, 'correct', 2500); // Still 'correct' for the popup system, message clarifies
-                playSound(pointAwardedIncorrectSoundAudioEl); // Different sound for this outcome
-                awardPointAndProceed(gameState.describerTeamIndex);
-            };
+            nextTurnLogicBtnEl.style.display = 'none';
+            pointAwardingButtonsContainerEl.innerHTML = `<button id="guesser-correct-btn" class="btn-success"><i class="fas fa-user-check"></i> Guesser was CORRECT!</button><button id="guesser-wrong-btn" class="btn-danger"><i class="fas fa-user-times"></i> Guesser was WRONG!</button>`;
+            document.getElementById('guesser-correct-btn').onclick = () => { showFeedbackMessage(`${gameState.teams[gameState.guesserTeamIndex]} gets a point!`, 'correct', 2500); playSound(pointAwardedCorrectSoundAudioEl); awardPointAndProceed(gameState.guesserTeamIndex); };
+            document.getElementById('guesser-wrong-btn').onclick = () => { showFeedbackMessage(`${gameState.teams[gameState.describerTeamIndex]} gets a point!`, 'correct', 2500); playSound(pointAwardedIncorrectSoundAudioEl); awardPointAndProceed(gameState.describerTeamIndex); };
         }
 
         function awardPointAndProceed(teamIndexToAward) {
             gameState.scores[teamIndexToAward]++;
-            pointAwardingButtonsContainerEl.innerHTML = ''; // Clear buttons
-            nextTurnLogicBtnEl.style.display = 'inline-flex'; // Show next/results button
-            if (gameState.scores[0] >= gameConfig.winningScore || gameState.scores[1] >= gameConfig.winningScore) {
-                nextTurnLogicBtnEl.innerHTML = 'See Final Results <i class="fas fa-trophy"></i>';
-            } else {
-                 nextTurnLogicBtnEl.innerHTML = 'Next Turn <i class="fas fa-arrow-right"></i>';
-            }
+            pointAwardingButtonsContainerEl.innerHTML = '';
+            nextTurnLogicBtnEl.style.display = 'inline-flex';
+            if (gameState.scores[0] >= gameConfig.winningScore || gameState.scores[1] >= gameConfig.winningScore) { nextTurnLogicBtnEl.innerHTML = 'See Final Results <i class="fas fa-trophy"></i>'; } else { nextTurnLogicBtnEl.innerHTML = 'Next Turn <i class="fas fa-arrow-right"></i>'; }
             resultFeedbackTextEl.innerHTML += `<br><br><strong>Point awarded to ${gameState.teams[teamIndexToAward]}!</strong>`;
             updateInterstitialScoreDisplay();
         }
 
         function updateInterstitialScoreDisplay() {
-            interstitialScoreDisplayAreaEl.innerHTML = ''; // Clear previous
+            interstitialScoreDisplayAreaEl.innerHTML = '';
             gameState.teams.forEach((team, index) => {
                 const scoreCard = document.createElement('div');
                 scoreCard.className = 'score-card-item';
-                const progressWidth = Math.min(100, (gameState.scores[index] / gameConfig.winningScore) * 100); // Cap at 100%
-                scoreCard.innerHTML = `
-                    <h4>${team}</h4>
-                    <div class="score-value-text">${gameState.scores[index]}</div>
-                    <div class="progress-bar-element">
-                        <div class="progress-fill-element" style="width: ${progressWidth}%"></div>
-                    </div>
-                `;
+                const progressWidth = Math.min(100, (gameState.scores[index] / gameConfig.winningScore) * 100);
+                scoreCard.innerHTML = `<h4>${team}</h4><div class="score-value-text">${gameState.scores[index]}</div><div class="progress-bar-element"><div class="progress-fill-element" style="width: ${progressWidth}%"></div></div>`;
                 interstitialScoreDisplayAreaEl.appendChild(scoreCard);
             });
         }
@@ -1040,7 +878,6 @@
             if (gameState.scores[0] >= gameConfig.winningScore || gameState.scores[1] >= gameConfig.winningScore) {
                 showGameOver();
             } else {
-                // Swap roles
                 const temp = gameState.describerTeamIndex;
                 gameState.describerTeamIndex = gameState.guesserTeamIndex;
                 gameState.guesserTeamIndex = temp;
@@ -1051,44 +888,32 @@
 
         function showGameOver() {
             const winnerIndex = gameState.scores[0] >= gameConfig.winningScore ? 0 : (gameState.scores[1] >= gameConfig.winningScore ? 1 : -1);
-
             if (winnerIndex !== -1) {
                 finalWinMessageEl.textContent = `${gameState.teams[winnerIndex]} Wins!`;
                 winnerMessageDetailsEl.textContent = `Congratulations!`;
                 triggerConfetti();
-            } else { // Should only happen if game ends some other way, or if winningScore is 0
+            } else {
                 finalWinMessageEl.textContent = "Game Over!";
                 winnerMessageDetailsEl.textContent = "It was a close one!";
             }
-
             finalScoresDisplayAreaEl.innerHTML = '';
             gameState.teams.forEach((team, index) => {
                 const scoreCard = document.createElement('div');
                 const isWinner = index === winnerIndex;
                 scoreCard.className = `score-card-item ${isWinner ? 'winner-glow' : ''}`;
-                scoreCard.innerHTML = `
-                    <h4>${team}</h4>
-                    <div class="score-value-text">${gameState.scores[index]}</div>
-                `; // No progress bar needed on final score display
+                scoreCard.innerHTML = `<h4>${team}</h4><div class="score-value-text">${gameState.scores[index]}</div>`;
                 finalScoresDisplayAreaEl.appendChild(scoreCard);
             });
-
-            // "Treat Yourself" callout
             if (!treatYourselfElement) {
                 treatYourselfElement = document.createElement('div');
                 treatYourselfElement.className = 'treat-yourself-callout';
                 treatYourselfElement.innerHTML = `<span>Treat Yourself!</span> <i class="fas fa-arrow-down"></i>`;
                 storeButtonWrapperEl.insertBefore(treatYourselfElement, visitStoreBtnEl);
             }
-            switchScreen('gameOver'); // This will also handle showing the treatYourselfElement
+            switchScreen('gameOver');
         }
 
-
-        function playAgain() {
-            // Teams names are preserved
-            startGame(); // Resets scores, turns, roles, etc.
-        }
-
+        function playAgain() { startGame(); }
         function newGame() {
             teamNameInputEls[0].value = '';
             teamNameInputEls[1].value = '';
@@ -1104,7 +929,6 @@
             sfxToggleBtnEl.classList.toggle('btn-success', gameConfig.sfxEnabled);
             sfxToggleBtnEl.classList.toggle('btn-danger', !gameConfig.sfxEnabled);
             bgmVolumeSliderEl.value = gameConfig.musicVolume;
-            initBackgroundMusic();
             switchScreen('start');
         });
     </script>
