@@ -3,457 +3,369 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paranoia - Game Show Edition!</title>
+    <title>Paranoia - Blyza Game Center</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Luckiest+Guy&family=Quicksand:wght@300..700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Luckiest+Guy&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Base Styles from Guess The Price */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        /* --- START: BRAND IDENTITY & ROOT VARIABLES (FROM GUESS THE PRICE) --- */
         :root {
-            --primary: #FF8833; /* Blyza Orange */
-            --secondary: #CB7AE1; /* Blyza Purple */
-            --light: #F2F2F2;
-            --success: #00BFA6; /* Blyza Keppel */
-            --danger: #ff4b2b;
-            --dark: #1a1c20;
-            --darker: #0f1012;
-            --info: #4ECDC4;
-            --gold: #FFD700; /* Game show gold */
-        }
+            --blyza-orange-primary: #FF8833;
+            --blyza-purple-secondary: #cb7ae1;
+            --blyza-keppel-accent: #00BFA6;
+            --blyza-sunny-yellow: #FFDF00;
+            --blyza-quickfire-red: #EA2027;
 
+            --darker-grey-bg: #4A4A4A;
+            --text-light: #FDFEFE;
+            --text-dark: #2C3A47;
+            --text-medium: #535c68;
+            --black-stroke: #1A1A1A;
+
+            --font-logo: "Luckiest Guy", cursive;
+            --font-heading-alt: "Bungee", cursive;
+            --font-body: 'Quicksand', sans-serif;
+            --border-radius-game: 12px;
+            --shadow-chunky: 4px 4px 0px var(--black-stroke);
+        }
+        /* --- END: BRAND IDENTITY & ROOT VARIABLES --- */
+
+        /* --- Basic Reset & Body --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
         body {
-            font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
-            color: var(--light);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            font-family: var(--font-body);
+            color: var(--text-light);
+            background: linear-gradient(135deg, var(--blyza-orange-primary) 0%, var(--blyza-purple-secondary) 100%);
             line-height: 1.6;
             overflow-x: hidden;
+            position: relative;
+            min-height: var(--app-height, 100vh); 
+            display: flex;
+            justify-content: center;
+            padding: 20px;
         }
 
+        /* --- Floating Background Elements (Themed for Paranoia) --- */
+        .hero-background-elements { position: fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events: none; }
+        .bg-game-element {
+            position: absolute; opacity: 0.1; color: var(--text-light);
+            animation: floatSimple 20s infinite ease-in-out alternate;
+            user-select: none;
+        }
+        .bg-question-1 { font-size: 150px; top: 10%; left: 5%; --initial-rotate: -15deg; animation-duration: 22s; }
+        .bg-eye-1 { font-size: 100px; top: 65%; right: 8%; --initial-rotate: 10deg; animation-duration: 18s; }
+        .bg-user-1 { font-size: 120px; top: 70%; left: 15%; --initial-rotate: 5deg; animation-duration: 25s; opacity: 0.08; }
+        .bg-thought-1 { font-size: 130px; top: 15%; right: 10%; --initial-rotate: 20deg; animation-duration: 16s; }
+        .bg-question-2 { font-size: 80px; top: 80%; right: 25%; --initial-rotate: 25deg; animation-duration: 15s; }
+        .bg-eye-2 { font-size: 120px; bottom: 5%; left: 3%; --initial-rotate: -5deg; animation-duration: 28s; }
+        .bg-user-2 { font-size: 90px; top: 20%; left: 20%; --initial-rotate: 15deg; animation-duration: 20s; }
+        .bg-bolt-1 { font-size: 70px; top: 5%; right: 30%; --initial-rotate: -10deg; animation-duration: 24s; }
+        .bg-user-secret-1 { font-size: 110px; bottom: 10%; right: 4%; --initial-rotate: 12deg; animation-duration: 19s; }
+        .bg-question-3 { font-size: 60px; top: 50%; left: 1%; --initial-rotate: 20deg; animation-duration: 26s; }
+
+
+        @keyframes floatSimple {
+            0% { transform: translateY(0px) rotate(var(--initial-rotate, 0deg)); }
+            50% { transform: translateY(-25px) rotate(calc(var(--initial-rotate, 0deg) + 8deg)); }
+            100% { transform: translateY(0px) rotate(calc(var(--initial-rotate, 0deg) - 8deg)); }
+        }
+        
+        /* --- Main Game Container --- */
         .game-container {
             max-width: 900px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 30px; /* GTP Padding */
-            box-shadow:
-                0 20px 40px rgba(0, 0, 0, 0.4),
-                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            background: linear-gradient(145deg, #fdfefe, #e9ecef);
+            color: var(--text-dark);
+            border-radius: var(--border-radius-game);
+            border: 3px solid var(--black-stroke);
+            box-shadow: 8px 8px 0px var(--black-stroke);
+            padding: 30px; 
             text-align: center;
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: auto 0;
+            z-index: 2;
         }
 
-        /* Brand Logo Styles */
-        .brand-logo {
-            object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        .brand-logo { object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+        .brand-logo-prominent { display: block; margin: 0 auto 15px; max-height: 80px; }
+        
+        h1 {
+            font-family: var(--font-logo);
+            font-size: clamp(2.5rem, 6vw, 3.5rem);
+            color: var(--blyza-orange-primary);
+            -webkit-text-stroke: 2px var(--black-stroke);
+            text-stroke: 2px var(--black-stroke);
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
+            line-height: 1.1;
         }
-        .brand-logo-prominent {
-            display: block;
-            margin: 0 auto 20px;
-            max-height: 80px; /* GTP Height */
-        }
-
-        h1 { /* Main Game Title */
-            font-family: "Luckiest Guy", cursive;
-            font-size: 3rem; /* GTP Size */
-            margin-bottom: 25px;
-            color: var(--gold);
-            text-shadow:
-                0 2px 0px #000,
-                0 4px 6px rgba(0, 0, 0, 0.5),
-                0 0 30px var(--primary);
-            letter-spacing: 1px;
-            margin-top: 10px;
-        }
-
-        /* Screen Styles */
+        
         .screen { display: none; animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .active { display: block; }
-
-        /* Player Input Styles - GTP Style */
-        .player-inputs {
-            margin: 30px 0;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
+        
+        /* --- Instructions & Info Panels --- */
+        .instructions, .player-inputs {
+            background: rgba(0,0,0, 0.04);
+            padding: 20px; border-radius: 10px; margin: 25px 0;
+            border: 2px dashed var(--text-medium);
         }
-        .player-inputs h3 { /* "Enter Player Names" */
-             font-family: "Bungee", cursive;
-             font-size: 1.6rem;
-             margin-bottom: 20px;
-             color: var(--primary);
-             text-shadow: 0 1px 2px #000;
-        }
-        .player-input-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .instructions p, .player-inputs h3 {
+            font-size: 1.1rem;
             margin-bottom: 15px;
+            font-weight: 600;
+            font-family: var(--font-heading-alt);
         }
+        .player-inputs h3 {
+             font-size: 1.4rem;
+             margin-bottom: 5px;
+        }
+        .instructions ul { list-style-type: none; text-align: left; padding: 0 10px; }
+        .instructions li { margin-bottom: 10px; display: flex; align-items: center; }
+        .instructions li a {
+            color: var(--blyza-orange-primary);
+            text-decoration: underline;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+        .instructions li a:hover { color: var(--blyza-purple-secondary); }
+        .instructions i { margin-right: 15px; font-size: 1.3em; color: var(--blyza-purple-secondary); width: 20px; text-align: center;}
+        
+        /* --- Buttons --- */
+        button, .btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-info {
+            font-family: var(--font-heading-alt); font-size: 1.1rem; padding: 0.7em 1.5em;
+            border: 3px solid var(--black-stroke); border-radius: 8px;
+            text-transform: uppercase; text-decoration: none; display: inline-flex;
+            align-items: center; justify-content: center; gap: 10px;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+            letter-spacing: 1px; cursor: pointer; color: var(--text-dark);
+            margin: 8px 5px;
+            box-shadow: var(--shadow-chunky);
+        }
+        button:hover:not(:disabled) { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black-stroke); }
+        button:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
+        button:disabled { background: var(--text-medium); color: var(--text-light); cursor: not-allowed; opacity: 0.7; box-shadow: var(--shadow-chunky); }
+
+        .btn-primary { background-color: var(--blyza-sunny-yellow); }
+        .btn-secondary { background-color: var(--blyza-purple-secondary); color: var(--text-light); }
+        .btn-success { background-color: var(--blyza-keppel-accent); color: var(--text-light); }
+        .btn-danger { background-color: var(--blyza-quickfire-red); color: var(--text-light); }
+        .btn-info { background-color: #4ECDC4; color: var(--text-dark); }
+
+        /* --- Player Input Styles --- */
+        .player-input-wrapper { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
         .player-input-wrapper input {
-            flex-grow: 1;
-            padding: 15px 20px; /* GTP input padding */
-            border-radius: 12px; /* GTP input radius */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 1.1rem; /* GTP input font size */
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--light);
-            transition: all 0.3s ease;
-            font-family: 'Quicksand', sans-serif;
+            width: 100%; padding: 12px 18px; border-radius: 8px;
+            border: 3px solid var(--black-stroke); background: var(--text-light);
+            color: var(--text-dark); font-size: 1rem; transition: all 0.3s ease;
+            font-family: var(--font-body); font-weight: 600;
         }
-        .player-input-wrapper input:focus {
-            outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 10px rgba(203, 122, 225, 0.2);
+        .player-input-wrapper input:focus { outline: none; border-color: var(--blyza-orange-primary); box-shadow: 0 0 0 3px var(--blyza-sunny-yellow); }
+        .remove-player-btn {
+            padding: 0.5em 0.8em; font-size: 0.8rem; flex-shrink: 0; min-width: auto;
         }
-        .remove-player-btn { /* Inherits general button, specific overrides */
-            padding: 8px 12px !important;
-            font-size: 0.9rem !important;
-            min-width: auto; /* Allow to shrink for icon */
-        }
-        .remove-player-btn i { margin: 0; } /* Center icon if only child */
 
+        /* --- Game Screen --- */
+        .round-info-display {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 12px 25px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-family: var(--font-heading-alt);
+            color: var(--text-dark);
+            border: 2px solid var(--black-stroke);
+        }
 
-        /* Slot Machine Animation - GTP Style */
+        /* --- Slot Machine (TV Screen Style) --- */
         .slot-machine {
-            height: 180px;
-            overflow: hidden;
-            position: relative;
-            background: var(--darker); /* Darker, like a TV screen */
-            border-radius: 15px;
-            margin: 30px auto;
-            border: 5px solid #333; /* TV border */
-            box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,0,0,0.3);
-            width: 90%;
-            max-width: 600px; /* Wider for effect */
+            background: #111; border: 10px solid #333; border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.7), inset 0 0 10px rgba(0,0,0,0.5);
+            position: relative; height: 160px;
+            margin: 20px auto; overflow: hidden;
+            width: 95%; max-width: 600px;
         }
-        .slot-window { /* The "selected" area, like a target line on a slot */
-            height: 50px;
-            width: 100%;
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 215, 0, 0.15); /* Gold tint */
-            border-top: 3px solid var(--gold);
-            border-bottom: 3px solid var(--gold);
-            box-shadow: 0 0 15px var(--gold);
-            z-index: 1;
+        .slot-window {
+            height: 50px; width: 100%; position: absolute;
+            top: 50%; transform: translateY(-50%);
+            border-top: 3px solid var(--blyza-sunny-yellow);
+            border-bottom: 3px solid var(--blyza-sunny-yellow);
+            box-shadow: 0 0 15px var(--blyza-sunny-yellow); z-index: 1;
         }
         .slot-items-container {
-            position: absolute;
-            width: 100%;
-            top: 0;
+            position: absolute; width: 100%; top: 0;
             transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
         .slot-item {
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem; /* Larger font */
-            color: var(--light);
-            font-weight: bold;
-            font-family: "Bungee", cursive;
-            text-shadow: 0 1px 3px #000, 0 0 5px var(--primary); /* Game show text shadow */
-            text-transform: uppercase; /* More emphasis */
+            height: 50px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; color: var(--text-light);
+            font-family: var(--font-heading-alt);
+            -webkit-text-stroke: 1px var(--black-stroke);
+            text-stroke: 1px var(--black-stroke);
+            text-transform: uppercase;
         }
 
-        /* Question Display - GTP Style Card */
+        /* --- Question Display --- */
         .question-display-area {
-            background: rgba(0,0,0, 0.2); /* GTP card BG */
-            padding: 25px;
-            border-radius: 20px;
-            margin: 30px 0;
-            border: 2px solid var(--gold); /* GTP card border */
-            box-shadow: 0 0 15px var(--gold); /* GTP card shadow */
-            position: relative;
+            background: rgba(0,0,0, 0.04);
+            padding: 20px; border-radius: 10px; margin: 25px 0;
+            border: 2px dashed var(--text-medium);
+            cursor: pointer;
         }
-        .question-text-element {
-            font-size: 1.5rem; /* Larger question text */
-            margin-bottom: 20px;
-            color: var(--light); /* Question in light, player name in gold/primary */
-            filter: blur(8px);
-            transition: filter 0.3s ease-in-out;
-            user-select: none;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            line-height: 1.5;
-        }
-        .question-text-element.revealed { filter: blur(0); }
-        .selected-player-name { /* "Question for: Player X" */
-            font-size: 1.8rem;
-            color: var(--gold);
-            margin: 10px 0 20px 0;
-            font-family: "Bungee", cursive;
-            text-shadow: 0 1px 2px #000;
+        .selected-player-name {
+            font-family: var(--font-heading-alt);
+            font-size: 1.6rem; color: var(--blyza-orange-primary);
         }
         .reveal-instruction-text {
-            font-size: 1.1rem;
-            color: var(--secondary);
-            margin: 15px 0 5px 0; /* Adjusted margin */
-            font-style: italic;
+            font-size: 0.9rem; color: var(--text-medium); font-style: italic;
         }
+        .question-text-element {
+            font-size: 1.3rem; margin-top: 15px;
+            font-weight: 600; line-height: 1.5; color: var(--text-dark);
+            filter: blur(8px); transition: filter 0.3s ease-in-out;
+            user-select: none; min-height: 90px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .question-text-element.revealed { filter: blur(0); }
 
-        /* Buttons - GTP Style */
-        button {
-            background: linear-gradient(135deg, var(--primary) 0%, #ff7711 100%);
-            color: var(--light);
-            border: 2px solid var(--darker);
-            padding: 15px 25px;
-            font-size: 1rem;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: normal; /* Bungee is bold */
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3), inset 0 -2px 5px rgba(0,0,0,0.2);
-            margin: 10px 5px;
-            font-family: "Bungee", cursive;
-            text-shadow: 1px 1px 2px #000;
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            flex-shrink: 0;
-        }
-        button:hover:not(:disabled) {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--primary);
-            background: linear-gradient(135deg, #ff7711 0%, var(--primary) 100%);
-        }
-        button:active:not(:disabled) { transform: translateY(-1px) scale(1.02); }
-        button:disabled {
-            background: rgba(255, 255, 255, 0.1);
-            cursor: not-allowed; opacity: 0.6;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transform: none; border-color: rgba(0,0,0,0.5);
-        }
-
-        .btn-primary {} /* Default */
-        .btn-secondary { background: linear-gradient(135deg, var(--secondary) 0%, #b85cd6 100%); }
-        .btn-secondary:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--secondary); }
-        .btn-success { background: linear-gradient(135deg, var(--success) 0%, #00a890 100%); }
-        .btn-success:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--success); }
-        .btn-danger { background: linear-gradient(135deg, var(--danger) 0%, #ff416c 100%); }
-        .btn-danger:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--danger); }
-        .btn-info { background: linear-gradient(135deg, var(--info) 0%, #3eb7af 100%); }
-        .btn-info:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 -2px 5px rgba(0,0,0,0.2), 0 0 10px var(--info); }
-
-
-        /* Round Info - GTP Style */
-        .round-info-display {
-            background: rgba(0, 0, 0, 0.2); /* GTP game info BG */
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            font-size: 1.2rem; /* Larger */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-family: "Orbitron", sans-serif; /* Match GTP Game Info */
-            color: var(--gold);
-            text-shadow: 0 0 5px var(--primary);
-        }
-
-        /* Instructions Section - GTP Style */
-        .instructions {
-            font-family: "Quicksand", sans-serif;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px;
-            border-radius: 20px;
-            margin: 30px 0;
-            line-height: 1.8;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            text-align: left;
-        }
-        .instructions p { /* "How to Play" title */
-            font-size: 1.2rem; margin-bottom: 15px; color: var(--light);
-            font-family: "Bungee", cursive;
-        }
-        .instructions ul { list-style-type: none; padding: 0 15px; }
-        .instructions li { margin-bottom: 12px; display: flex; align-items: center; color: var(--light); font-size: 1rem;}
-        .instructions li a { color: var(--primary); text-decoration: none; display:inline-flex; align-items: center; transition: color 0.3s ease;}
-        .instructions li a:hover { color: var(--secondary); }
-        .instructions i { margin-right: 15px; font-size: 1.4em; color: var(--primary); width:20px; text-align:center;}
-
-        /* Game Over Screen Specifics - GTP Style */
+        /* --- Game Over --- */
         .game-over-message {
-            font-size: 3rem; /* Match GTP win message */
-            margin: 30px 0;
-            color: var(--gold);
-            text-shadow: 0 3px 0px #000, 0 0 20px var(--primary);
-            font-family: "Luckiest Guy", cursive;
+            font-family: var(--font-logo); font-size: 3rem; margin: 20px 0;
+            color: var(--blyza-orange-primary);
+            -webkit-text-stroke: 2px var(--black-stroke);
+            text-stroke: 2px var(--black-stroke);
         }
         .game-over-trophy {
-            font-size: 6rem; /* Match GTP trophy */
-            margin: 20px 0 30px 0;
-            animation: bounce 1.5s infinite ease-in-out;
-            color: var(--gold);
-            text-shadow: 0 0 20px var(--gold), 0 0 30px var(--primary);
+            font-size: 6rem; margin: 20px 0; animation: bounce 1.5s infinite ease-in-out;
+            color: var(--blyza-sunny-yellow);
+            text-shadow: 0 0 20px var(--blyza-orange-primary), 3px 3px 0 var(--black-stroke);
         }
-        @keyframes bounce { /* Match GTP bounce */
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-35px) scale(1.1); }
-        }
-        /* Game Over Buttons & Treat Yourself - GTP Style */
-        .game-over-buttons-container {
-            display: flex; justify-content: center; align-items: flex-start;
-            flex-wrap: wrap; gap: 10px; margin-top: 20px;
-        }
-        .game-over-button-wrapper {
-            position: relative; display: flex; flex-direction: column; align-items: center;
-        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-25px); } }
+        
+        .game-over-buttons-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
+        .game-over-button-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; }
         .treat-yourself-callout {
-            margin-bottom: 8px; background-color: var(--gold); color: var(--darker);
-            padding: 8px 15px; border-radius: 20px; font-family: "Bungee", cursive;
-            font-size: 0.9rem; white-space: nowrap; box-shadow: 0 2px 10px rgba(255,215,0,0.5);
+            margin-bottom: 8px; background-color: var(--blyza-sunny-yellow); color: var(--text-dark);
+            padding: 8px 15px; border-radius: 20px; font-family: var(--font-heading-alt);
+            font-size: 0.9rem; white-space: nowrap; box-shadow: var(--shadow-chunky);
             display: none; align-items: center; gap: 8px; z-index: 10;
+            border: 2px solid var(--black-stroke);
         }
         .treat-yourself-callout i { font-size: 1.2em; animation: bounceArrow 1s infinite; }
-        @keyframes bounceArrow {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
-        }
+        @keyframes bounceArrow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
-
-        /* Icon Buttons (Home, Back, Settings) */
+        /* --- Floating Icon Buttons --- */
         .icon-btn {
-            position: absolute;
-            background: rgba(0,0,0, 0.3); color: var(--light);
-            border: 1px solid var(--gold); border-radius: 50%;
-            width: 40px; height: 40px; font-size: 1.1rem;
-            cursor: pointer; transition: all 0.3s ease;
-            display: flex; justify-content: center; align-items: center;
-            z-index: 100; padding: 0; margin: 0;
-            box-shadow: none; text-shadow: none;
-            text-decoration: none; /* For <a> tags */
+            position: absolute; background-color: var(--blyza-purple-secondary);
+            color: var(--text-light); border-radius: 50%; width: 55px; height: 55px;
+            font-size: 1.2rem; cursor: pointer; transition: all 0.1s ease;
+            display: flex; justify-content: center; align-items: center; z-index: 100;
+            text-decoration: none; border: 3px solid var(--black-stroke);
+            box-shadow: 4px 4px 0px var(--black-stroke);
         }
-        .icon-btn#settings-btn { top: 15px; right: 15px; }
-        .icon-btn#home-menu-btn { top: 15px; left: 15px; display: flex; }
-        .icon-btn#back-btn { top: 15px; left: 15px; display: none; }
-        .icon-btn:hover {
-            background: rgba(0,0,0, 0.5); transform: scale(1.1) rotate(15deg);
-            box-shadow: 0 0 10px var(--gold);
-        }
-        .icon-btn#back-btn:hover { transform: scale(1.1) rotate(-5deg); }
-        .icon-btn i { margin: 0; }
-
-        /* Modal Styles - GTP Style */
+        .icon-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black-stroke); }
+        .icon-btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
+        #settings-btn { top: 20px; right: 20px; }
+        #home-menu-btn, #back-btn { top: 20px; left: 20px; }
+        #back-btn { display: none; }
+        
+        /* --- Modal Styles --- */
         .modal {
-            position: fixed; z-index: 1000; left: 0; top: 0;
-            width: 100%; height: 100%; overflow: auto;
-            background-color: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
             display: none; justify-content: center; align-items: center;
         }
         .modal-content {
-            background-color: var(--darker); margin: auto; padding: 30px;
-            border: 2px solid var(--gold); border-radius: 15px;
-            width: 80%; max-width: 450px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px var(--primary);
-            position: relative; color: var(--light);
+            background-color: var(--darker-grey-bg); margin: auto; padding: 25px;
+            border: 3px solid var(--black-stroke); border-radius: var(--border-radius-game);
+            width: 90%; max-width: 450px; box-shadow: 8px 8px 0px rgba(0,0,0,0.4);
+            position: relative; color: var(--text-light);
         }
-        .modal-content h2 { /* Settings title in modal */
-            font-family: "Bungee", cursive; color: var(--primary);
-            text-align: center; margin-bottom: 25px; font-size: 1.8rem;
+        .modal-content h2 {
+            font-family: var(--font-logo); color: var(--blyza-orange-primary);
+            -webkit-text-stroke: 1.5px var(--black-stroke); text-stroke: 1.5px var(--black-stroke);
+            text-align: center; margin-bottom: 25px; font-size: 2rem;
         }
-        .setting-item { margin-bottom: 20px; display: flex; flex-direction: column; }
-        .setting-item label { margin-bottom: 8px; font-weight: 600; font-size: 0.9rem;}
+        .setting-item { margin-bottom: 18px; display: flex; flex-direction: column; }
+        .setting-item label { margin-bottom: 10px; font-weight: 600; font-size: 1rem; }
+        .close-modal-btn { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.2s; }
+        .close-modal-btn:hover { color: var(--text-light); }
+        .modal-content button#sfx-toggle-btn { font-size: 1rem; padding: 10px 20px; }
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
-        input[type=range]::-webkit-slider-thumb {
-          -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
-          background: var(--primary); cursor: pointer; margin-top: -7px;
-          box-shadow: 0 0 8px var(--primary);
-        }
-        input[type=range]::-moz-range-thumb {
-          height: 20px; width: 20px; border-radius: 50%; background: var(--primary);
-          cursor: pointer; border: none; box-shadow: 0 0 8px var(--primary);
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-          width: 100%; height: 6px; cursor: pointer; background: rgba(255,255,255,0.2);
-          border-radius: 3px; border: 1px solid rgba(0,0,0,0.2);
-        }
-        input[type=range]::-moz-range-track {
-          width: 100%; height: 6px; cursor: pointer; background: rgba(255,255,255,0.2);
-          border-radius: 3px; border: 1px solid rgba(0,0,0,0.2);
-        }
-        .close-modal-btn {
-            color: #aaa; position: absolute; top: 15px; right: 20px;
-            font-size: 28px; font-weight: bold; cursor: pointer;
-        }
-        .close-modal-btn:hover, .close-modal-btn:focus { color: var(--light); text-decoration: none; }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 10px; cursor: pointer; background: rgba(0,0,0,0.3); border-radius: 5px; border: 2px solid var(--black-stroke); }
+        input[type=range]::-webkit-slider-thumb { border: 2px solid var(--black-stroke); height: 22px; width: 22px; border-radius: 50%; background: var(--blyza-orange-primary); cursor: pointer; -webkit-appearance: none; margin-top: -9px; }
 
-        /* Feedback Pop-up Styles - GTP Style */
+        /* --- Feedback Popup --- */
         .feedback-popup {
             position: fixed; top: 50%; left: 50%;
-            background-color: rgba(15, 16, 18, 0.97);
-            color: white; padding: 30px 50px;
-            border-radius: 20px;
-            font-size: 2.8rem;
-            font-family: "Luckiest Guy", cursive; text-align: center;
-            z-index: 2000; box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+            background-color: var(--text-dark); color: white;
+            padding: 25px 40px; border-radius: var(--border-radius-game);
+            font-size: 2.5rem; font-family: var(--font-logo); text-align: center;
+            z-index: 2000; box-shadow: 8px 8px 0px rgba(0,0,0,0.5);
             opacity: 0; transform: translate(-50%, -50%) scale(0.7);
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-            pointer-events: none; border: 3px solid var(--gold);
-            display: none; /* JS toggles .show */
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none; border: 3px solid var(--black-stroke);
+            display: none;
         }
-        .feedback-popup.show { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; display: block; }
-        .feedback-popup.info { color: var(--info); border-color: var(--info); text-shadow: 0 0 15px var(--info); }
-        .feedback-popup.correct { color: var(--success); border-color: var(--success); text-shadow: 0 0 15px var(--success); }
-        .feedback-popup.danger { color: var(--danger); border-color: var(--danger); text-shadow: 0 0 15px var(--danger); }
-
-
-        /* Responsive Design */
+        .feedback-popup.show { opacity: 1; transform: translate(-50%, -50%) scale(1); display: block; }
+        .feedback-popup.info { color: var(--blyza-sunny-yellow); }
+        .feedback-popup.danger { color: var(--blyza-quickfire-red); }
+        .feedback-popup.correct { color: var(--blyza-keppel-accent); }
+        
+        /* --- Responsive Adjustments --- */
         @media (max-width: 768px) {
-            .game-container { padding: 25px; }
-            h1 { font-size: 2.5rem; }
-            .player-inputs h3 { font-size: 1.4rem; }
-            .slot-machine { height: 160px; width: 95%;}
-            .slot-item { font-size: 1.4rem; }
-            .question-text-element { font-size: 1.3rem; min-height: 80px; }
-            .selected-player-name { font-size: 1.6rem; }
-            .feedback-popup { font-size: 2rem; padding: 25px 35px; width: 90%;}
+            body { padding: 10px; }
+            .game-container { padding: 45px 15px 15px; } 
+            h1 { font-size: 2.2rem; margin-top: 5px; }
+            .instructions, .player-inputs { padding: 15px; }
+            .icon-btn { width: 48px; height: 48px; }
+            #settings-btn { top: 12px; right: 12px; }
+            #home-menu-btn, #back-btn { top: 12px; left: 12px; }
+            .feedback-popup { font-size: 2rem; padding: 20px 30px; width: 90%; }
             .modal-content { padding: 20px; }
-            .game-over-buttons-container { flex-direction: column; align-items: center;}
-            .game-over-buttons-container .game-over-button-wrapper { width: 90%; margin: 5px auto;}
-            .game-over-buttons-container .game-over-button-wrapper button { width: 100%;}
-            .round-info-display { font-size: 1.1rem; padding: 12px 18px;}
-            .icon-btn { top: 10px; right: 10px; width: 38px; height: 38px; font-size: 1rem; }
-            .icon-btn#home-menu-btn, .icon-btn#back-btn { top: 10px; left: 10px; }
+            .game-over-buttons-container { flex-direction: column; align-items: center; }
+            .game-over-buttons-container .game-over-button-wrapper { width: 90%; }
+            .game-over-buttons-container .game-over-button-wrapper button { width: 100%; }
+            .game-over-message { font-size: 2.2rem; }
+            .bg-game-element { display: none; }
+            .slot-machine { height: 140px; }
+            .slot-item { font-size: 1.4rem; }
+            .question-text-element { font-size: 1.2rem; min-height: 80px; }
+            .selected-player-name { font-size: 1.5rem; }
         }
-         @media (max-width: 480px) {
-              h1 { font-size: 2rem; }
-              .player-inputs h3 { font-size: 1.2rem; }
-              .instructions li { font-size: 0.9rem; }
-              .player-input-wrapper input { padding: 12px 18px; font-size: 1rem;}
-              .remove-player-btn { padding: 7px 10px !important; font-size: 0.8rem !important;}
-              .slot-machine { height: 140px; }
-              .slot-item { font-size: 1.2rem; }
-              .question-text-element { font-size: 1.1rem; min-height: 70px;}
-              .selected-player-name { font-size: 1.4rem; }
-              .game-over-message { font-size: 2.2rem; }
-         }
-
     </style>
 </head>
 <body>
+    <!-- Floating background elements -->
+    <div class="hero-background-elements">
+        <div class="bg-game-element bg-question-1"><i class="fas fa-question-circle"></i></div>
+        <div class="bg-game-element bg-eye-1"><i class="fas fa-eye"></i></div>
+        <div class="bg-game-element bg-user-1"><i class="fas fa-user"></i></div>
+        <div class="bg-game-element bg-thought-1"><i class="fas fa-comment-dots"></i></div>
+        <div class="bg-game-element bg-question-2"><i class="fas fa-question-circle"></i></div>
+        <div class="bg-game-element bg-eye-2"><i class="fas fa-eye"></i></div>
+        <div class="bg-game-element bg-user-2"><i class="fas fa-user"></i></div>
+        <div class="bg-game-element bg-bolt-1"><i class="fas fa-bolt"></i></div>
+        <div class="bg-game-element bg-user-secret-1"><i class="fas fa-user-secret"></i></div>
+        <div class="bg-game-element bg-question-3"><i class="fas fa-question-circle"></i></div>
+    </div>
+
+    <script>
+        function setAppHeight() {
+            const doc = document.documentElement;
+            doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+        }
+        window.addEventListener('resize', setAppHeight);
+        setAppHeight();
+    </script>
+
     <div class="game-container">
         <a href="/" id="home-menu-btn" class="icon-btn" aria-label="Back to Games List">
             <i class="fas fa-home"></i>
@@ -470,24 +382,23 @@
             <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
             <h1>Paranoia</h1>
             <div class="instructions">
-                <p>HOW TO PLAY:</p>
+                <p><strong>HOW TO PLAY:</strong></p>
                 <ul>
                     <li><i class="fas fa-users"></i> Play with 3-12 players</li>
                     <li><i class="fas fa-random"></i> A random player is selected each round</li>
-                    <li><i class="fas fa-question"></i> The selected player gets a secret question</li>
-                    <li><i class="fas fa-user-secret"></i> They must answer by choosing another player</li>
+                    <li><i class="fas fa-question"></i> They must answer a secret question by choosing another player</li>
                     <li><i class="fas fa-volume-up"></i> The question is revealed to everyone *after* the choice</li>
                     <li><i class="fas fa-trophy"></i> 5 rounds of fun and revelations!</li>
                      <li>
                         <a href="https://www.youtube.com/watch?v=rGRIRy4LG50" target="_blank" rel="noopener noreferrer">
-                            <i class="fab fa-youtube"></i> Watch a video tutorial on rules
+                            <i class="fab fa-youtube"></i> Watch a video of the rules
                         </a>
                     </li>
                 </ul>
             </div>
             <div class="player-inputs">
                 <h3>Enter Player Names</h3>
-                <p class="info-text" style="font-size:0.9rem; margin-top:-15px; margin-bottom:15px; color: rgba(242,242,242,0.7);">(3-12 players)</p>
+                <p style="font-size:0.9rem; margin-top:-10px; margin-bottom:15px; color: var(--text-medium);">(3-12 players)</p>
                 <div id="player-names-list"></div>
                 <button id="add-player-btn" class="btn-secondary"><i class="fas fa-plus"></i> Add Player</button>
             </div>
@@ -513,8 +424,8 @@
             </div>
             <div class="question-display-area">
                 <div class="selected-player-name" id="selected-player-display"></div>
-                <div class="reveal-instruction-text">Tap question to reveal</div>
                 <div class="question-text-element" id="question-text-display"></div>
+                <div class="reveal-instruction-text">(Tap question to reveal)</div>
             </div>
             <button id="next-round-btn" class="btn-primary">Next Round <i class="fas fa-arrow-right"></i></button>
         </div>
@@ -523,7 +434,7 @@
         <div id="game-over-screen" class="screen">
             <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
             <h1>Game Over!</h1>
-            <div class="game-over-message">Thanks for playing Paranoia!</div>
+            <div class="game-over-message">Thanks for playing!</div>
             <div class="game-over-trophy">🎉</div>
             <div class="game-over-buttons-container">
                 <div class="game-over-button-wrapper">
@@ -572,6 +483,7 @@
        <script>
         const gameConfig = { sfxEnabled: true, musicVolume: 0.2, minPlayers: 3, maxPlayers: 12, totalRounds: 5, slotSpinDuration: 4500, slotItemHeight: 50 };
         const gameState = { players: [], currentRound: 1, selectedPlayerName: null, questions: [ "Who here do you think is the most attractive?", "Who here do you think is the least attractive?", "Who here would you trust with your deepest secret?", "Who here do you think is the least trustowrthy?", "Who here would you want to be stranded on a desert island with?", "Who here do you think is the most intelligent?", "Who here do you think is the dumbest?", "Who here do you think is the most charismatic?", "Who here would you never want as your roommate?", "Who here do you think is the least reliable?", "Who’s most likely to make out with a stranger at a party?", "Who gives off the most “main character” energy?", "Who do you think has the best-looking body?", "Who's most likely to ghost someone after a first date?", "Who looks like they’d be amazing in bed?", "Who looks like they’d be horrible in bed?", "Who would you most want to kiss right now?", "Who gives off the strongest “walking red flag” energy?", "Who’s most likely to get back with a toxic ex?", "Who’s most likely to pretend they’re innocent but really aren't?", "Who do you think has the worst music taste?", "Who’s most likely to betray someone for personal gain?", "Who's most likely to throw someone under the bus at work or school?", "Who do you think would fake being sick to get out of plans?", "Who's most likely to take credit for someone else's work?", "Who do you secretly think is way too fake in group settings?", "Who’s most likely to act like a victim when they were the problem?", "Who is the best at gaslighting someone?", "Who’s most likely to talk big online and be quiet in person?", "Who tries too hard to be liked by everyone?", "Who's most likely to exaggerate everything they say?" ], usedQuestionsThisGame: [] };
+        
         const screens = { start: document.getElementById('start-screen'), selection: document.getElementById('selection-screen'), question: document.getElementById('question-screen'), gameOver: document.getElementById('game-over-screen') };
         const homeMenuBtnEl = document.getElementById('home-menu-btn');
         const backBtnEl = document.getElementById('back-btn');
@@ -598,52 +510,45 @@
         const bgmVolumeSliderEl = document.getElementById('bgm-volume-slider');
         const sfxToggleBtnEl = document.getElementById('sfx-toggle-btn');
         const backgroundMusicAudioEl = document.getElementById('background-game-music');
-        const startGameSoundAudioEl = document.getElementById('start-game-sound');
-        const interactionSoundAudioEl = document.getElementById('interaction-sound');
-        const slotSpinSoundAudioEl = document.getElementById('slot-spin-sound');
-        const playerSelectedSoundAudioEl = document.getElementById('player-selected-sound');
-        const questionRevealSoundAudioEl = document.getElementById('question-reveal-sound');
-        const gameOverSoundAudioEl = document.getElementById('game-over-sound');
         const feedbackPopupEl = document.getElementById('feedback-popup');
         const feedbackMessageTextPopupEl = document.getElementById('feedback-message-text-el');
-        let feedbackTimeoutId;
 
-        function playSound(audioElement) { if (gameConfig.sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.volume = 0.7; audioElement.play().catch(e => console.error("SFX play error:", e)); } }
-        function playSoundWithCallback(audioElement, callback, ...args) { if (gameConfig.sfxEnabled && audioElement) { audioElement.currentTime = 0; audioElement.volume = 0.7; let cb = false; const ex = () => { if (!cb) { cb = true; audioElement.removeEventListener('ended', ex); if (typeof t !== 'undefined' && t) clearTimeout(t); if (callback) callback(...args); } }; audioElement.addEventListener('ended', ex); const d = (audioElement.duration && isFinite(audioElement.duration)) ? audioElement.duration * 1000 : 500; const t = setTimeout(ex, d + 200); audioElement.play().catch(e => { console.error("SFX play error:", e); ex(); }); } else { if (callback) callback(...args); } }
-        function initBackgroundMusic() { backgroundMusicAudioEl.volume = gameConfig.musicVolume; backgroundMusicAudioEl.play().catch(e => console.log("BGM autoplay failed.", e)); }
+        const allSfx = [ document.getElementById('start-game-sound'), document.getElementById('interaction-sound'), document.getElementById('slot-spin-sound'), document.getElementById('player-selected-sound'), document.getElementById('question-reveal-sound'), document.getElementById('game-over-sound') ];
+        let feedbackTimeoutId, audioContextStarted = false;
+
+        function initAudio() { if (audioContextStarted) return; audioContextStarted = true; console.log("Audio context unlocked."); backgroundMusicAudioEl.play().catch(e => {}); allSfx.forEach(sound => { if(sound) { sound.volume = 0; sound.play().then(() => { sound.pause(); sound.currentTime = 0; sound.volume = 1; }).catch(e => {}); } }); }
+        function playSound(audioElement) { if (gameConfig.sfxEnabled && audioElement && audioContextStarted) { audioElement.currentTime = 0; audioElement.play().catch(e => {}); } }
+        function playSoundWithCallback(audioElement, callback, ...args) { if (gameConfig.sfxEnabled && audioElement && audioContextStarted) { audioElement.currentTime = 0; let cbExecuted = false; const execCb = () => { if (!cbExecuted) { cbExecuted = true; audioElement.onended = null; if (timeoutId) clearTimeout(timeoutId); if (callback) callback(...args); } }; audioElement.onended = execCb; const timeoutId = setTimeout(execCb, (audioElement.duration && isFinite(audioElement.duration)) ? audioElement.duration * 1000 + 200 : 500); audioElement.play().catch(e => { execCb(); }); } else { if (callback) callback(...args); } }
         function showFeedbackMessage(message, type = 'info', duration = 2500) { feedbackMessageTextPopupEl.textContent = message; feedbackPopupEl.className = 'feedback-popup'; if (type) feedbackPopupEl.classList.add(type); feedbackPopupEl.classList.add('show'); clearTimeout(feedbackTimeoutId); feedbackTimeoutId = setTimeout(() => { feedbackPopupEl.classList.remove('show'); }, duration); }
+        function loadAudioSettings() { const savedVol = localStorage.getItem('musicVolume'), savedSfx = localStorage.getItem('sfxEnabled'); if (savedVol !== null) gameConfig.musicVolume = parseFloat(savedVol); if (savedSfx !== null) gameConfig.sfxEnabled = savedSfx === 'true'; backgroundMusicAudioEl.volume = gameConfig.musicVolume; bgmVolumeSliderEl.value = gameConfig.musicVolume; sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; }
 
         function switchScreen(screenId) {
             Object.values(screens).forEach(screen => screen.classList.remove('active'));
             screens[screenId].classList.add('active');
             
-            const isStartScreen = screenId === 'start';
-            homeMenuBtnEl.style.display = isStartScreen ? 'flex' : 'none';
-            backBtnEl.style.display = isStartScreen ? 'none' : 'flex';
-
-            if (screenId === 'gameOver') { // Also hide back button on final game over screen
-                 backBtnEl.style.display = 'none';
-            }
+            const isStartOrGameOver = screenId === 'start' || screenId === 'gameOver';
+            homeMenuBtnEl.style.display = isStartOrGameOver ? 'flex' : 'none';
+            backBtnEl.style.display = isStartOrGameOver ? 'none' : 'flex';
 
             if (treatYourselfElement) {
                 treatYourselfElement.style.display = (screenId === 'gameOver') ? 'flex' : 'none';
             }
         }
         
-        backBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); mainMenu(); });
-        addPlayerBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); addPlayerInput(); });
-        startGameBtnEl.addEventListener('click', () => { if(backgroundMusicAudioEl.paused) initBackgroundMusic(); playSoundWithCallback(startGameSoundAudioEl, startGame); });
+        document.body.addEventListener('click', initAudio, { once: true });
+        backBtnEl.addEventListener('click', () => { playSound(allSfx[1]); mainMenu(); });
+        addPlayerBtnEl.addEventListener('click', () => { playSound(allSfx[1]); addPlayerInput(); });
+        startGameBtnEl.addEventListener('click', () => { playSoundWithCallback(allSfx[0], startGame); });
         pickPlayerBtnEl.addEventListener('click', () => { startPlayerSelection(); });
-        nextRoundBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); nextRound(); });
-        playAgainBtnEl.addEventListener('click', () => { playSoundWithCallback(startGameSoundAudioEl, playAgain); });
-        mainMenuBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); mainMenu(); });
-        visitStoreBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); window.location.href = '/store'; });
-        questionTextDisplayEl.parentElement.addEventListener('click', () => { if (!questionTextDisplayEl.classList.contains('revealed')) { playSound(questionRevealSoundAudioEl); questionTextDisplayEl.classList.add('revealed'); } });
-        settingsBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'flex'; });
-        closeModalBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; });
-        window.addEventListener('click', (event) => { if (event.target === settingsModalEl) { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; } });
-        bgmVolumeSliderEl.addEventListener('input', (e) => { gameConfig.musicVolume = parseFloat(e.target.value); backgroundMusicAudioEl.volume = gameConfig.musicVolume; });
-        sfxToggleBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); gameConfig.sfxEnabled = !gameConfig.sfxEnabled; sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; sfxToggleBtnEl.classList.toggle('btn-success', gameConfig.sfxEnabled); sfxToggleBtnEl.classList.toggle('btn-danger', !gameConfig.sfxEnabled); });
+        nextRoundBtnEl.addEventListener('click', () => { playSound(allSfx[1]); nextRound(); });
+        playAgainBtnEl.addEventListener('click', () => { playSoundWithCallback(allSfx[0], playAgain); });
+        mainMenuBtnEl.addEventListener('click', () => { playSound(allSfx[1]); mainMenu(); });
+        visitStoreBtnEl.addEventListener('click', () => { playSound(allSfx[1]); window.location.href = '/store'; });
+        questionTextDisplayEl.parentElement.addEventListener('click', () => { if (!questionTextDisplayEl.classList.contains('revealed')) { playSound(allSfx[4]); questionTextDisplayEl.classList.add('revealed'); } });
+        settingsBtnEl.addEventListener('click', () => { playSound(allSfx[1]); settingsModalEl.style.display = 'flex'; });
+        closeModalBtnEl.addEventListener('click', () => { playSound(allSfx[1]); settingsModalEl.style.display = 'none'; });
+        bgmVolumeSliderEl.addEventListener('input', (e) => { gameConfig.musicVolume = parseFloat(e.target.value); backgroundMusicAudioEl.volume = gameConfig.musicVolume; localStorage.setItem('musicVolume', gameConfig.musicVolume); });
+        sfxToggleBtnEl.addEventListener('click', () => { gameConfig.sfxEnabled = !gameConfig.sfxEnabled; sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; playSound(allSfx[1]); localStorage.setItem('sfxEnabled', gameConfig.sfxEnabled); });
 
         function createPlayerInputField(playerNumber) {
             const wrapper = document.createElement('div');
@@ -656,7 +561,7 @@
             const removeBtn = document.createElement('button');
             removeBtn.className = 'remove-player-btn btn-danger';
             removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-            removeBtn.onclick = function() { playSound(interactionSoundAudioEl); wrapper.remove(); updateAddRemovePlayerButtons(); };
+            removeBtn.onclick = function() { playSound(allSfx[1]); wrapper.remove(); updateAddRemovePlayerButtons(); };
             wrapper.appendChild(removeBtn);
             return wrapper;
         }
@@ -680,54 +585,63 @@
 
         function startGame() {
             gameState.players = Array.from(playerNamesListDiv.querySelectorAll('.player-name-input')).map((input, index) => input.value.trim() || `Player ${index + 1}`).filter(name => name !== '');
-            if (gameState.players.some(name => name.length > 15)) { showFeedbackMessage("Player names too long (max 15)!", "danger"); return; }
-            if (gameState.players.length < gameConfig.minPlayers) { showFeedbackMessage(`Need ${gameConfig.minPlayers}-${gameConfig.maxPlayers} players!`, 'danger'); return; }
+            if (gameState.players.some(name => name.length > 15)) { showFeedbackMessage("Player names too long!", "danger"); return; }
+            if (new Set(gameState.players.map(p => p.toLowerCase())).size !== gameState.players.length) { showFeedbackMessage("Player names must be unique!", "danger"); return; }
+            if (gameState.players.length < gameConfig.minPlayers) { showFeedbackMessage(`Need at least ${gameConfig.minPlayers} players!`, 'danger'); return; }
             gameState.currentRound = 1;
             gameState.selectedPlayerName = null;
             gameState.usedQuestionsThisGame = [];
             currentRoundTextEl.textContent = gameState.currentRound;
-            totalRoundsTextEl.textContent = gameConfig.totalRounds;
             questionScreenRoundTextEl.textContent = gameState.currentRound;
-            questionScreenTotalRoundsTextEl.textContent = gameConfig.totalRounds;
             setupSlotMachine();
             switchScreen('selection');
         }
 
         function setupSlotMachine() {
+            pickPlayerBtnEl.disabled = false;
             slotItemsContainerEl.innerHTML = '';
             slotItemsContainerEl.style.transition = 'none';
             slotItemsContainerEl.style.transform = 'translateY(0px)';
-            const repetitions = Math.max(15, Math.ceil(3000 / (gameState.players.length * gameConfig.slotItemHeight)) * gameState.players.length + gameState.players.length * 3);
+            const repetitions = 50; // More than enough for visual effect
+            const listForReel = [];
             for (let i = 0; i < repetitions; i++) {
                 const shuffledPlayers = [...gameState.players].sort(() => Math.random() - 0.5);
-                shuffledPlayers.forEach(player => {
-                    const item = document.createElement('div');
-                    item.className = 'slot-item';
-                    item.textContent = player;
-                    slotItemsContainerEl.appendChild(item);
-                });
+                listForReel.push(...shuffledPlayers);
             }
-            void slotItemsContainerEl.offsetWidth;
+            listForReel.forEach(player => {
+                const item = document.createElement('div');
+                item.className = 'slot-item';
+                item.textContent = player;
+                slotItemsContainerEl.appendChild(item);
+            });
+            void slotItemsContainerEl.offsetWidth; // Force reflow
         }
 
         function startPlayerSelection() {
             if (pickPlayerBtnEl.disabled) return;
             pickPlayerBtnEl.disabled = true;
-            playSound(slotSpinSoundAudioEl);
+            playSound(allSfx[2]); // slot spin
             const reelItems = Array.from(slotItemsContainerEl.children);
             const actualPlayerIndex = Math.floor(Math.random() * gameState.players.length);
             gameState.selectedPlayerName = gameState.players[actualPlayerIndex];
+            
+            const minLandingIndex = reelItems.length / 2;
             let targetIndexInReel = -1;
-            const minTargetIndex = gameState.players.length * 5;
-            for (let i = reelItems.length - 1; i >= 0; i--) { if (reelItems[i].textContent === gameState.selectedPlayerName && i >= minTargetIndex) { targetIndexInReel = i; break; } }
-            if (targetIndexInReel === -1) { const firstInstance = reelItems.findIndex(item => item.textContent === gameState.selectedPlayerName); targetIndexInReel = firstInstance !== -1 ? firstInstance + gameState.players.length * (Math.floor(reelItems.length / (gameState.players.length*2))) : Math.floor(reelItems.length / 2); }
-            targetIndexInReel = Math.min(targetIndexInReel, reelItems.length -1);
-            const slotMachineHeight = parseFloat(getComputedStyle(document.querySelector('.slot-machine')).height);
+            for (let i = reelItems.length - gameState.players.length - 1; i >= minLandingIndex; i--) {
+                if (reelItems[i].textContent === gameState.selectedPlayerName) {
+                    targetIndexInReel = i;
+                    break;
+                }
+            }
+            if (targetIndexInReel === -1) { targetIndexInReel = Math.floor(reelItems.length / 2); }
+
+            const slotMachineHeight = slotItemsContainerEl.parentElement.clientHeight;
             const yOffset = (targetIndexInReel * gameConfig.slotItemHeight) - (slotMachineHeight / 2) + (gameConfig.slotItemHeight / 2);
             slotItemsContainerEl.style.transition = `transform ${gameConfig.slotSpinDuration / 1000}s cubic-bezier(0.23, 1, 0.32, 1)`;
             slotItemsContainerEl.style.transform = `translateY(-${yOffset}px)`;
+            
             setTimeout(() => {
-                playSound(playerSelectedSoundAudioEl);
+                playSound(allSfx[3]); // player selected
                 selectedPlayerDisplayEl.textContent = `Question for: ${gameState.selectedPlayerName}`;
                 let questionPool = gameState.questions.filter(q => !gameState.usedQuestionsThisGame.includes(q));
                 if (questionPool.length === 0) { gameState.usedQuestionsThisGame = []; questionPool = [...gameState.questions]; }
@@ -735,14 +649,13 @@
                 gameState.usedQuestionsThisGame.push(randomQuestion);
                 questionTextDisplayEl.textContent = randomQuestion;
                 questionTextDisplayEl.classList.remove('revealed');
-                pickPlayerBtnEl.disabled = false;
                 switchScreen('question');
             }, gameConfig.slotSpinDuration + 200);
         }
 
         function nextRound() {
             if (gameState.currentRound >= gameConfig.totalRounds) {
-                playSound(gameOverSoundAudioEl);
+                playSound(allSfx[5]); // game over
                 showGameOver();
             } else {
                 gameState.currentRound++;
@@ -764,27 +677,23 @@
             switchScreen('gameOver');
         }
 
-        function playAgain() { startGame(); }
+        function playAgain() { 
+            if (treatYourselfElement) treatYourselfElement.style.display = 'none';
+            startGame(); 
+        }
         function mainMenu() {
             playerNamesListDiv.innerHTML = '';
             for (let i = 0; i < gameConfig.minPlayers; i++) { playerNamesListDiv.appendChild(createPlayerInputField(i + 1)); }
             updateAddRemovePlayerButtons();
             if (treatYourselfElement) treatYourselfElement.style.display = 'none';
-            if(backgroundMusicAudioEl.paused) initBackgroundMusic();
             switchScreen('start');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
-            sfxToggleBtnEl.classList.toggle('btn-success', gameConfig.sfxEnabled);
-            sfxToggleBtnEl.classList.toggle('btn-danger', !gameConfig.sfxEnabled);
-            bgmVolumeSliderEl.value = gameConfig.musicVolume;
+            loadAudioSettings();
             totalRoundsTextEl.textContent = gameConfig.totalRounds;
             questionScreenTotalRoundsTextEl.textContent = gameConfig.totalRounds;
-            playerNamesListDiv.innerHTML = '';
-            for (let i = 0; i < gameConfig.minPlayers; i++) { playerNamesListDiv.appendChild(createPlayerInputField(i + 1)); }
-            updateAddRemovePlayerButtons();
-            switchScreen('start');
+            mainMenu();
         });
     </script>
     <script>

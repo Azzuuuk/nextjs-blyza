@@ -158,6 +158,18 @@
         .role-card-front:hover { transform: translateY(-5px) scale(1.02); box-shadow: 6px 6px 0 var(--blyza-orange-primary); }
         .role-card-front p { font-family: var(--font-heading-alt); font-size: 1.2rem; }
         .role-card-back p { font-size: 1rem; color: var(--text-medium); margin-top: 12px; }
+        /* --- Add this new block to style the question text --- */
+#player-question {
+    font-size: 1.1rem;         /* Make the font a little bigger */
+    font-weight: 600;          /* Make it semi-bold */
+    color: var(--text-dark);   /* Change the color to be darker and more prominent */
+    font-style: italic;        /* Add an italic style */
+    line-height: 1.4;          /* Adjust the line spacing if the question is long */
+    padding: 10px;             /* Add some space around the text */
+    background: rgba(0,0,0,0.05); /* Give it a subtle background to stand out */
+    border-radius: 8px;        /* Round the corners of the background */
+    border: 2px dashed var(--blyza-purple-secondary); /* Give it a cool dashed border */
+}
         #player-role { font-family: var(--font-logo); font-size: 2.2rem; -webkit-text-stroke: 2px var(--black-stroke); text-stroke: 2px var(--black-stroke); margin-bottom: 15px; }
         .role-imposter { color: var(--blyza-quickfire-red); }
         .role-crewmate { color: var(--blyza-keppel-accent); }
