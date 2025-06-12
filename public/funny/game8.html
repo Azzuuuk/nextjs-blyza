@@ -311,6 +311,7 @@
         .icon-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black-stroke); }
         .icon-btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
         #settings-btn { top: 20px; right: 20px; }
+        #highscore-btn { top: 20px; right: 85px; background-color: var(--blyza-sunny-yellow); } /* NEW */
         #home-menu-btn, #back-btn { top: 20px; left: 20px; }
         #back-btn { display: none; }
         
@@ -344,7 +345,7 @@
         
         /* --- Responsive Adjustments --- */
         @media (max-width: 768px) {
-            body { padding: 10px; }
+            body { padding: 10px; margin-top: 30px; align-items: flex-start;}
             .game-container { padding: 45px 15px 15px; } 
             h1 { font-size: 2rem; margin-top: 5px; }
             .instructions { padding: 15px; }
@@ -352,6 +353,7 @@
             .choice-btn { width: 90%; max-width: none; }
             .icon-btn { width: 48px; height: 48px; }
             #settings-btn { top: 12px; right: 12px; }
+            #highscore-btn { top: 12px; right: 70px; } /* NEW */
             #home-menu-btn, #back-btn { top: 12px; left: 12px; }
             .feedback-popup { font-size: 2rem; padding: 20px 30px; width: 90%; }
             .modal-content { padding: 20px; }
@@ -395,6 +397,9 @@
         <button id="back-btn" class="icon-btn" aria-label="Go Back" style="display: none;">
             <i class="fas fa-arrow-left"></i>
         </button>
+        <button id="highscore-btn" class="icon-btn" aria-label="Show High Score">
+            <i class="fas fa-star"></i>
+        </button>
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
         </button>
@@ -409,33 +414,39 @@
                     <li><i class="fas fa-images"></i> You'll be shown a photo of two people.</li>
                     <li><i class="fas fa-user-friends"></i><i class="fas fa-heart" style="margin-left: 5px;"></i> Decide if they are siblings or if they are dating.</li>
                     <li><i class="fas fa-users"></i> Play solo or with up to 4 teams!</li>
-                    <li><i class="fas fa-check-double"></i> Get 1 point for each correct guess.</li>
-                    <li><i class="fas fa-trophy"></i> The game consists of 5 rounds. Good luck!</li>
                 </ul>
             </div>
              <div class="game-mode-selection">
                 <div class="mode-option selected" data-mode="single">
                     <i class="fas fa-user"></i>
                     <h3>Single Player</h3>
-                    <p>Play 5 rounds alone</p>
+                    <p>5 rounds or infinite mode</p>
                 </div>
                 <div class="mode-option" data-mode="multi">
                     <i class="fas fa-users"></i>
                     <h3>Multiplayer</h3>
-                    <p>Up to 4 teams</p>
+                    <p>Up to 4 teams, 5 rounds</p>
                 </div>
             </div>
-            <div id="team-inputs-container" style="display: none;">
-                <div class="team-inputs">
-                    <h3>Enter Team Names</h3>
-                    <div id="team-names-list">
-                        <div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 1"></div>
-                        <div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 2"></div>
+            
+            <div id="single-player-sub-options" style="margin-top: 15px;">
+                <button id="five-rounds-btn" class="btn-primary"><i class="fas fa-list-ol"></i> 5 Rounds</button>
+                <button id="infinite-mode-btn" class="btn-primary"><i class="fas fa-infinity"></i> Infinite Mode</button>
+            </div>
+
+            <div id="multiplayer-start-area" style="display: none;">
+                <div id="team-inputs-container">
+                    <div class="team-inputs">
+                        <h3>Enter Team Names</h3>
+                        <div id="team-names-list">
+                            <div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 1"></div>
+                            <div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 2"></div>
+                        </div>
+                        <button id="add-team-btn" class="btn-secondary"><i class="fas fa-plus"></i> Add Team</button>
                     </div>
-                    <button id="add-team-btn" class="btn-secondary"><i class="fas fa-plus"></i> Add Team</button>
                 </div>
+                <button id="start-multiplayer-game-btn" class="btn-primary">Start Game <i class="fas fa-play"></i></button>
             </div>
-            <button id="start-game-btn" class="btn-primary">Start Game <i class="fas fa-play"></i></button>
         </div>
 
         <!-- Game Screen -->
@@ -506,7 +517,7 @@
             <span id="close-modal-btn" class="close-modal-btn">×</span>
             <h2>Settings</h2>
             <div class="setting-item">
-                <label for="bgm-volume-slider">Background Music Volume:</label>
+                <label for="bgm-volume-slider">Music Volume:</label>
                 <input type="range" id="bgm-volume-slider" min="0" max="1" step="0.01" value="0.2">
             </div>
             <div class="setting-item">
@@ -521,7 +532,7 @@
         <span id="feedback-message-text-el"></span>
     </div>
 
-    <audio id="background-game-music" loop src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3"></audio>
+    <audio id="background-music" loop src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3"></audio>
     <audio id="start-game-sound" src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3"></audio>
     <audio id="interaction-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
     <audio id="correct-answer-sound" src="https://static.wixstatic.com/mp3/9ce3e5_76691a6fefcd4536aa403ada111e886a.mp3"></audio>
@@ -531,85 +542,40 @@
 
     <script>
         const gameConfig = { totalRounds: 5, sfxEnabled: true, musicVolume: 0.2, minTeams: 2, maxTeams: 4 };
-        const gameState = { gameMode: 'single', players: [], scores: {}, currentRound: 0, currentPlayerIndexInRound: 0, roundPlayerChoices: {}, singlePlayerChoice: null, currentMedia: null, mediaItems: [ { url: "https://static.wixstatic.com/media/9ce3e5_2a4bf1da960443c9b30108c5fb6db7db~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_4ff037154c604c6e8302e195b3aa2346~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_338937bc52754c6cba2ab324ad24f66a~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_ee1311e3f2c649c5bb92a8cc33a2cdc6~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_18a5fdf7fd534413bd83bd0311676ce0~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_d5f4aacfa0c747c1a9d6e5b23c3dbaa7~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_6d273f451e46464fb8c199101eb1cd5e~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_5d5191182b064159a8f7d4fc971f828b~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_cdbcb9884c664be8bb5b41447dec31fe~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_493688d1afe749019ca019a7053bdcd2~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_7d66e4a893e24874982d6229a05b41f3~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_39e3debd6a424f7ca2545707a4601ae4~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_570a72fd7392406db23a982f5a30f1cf~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_6b40aceaf91344438e0732c587a6ec5a~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_f875d76e6ba84544ac383938cc20af32~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_fd1dab053f0c4fb6a1f8b7ef1997a2b0~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_9b631479f9bd4bbbb1bd43f1dc44eeb2~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_70ce3be7d82340fba5be9415f1fd9252~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_8ccaec12c1724f159b30a543a249668c~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_a66add3ba32a464abe2500589cb0a000~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_e836809728a44c35853d5c0d3e65cef2~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_a760321c0463461bae00abf096d334e9~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_2199e9755c144209a775f6d39a6d54d7~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_5f0d3e0a61f3447d916bde690dd016dc~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_a750f1c249264c208358458dbf75497e~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_f278a6277e68453b85e22ed79ddee9d8~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_76096dcd416344cab64edc8a0896267d~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_c9e389ac5ad640d89f4126804eaf33b0~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_585c7fbd66ff48c5a0427b9388201f80~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_d8b26a6fcf3b4676aa583aa5b268ddaf~mv2.jpg", isDating: false }, ], usedItems: [] };
+        const gameState = { gameMode: 'single', singlePlayerSubType: '5rounds', players: [], scores: {}, currentRound: 0, currentPlayerIndexInRound: 0, roundPlayerChoices: {}, singlePlayerChoice: null, currentMedia: null, mediaItems: [ { url: "https://static.wixstatic.com/media/9ce3e5_2a4bf1da960443c9b30108c5fb6db7db~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_4ff037154c604c6e8302e195b3aa2346~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_338937bc52754c6cba2ab324ad24f66a~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_ee1311e3f2c649c5bb92a8cc33a2cdc6~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_18a5fdf7fd534413bd83bd0311676ce0~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_d5f4aacfa0c747c1a9d6e5b23c3dbaa7~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_6d273f451e46464fb8c199101eb1cd5e~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_5d5191182b064159a8f7d4fc971f828b~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_cdbcb9884c664be8bb5b41447dec31fe~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_493688d1afe749019ca019a7053bdcd2~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_7d66e4a893e24874982d6229a05b41f3~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_39e3debd6a424f7ca2545707a4601ae4~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_570a72fd7392406db23a982f5a30f1cf~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_6b40aceaf91344438e0732c587a6ec5a~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_f875d76e6ba84544ac383938cc20af32~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_fd1dab053f0c4fb6a1f8b7ef1997a2b0~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_9b631479f9bd4bbbb1bd43f1dc44eeb2~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_70ce3be7d82340fba5be9415f1fd9252~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_8ccaec12c1724f159b30a543a249668c~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_a66add3ba32a464abe2500589cb0a000~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_e836809728a44c35853d5c0d3e65cef2~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_a760321c0463461bae00abf096d334e9~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_2199e9755c144209a775f6d39a6d54d7~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_5f0d3e0a61f3447d916bde690dd016dc~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_a750f1c249264c208358458dbf75497e~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_f278a6277e68453b85e22ed79ddee9d8~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_76096dcd416344cab64edc8a0896267d~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_c9e389ac5ad640d89f4126804eaf33b0~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_585c7fbd66ff48c5a0427b9388201f80~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_d8b26a6fcf3b4676aa583aa5b268ddaf~mv2.jpg", isDating: false }, ], usedItems: [] };
+        let infiniteHighScore = 0; // NEW
         
         const screens = { start: document.getElementById('start-screen'), game: document.getElementById('game-screen'), results: document.getElementById('results-screen'), gameOver: document.getElementById('game-over-screen')};
-        const homeMenuBtnEl = document.getElementById('home-menu-btn');
-        const backBtnEl = document.getElementById('back-btn');
-        const settingsBtnEl = document.getElementById('settings-btn');
-        const modeOptionsEl = document.querySelectorAll('.mode-option');
-        const teamInputsContainerEl = document.getElementById('team-inputs-container');
-        const teamNamesListEl = document.getElementById('team-names-list');
-        const addTeamBtnEl = document.getElementById('add-team-btn');
-        const startGameBtnEl = document.getElementById('start-game-btn');
-        const roundInfoTextEl = document.getElementById('round-info-text');
-        const scoreInfoTextEl = document.getElementById('score-info-text');
-        const turnIndicatorEl = document.getElementById('turn-indicator');
-        const roundNumberTextEl = document.getElementById('round-number-text');
-        const currentScoreTextEl = document.getElementById('current-score-text');
-        const mediaCurtainLeftEl = document.getElementById('media-curtain-left');
-        const mediaCurtainRightEl = document.getElementById('media-curtain-right');
-        const mediaImageContentEl = document.getElementById('media-image-content');
-        const siblingsBtnEl = document.getElementById('siblings-btn');
-        const datingBtnEl = document.getElementById('dating-btn');
-        const resultImageContentEl = document.getElementById('result-image-content');
-        const actualAnswerTextEl = document.getElementById('actual-answer-text');
-        const playerGuessFeedbackTextEl = document.getElementById('player-guess-feedback-text');
-        const scoreDisplayContainerResultsEl = document.getElementById('score-display-container-results');
-        const detailedFeedbackAreaMultiplayerEl = document.getElementById('detailed-feedback-area-multiplayer');
-        const nextRoundBtnEl = document.getElementById('next-round-btn');
-        const finalWinMessageTextEl = document.getElementById('final-win-message-text');
-        const finalMessageDetailsEl = document.getElementById('final-message-details');
-        const finalScoresDisplayAreaEl = document.getElementById('final-scores-display-area');
-        const storeButtonWrapperEl = document.getElementById("store-button-wrapper");
+        const homeMenuBtnEl = document.getElementById('home-menu-btn'), backBtnEl = document.getElementById('back-btn'), settingsBtnEl = document.getElementById('settings-btn'), modeOptionsEl = document.querySelectorAll('.mode-option'), teamInputsContainerEl = document.getElementById('team-inputs-container'), teamNamesListEl = document.getElementById('team-names-list'), addTeamBtnEl = document.getElementById('add-team-btn'), startMultiplayerGameBtnEl = document.getElementById('start-multiplayer-game-btn'), roundInfoTextEl = document.getElementById('round-info-text'), scoreInfoTextEl = document.getElementById('score-info-text'), turnIndicatorEl = document.getElementById('turn-indicator'), roundNumberTextEl = document.getElementById('round-number-text'), currentScoreTextEl = document.getElementById('current-score-text'), mediaCurtainLeftEl = document.getElementById('media-curtain-left'), mediaCurtainRightEl = document.getElementById('media-curtain-right'), mediaImageContentEl = document.getElementById('media-image-content'), siblingsBtnEl = document.getElementById('siblings-btn'), datingBtnEl = document.getElementById('dating-btn'), resultImageContentEl = document.getElementById('result-image-content'), actualAnswerTextEl = document.getElementById('actual-answer-text'), playerGuessFeedbackTextEl = document.getElementById('player-guess-feedback-text'), scoreDisplayContainerResultsEl = document.getElementById('score-display-container-results'), detailedFeedbackAreaMultiplayerEl = document.getElementById('detailed-feedback-area-multiplayer'), nextRoundBtnEl = document.getElementById('next-round-btn'), finalWinMessageTextEl = document.getElementById('final-win-message-text'), finalMessageDetailsEl = document.getElementById('final-message-details'), finalScoresDisplayAreaEl = document.getElementById('final-scores-display-area'), storeButtonWrapperEl = document.getElementById("store-button-wrapper"), playAgainBtnEl = document.getElementById('play-again-btn'), mainMenuBtnEl = document.getElementById('main-menu-btn'), visitStoreBtnEl = document.getElementById('visit-store-btn'), settingsModalEl = document.getElementById('settings-modal'), closeModalBtnEl = document.getElementById('close-modal-btn'), bgmVolumeSliderEl = document.getElementById('bgm-volume-slider'), sfxToggleBtnEl = document.getElementById('sfx-toggle-btn'), feedbackPopupEl = document.getElementById('feedback-popup'), feedbackMessageTextPopupEl = document.getElementById('feedback-message-text-el');
+        
+        // NEW DOM Elements
+        const highscoreBtnEl = document.getElementById('highscore-btn');
+        const singlePlayerSubOptionsEl = document.getElementById('single-player-sub-options');
+        const multiplayerStartAreaEl = document.getElementById('multiplayer-start-area');
+        const fiveRoundsBtnEl = document.getElementById('five-rounds-btn');
+        const infiniteModeBtnEl = document.getElementById('infinite-mode-btn');
         let treatYourselfElement = null;
-        const playAgainBtnEl = document.getElementById('play-again-btn');
-        const mainMenuBtnEl = document.getElementById('main-menu-btn');
-        const visitStoreBtnEl = document.getElementById('visit-store-btn');
-        const settingsModalEl = document.getElementById('settings-modal');
-        const closeModalBtnEl = document.getElementById('close-modal-btn');
-        const bgmVolumeSliderEl = document.getElementById('bgm-volume-slider');
-        const sfxToggleBtnEl = document.getElementById('sfx-toggle-btn');
-        const feedbackPopupEl = document.getElementById('feedback-popup');
-        const feedbackMessageTextPopupEl = document.getElementById('feedback-message-text-el');
 
         const allSfx = [ document.getElementById('start-game-sound'), document.getElementById('interaction-sound'), document.getElementById('correct-answer-sound'), document.getElementById('wrong-answer-sound'), document.getElementById('curtain-sound'), document.getElementById('confetti-sound') ];
+        const backgroundMusicAudioEl = document.getElementById('background-music');
         let feedbackTimeoutId, audioContextStarted = false;
 
-        function initAudio() { if (audioContextStarted) return; audioContextStarted = true; console.log("Audio context unlocked."); allSfx.forEach(sound => { if(sound) { sound.volume = 0; sound.play().then(() => { sound.pause(); sound.currentTime = 0; sound.volume = 1; }).catch(e => {}); } }); }
+        function initAudio() { if (audioContextStarted) return; audioContextStarted = true; console.log("Audio context unlocked."); backgroundMusicAudioEl.play().catch(e=>{}); allSfx.forEach(sound => { if(sound) { sound.volume = 0; sound.play().then(() => { sound.pause(); sound.currentTime = 0; sound.volume = 1; }).catch(e => {}); } }); }
         function playSound(audioElement) { if (gameConfig.sfxEnabled && audioElement && audioContextStarted) { audioElement.currentTime = 0; audioElement.play().catch(e => {}); } }
         function playSoundWithCallback(audioElement, callback, ...args) { if (gameConfig.sfxEnabled && audioElement && audioContextStarted) { audioElement.currentTime = 0; let cbExecuted = false; const execCb = () => { if (!cbExecuted) { cbExecuted = true; audioElement.onended = null; if (timeoutId) clearTimeout(timeoutId); if (callback) callback(...args); } }; audioElement.onended = execCb; const timeoutId = setTimeout(execCb, (audioElement.duration && isFinite(audioElement.duration)) ? audioElement.duration * 1000 + 200 : 500); audioElement.play().catch(e => { execCb(); }); } else { if (callback) callback(...args); } }
         function showFeedbackMessage(message, type = 'info', duration = 2500) { feedbackMessageTextPopupEl.textContent = message; feedbackPopupEl.className = 'feedback-popup'; if (type) feedbackPopupEl.classList.add(type); feedbackPopupEl.classList.add('show'); clearTimeout(feedbackTimeoutId); feedbackTimeoutId = setTimeout(() => { feedbackPopupEl.classList.remove('show'); }, duration); }
         function triggerConfetti() { playSound(allSfx[5]); const colors = ['var(--blyza-orange-primary)', 'var(--blyza-purple-secondary)', 'var(--blyza-keppel-accent)', 'var(--blyza-sunny-yellow)']; for (let i = 0; i < 100; i++) { const piece = document.createElement('div'); piece.classList.add('confetti-piece'); piece.style.left = Math.random() * 100 + 'vw'; piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; const animDur = Math.random() * 3 + 2; piece.style.animationName = 'fallAndFade'; piece.style.animationDuration = animDur + 's'; piece.style.animationDelay = Math.random() * 1 + 's'; document.body.appendChild(piece); setTimeout(() => piece.remove(), (animDur + 1.1) * 1000); } }
+        
         function loadAudioSettings() { const savedVol = localStorage.getItem('musicVolume'), savedSfx = localStorage.getItem('sfxEnabled'); if (savedVol !== null) gameConfig.musicVolume = parseFloat(savedVol); if (savedSfx !== null) gameConfig.sfxEnabled = savedSfx === 'true'; backgroundMusicAudioEl.volume = gameConfig.musicVolume; bgmVolumeSliderEl.value = gameConfig.musicVolume; sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; }
+        function loadHighScore() { const savedScore = localStorage.getItem('sod_infinite_highscore'); infiniteHighScore = savedScore ? parseInt(savedScore, 10) : 0; }
+        function saveHighScore(score) { if (score > infiniteHighScore) { infiniteHighScore = score; localStorage.setItem('sod_infinite_highscore', infiniteHighScore); } }
+        function showHighScore() { playSound(allSfx[1]); showFeedbackMessage(`Infinite High Score: ${infiniteHighScore}`, 'info', 3000); }
 
-        function switchScreen(screenId) {
-            Object.values(screens).forEach(s=>s.classList.remove('active'));
-            screens[screenId].classList.add('active');
-            
-            const isStartOrGameOver = screenId === 'start' || screenId === 'gameOver';
-            homeMenuBtnEl.style.display = isStartOrGameOver ? 'flex' : 'none';
-            backBtnEl.style.display = isStartOrGameOver ? 'none' : 'flex';
-
-            if (treatYourselfElement) { treatYourselfElement.style.display = (screenId === 'gameOver') ? 'flex' : 'none'; }
-        }
-
+        function switchScreen(screenId) { Object.values(screens).forEach(s=>s.classList.remove('active')); screens[screenId].classList.add('active'); const isStartOrGameOver = screenId === 'start' || screenId === 'gameOver'; homeMenuBtnEl.style.display = isStartOrGameOver ? 'flex' : 'none'; backBtnEl.style.display = isStartOrGameOver ? 'none' : 'flex'; if (treatYourselfElement) { treatYourselfElement.style.display = (screenId === 'gameOver') ? 'flex' : 'none'; } }
         function openMediaCurtains() { mediaCurtainLeftEl.classList.add('open'); mediaCurtainRightEl.classList.add('open'); mediaImageContentEl.classList.add('visible'); playSound(allSfx[4]); }
         function closeMediaCurtains() { mediaCurtainLeftEl.classList.remove('open'); mediaCurtainRightEl.classList.remove('open'); mediaImageContentEl.classList.remove('visible'); mediaImageContentEl.src = ""; }
-
-        document.body.addEventListener('click', initAudio, { once: true });
-        backBtnEl.addEventListener('click', () => { playSound(allSfx[1]); mainMenu(); });
-        settingsBtnEl.addEventListener('click', () => { playSound(allSfx[1]); settingsModalEl.style.display = 'flex'; });
-        closeModalBtnEl.addEventListener('click', () => { playSound(allSfx[1]); settingsModalEl.style.display = 'none'; });
-        bgmVolumeSliderEl.addEventListener('input', (e) => { gameConfig.musicVolume = parseFloat(e.target.value); backgroundMusicAudioEl.volume = gameConfig.musicVolume; localStorage.setItem('musicVolume', gameConfig.musicVolume); });
-        sfxToggleBtnEl.addEventListener('click', () => { gameConfig.sfxEnabled = !gameConfig.sfxEnabled; sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; playSound(allSfx[1]); localStorage.setItem('sfxEnabled', gameConfig.sfxEnabled); });
         
-        modeOptionsEl.forEach(opt => { opt.addEventListener('click', function(){ playSound(allSfx[1]); modeOptionsEl.forEach(o=>o.classList.remove('selected')); this.classList.add('selected'); gameState.gameMode=this.dataset.mode; teamInputsContainerEl.style.display = gameState.gameMode==='multi'?'block':'none'; if(gameState.gameMode==='multi')updateTeamAddRemoveButtons();});});
-        addTeamBtnEl.addEventListener('click', () => { playSound(allSfx[1]); const teamCount = teamNamesListEl.querySelectorAll('.team-input-wrapper').length; if (teamCount < gameConfig.maxTeams) { const wr = document.createElement('div'); wr.className='team-input-wrapper'; wr.innerHTML=`<input type="text" class="team-name-input" placeholder="Team ${teamCount+1}"><button class="remove-team-btn btn-danger"><i class="fas fa-times"></i></button>`; wr.querySelector('.remove-team-btn').onclick = function(){ playSound(allSfx[1]); this.parentElement.remove(); updateTeamAddRemoveButtons(); }; teamNamesListEl.appendChild(wr); updateTeamAddRemoveButtons(); } else { showFeedbackMessage(`Max ${gameConfig.maxTeams} teams.`, 'info');}});
-        function updateTeamAddRemoveButtons() { const trs = teamNamesListEl.querySelectorAll('.team-input-wrapper'); const tc = trs.length; addTeamBtnEl.disabled = tc>=gameConfig.maxTeams; trs.forEach(tr => { const rb = tr.querySelector('.remove-team-btn'); if(rb)rb.disabled=tc<=gameConfig.minTeams; });}
-        
-        startGameBtnEl.addEventListener('click', () => { playSoundWithCallback(allSfx[0], startGame); });
-
+        function startSinglePlayerGame(subType) { gameState.singlePlayerSubType = subType; playSoundWithCallback(allSfx[0], startGame); }
         function startGame() {
             gameState.currentRound = 0; gameState.usedItems = []; gameState.scores = {};
             if (gameState.gameMode === 'single') { gameState.players = ['You']; }
@@ -621,16 +587,40 @@
 
         function setupRound() {
             closeMediaCurtains();
+            
+            if (gameState.gameMode === 'single' && gameState.singlePlayerSubType === '5rounds' && gameState.currentRound >= gameConfig.totalRounds) {
+                return showGameOver();
+            }
+            
             gameState.currentRound++; gameState.singlePlayerChoice = null; gameState.roundPlayerChoices = {}; gameState.currentPlayerIndexInRound = 0;
             let availItems = gameState.mediaItems.filter(item => !gameState.usedItems.includes(item.url));
-            if (availItems.length === 0) { gameState.usedItems = []; availItems = [...gameState.mediaItems]; }
+            if (availItems.length === 0) {
+                if(gameState.singlePlayerSubType === 'infinite') return showGameOver(true); // Player beat the game
+                gameState.usedItems = []; availItems = [...gameState.mediaItems];
+            }
             gameState.currentMedia = availItems[Math.floor(Math.random() * availItems.length)];
             gameState.usedItems.push(gameState.currentMedia.url);
-            roundNumberTextEl.textContent = gameState.currentRound;
-            scoreInfoTextEl.style.display = gameState.gameMode === 'single' ? 'block' : 'none';
-            turnIndicatorEl.style.display = gameState.gameMode === 'multi' ? 'block' : 'none';
-            if (gameState.gameMode === 'single') { currentScoreTextEl.textContent = gameState.scores['You']; }
-            else { updateTurnIndicator(); }
+
+            if (gameState.gameMode === 'single') {
+                turnIndicatorEl.style.display = 'none';
+                if (gameState.singlePlayerSubType === 'infinite') {
+                    roundInfoTextEl.style.display = 'none';
+                    scoreInfoTextEl.style.display = 'block';
+                    currentScoreTextEl.textContent = gameState.scores['You'];
+                } else {
+                    roundInfoTextEl.style.display = 'block';
+                    scoreInfoTextEl.style.display = 'block';
+                    roundNumberTextEl.textContent = gameState.currentRound;
+                    currentScoreTextEl.textContent = gameState.scores['You'];
+                }
+            } else {
+                scoreInfoTextEl.style.display = 'none';
+                turnIndicatorEl.style.display = 'block';
+                roundInfoTextEl.style.display = 'block';
+                roundNumberTextEl.textContent = gameState.currentRound;
+                updateTurnIndicator();
+            }
+
             mediaImageContentEl.src = gameState.currentMedia.url;
             [siblingsBtnEl, datingBtnEl].forEach(btn => { btn.classList.remove('selected'); btn.disabled = false; });
             switchScreen('game');
@@ -638,10 +628,6 @@
         }
 
         function updateTurnIndicator() { if (gameState.gameMode === 'multi' && gameState.players.length > 0) { turnIndicatorEl.textContent = `${gameState.players[gameState.currentPlayerIndexInRound]}'s turn:`; }}
-
-        siblingsBtnEl.addEventListener('click', () => makeChoice('siblings'));
-        datingBtnEl.addEventListener('click', () => makeChoice('dating'));
-
         function makeChoice(choice) {
             playSound(allSfx[1]);
             const currentPlayerName = gameState.gameMode === 'multi' ? gameState.players[gameState.currentPlayerIndexInRound] : 'You';
@@ -667,6 +653,7 @@
         }
 
         function processAndShowResults() {
+            let isGameOver = false;
             switchScreen('results');
             resultImageContentEl.src = gameState.currentMedia.url;
             const actualRelationship = gameState.currentMedia.isDating ? "dating" : "siblings";
@@ -676,7 +663,10 @@
             if (gameState.gameMode === 'single') {
                 const isCorrect = gameState.singlePlayerChoice === actualRelationship;
                 if (isCorrect) { gameState.scores['You']++; playSound(allSfx[2]); showFeedbackMessage("Correct!", "correct"); }
-                else { playSound(allSfx[3]); showFeedbackMessage("Incorrect!", "incorrect"); }
+                else { 
+                    playSound(allSfx[3]); showFeedbackMessage("Incorrect!", "incorrect"); 
+                    if (gameState.singlePlayerSubType === 'infinite') isGameOver = true;
+                }
                 playerGuessFeedbackTextEl.textContent = `You guessed: ${gameState.singlePlayerChoice}.`;
                 playerGuessFeedbackTextEl.className = isCorrect ? "inline-feedback-text feedback-correct-text" : "inline-feedback-text feedback-incorrect-text";
             } else {
@@ -687,8 +677,14 @@
                 playerGuessFeedbackTextEl.textContent = "";
             }
             updateScoreDisplayOnResults();
-            if (gameState.currentRound >= gameConfig.totalRounds) { nextRoundBtnEl.innerHTML = 'See Final Results <i class="fas fa-trophy"></i>';}
-            else { nextRoundBtnEl.innerHTML = 'Next Round <i class="fas fa-arrow-right"></i>';}
+            
+            if (isGameOver || (gameState.gameMode !== 'single' && gameState.currentRound >= gameConfig.totalRounds) || (gameState.singlePlayerSubType === '5rounds' && gameState.currentRound >= gameConfig.totalRounds)) {
+                 nextRoundBtnEl.innerHTML = 'See Final Results <i class="fas fa-trophy"></i>';
+                 nextRoundBtnEl.onclick = () => showGameOver();
+            } else {
+                nextRoundBtnEl.innerHTML = 'Next Round <i class="fas fa-arrow-right"></i>';
+                nextRoundBtnEl.onclick = () => setupRound();
+            }
         }
 
         function updateScoreDisplayOnResults() {
@@ -696,8 +692,12 @@
             detailedFeedbackAreaMultiplayerEl.innerHTML = '';
             if (gameState.gameMode === 'single') {
                 const scCard = document.createElement('div'); scCard.className = 'score-card';
-                const prog = (gameState.scores['You'] / gameConfig.totalRounds) * 100;
-                scCard.innerHTML = `<h4>Your Current Score</h4><div class="score-value-text">${gameState.scores['You']}/${gameConfig.totalRounds}</div><div class="progress-bar-element"><div class="progress-fill-element" style="width:${prog}%"></div></div>`;
+                if (gameState.singlePlayerSubType === 'infinite') {
+                    scCard.innerHTML = `<h4>Current Score</h4><div class="score-value-text">${gameState.scores['You']}</div>`;
+                } else {
+                    const prog = (gameState.scores['You'] / gameConfig.totalRounds) * 100;
+                    scCard.innerHTML = `<h4>Your Current Score</h4><div class="score-value-text">${gameState.scores['You']}/${gameConfig.totalRounds}</div><div class="progress-bar-element"><div class="progress-fill-element" style="width:${prog}%"></div></div>`;
+                }
                 scoreDisplayContainerResultsEl.appendChild(scCard);
             } else {
                 detailedFeedbackAreaMultiplayerEl.innerHTML = '<h3>Individual Guesses:</h3>';
@@ -707,40 +707,45 @@
                     scCard.innerHTML = `<h4>${p}</h4><div class="score-value-text">${score}</div><div class="progress-bar-element"><div class="progress-fill-element" style="width:${prog}%"></div></div>`;
                     scoreDisplayContainerResultsEl.appendChild(scCard);
                     const choice = gameState.roundPlayerChoices[p];
-                    if (choice) {
-                        const isCorrect = choice === (gameState.currentMedia.isDating ? "dating" : "siblings");
-                        detailedFeedbackAreaMultiplayerEl.innerHTML += `<p><strong>${p}</strong> guessed: ${choice} (${isCorrect ? '<span style="color:var(--blyza-keppel-accent);">Correct!</span>' : '<span style="color:var(--blyza-quickfire-red);">Incorrect.</span>'})</p>`;
-                    } else { detailedFeedbackAreaMultiplayerEl.innerHTML += `<p><strong>${p}</strong> did not guess.</p>`; }
+                    if (choice) { const isCorrect = choice === (gameState.currentMedia.isDating ? "dating" : "siblings"); detailedFeedbackAreaMultiplayerEl.innerHTML += `<p><strong>${p}</strong> guessed: ${choice} (${isCorrect ? '<span style="color:var(--blyza-keppel-accent);">Correct!</span>' : '<span style="color:var(--blyza-quickfire-red);">Incorrect.</span>'})</p>`; } else { detailedFeedbackAreaMultiplayerEl.innerHTML += `<p><strong>${p}</strong> did not guess.</p>`; }
                 });
             }
         }
 
-        nextRoundBtnEl.addEventListener('click', () => { playSound(allSfx[1]); if (gameState.currentRound >= gameConfig.totalRounds) { showGameOver(); } else { setupRound(); }});
-
-        function showGameOver() {
+        function showGameOver(beatTheGame = false) {
             triggerConfetti();
             finalScoresDisplayAreaEl.innerHTML = '';
+            
             if (gameState.gameMode === 'single') {
                 const score = gameState.scores['You'];
-                finalMessageDetailsEl.textContent = `You scored ${score} out of ${gameConfig.totalRounds}!`;
-                finalWinMessageTextEl.textContent = score === gameConfig.totalRounds ? "Perfect Score!" : (score >= Math.ceil(gameConfig.totalRounds/2) ? "Great Job!" : "Game Over!");
-                const fsc = document.createElement('div'); fsc.className = `score-card ${score===gameConfig.totalRounds?'winner-glow':''}`;
-                fsc.innerHTML = `<h4>Final Score</h4><div class="score-value-text">${score}/${gameConfig.totalRounds}</div>`;
+                if (gameState.singlePlayerSubType === 'infinite') {
+                    saveHighScore(score);
+                    let isNewHighScore = score > 0 && score === infiniteHighScore;
+                    if (beatTheGame) {
+                        finalWinMessageTextEl.textContent = "You Beat The Game!";
+                        finalMessageDetailsEl.innerHTML = `You correctly identified all ${gameState.mediaItems.length} images! <br>Final Score: ${score}. ${isNewHighScore ? '<strong>New High Score!</strong>' : ''}`;
+                    } else {
+                        finalWinMessageTextEl.textContent = "Game Over!";
+                        finalMessageDetailsEl.innerHTML = `Your Score: ${score}. ${isNewHighScore ? '<strong>New High Score!</strong>' : `High Score: ${infiniteHighScore}`}`;
+                    }
+                } else {
+                     finalMessageDetailsEl.textContent = `You scored ${score} out of ${gameConfig.totalRounds}!`;
+                    finalWinMessageTextEl.textContent = score === gameConfig.totalRounds ? "Perfect Score!" : (score >= Math.ceil(gameConfig.totalRounds/2) ? "Great Job!" : "Game Over!");
+                }
+                const fsc = document.createElement('div'); fsc.className = 'score-card';
+                fsc.innerHTML = `<h4>Final Score</h4><div class="score-value-text">${score}</div>`;
                 finalScoresDisplayAreaEl.appendChild(fsc);
+
             } else {
                 let highScore = Math.max(...Object.values(gameState.scores));
-                const winners = gameState.players.filter(p=>gameState.scores[p]===highScore);
-                finalWinMessageTextEl.textContent = winners.length > 1 ? "It's a Tie!" : `${winners[0]} Wins!`;
-                finalMessageDetailsEl.textContent=`Congratulations on scoring ${highScore} points!`;
+                const winners = gameState.players.filter(p=>gameState.scores[p]===highScore && highScore > 0);
+                finalWinMessageTextEl.textContent = winners.length > 1 ? "It's a Tie!" : (winners.length === 1 ? `${winners[0]} Wins!` : "Game Over!");
+                finalMessageDetailsEl.textContent = winners.length > 0 ?`Congratulations on scoring ${highScore} points!` : "Better luck next time!";
                 gameState.players.sort((a,b)=>gameState.scores[b] - gameState.scores[a]).forEach(p=>{const sc=document.createElement('div');sc.className=`score-card ${winners.includes(p)?'winner-glow':''}`;sc.innerHTML=`<h4>${p}</h4><div class="score-value-text">${gameState.scores[p]}</div>`;finalScoresDisplayAreaEl.appendChild(sc);});
             }
             if (!treatYourselfElement) { treatYourselfElement = document.createElement('div'); treatYourselfElement.className = 'treat-yourself-callout'; treatYourselfElement.innerHTML = `<span>Treat Yourself!</span> <i class="fas fa-arrow-down"></i>`; storeButtonWrapperEl.insertBefore(treatYourselfElement, visitStoreBtnEl); }
             switchScreen('gameOver');
         }
-
-        playAgainBtnEl.addEventListener('click', () => { playSoundWithCallback(allSfx[0], startGame);});
-        mainMenuBtnEl.addEventListener('click', () => { playSound(allSfx[1]); mainMenu(); });
-        visitStoreBtnEl.addEventListener('click', () => { playSound(allSfx[1]); window.location.href = '/store'; });
 
         function mainMenu() {
             teamNamesListEl.innerHTML = `<div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 1"></div><div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 2"></div>`;
@@ -749,10 +754,32 @@
             if (treatYourselfElement) treatYourselfElement.style.display = 'none';
             switchScreen('start');
         }
-        
+
+        function updateTeamAddRemoveButtons() { const trs = teamNamesListEl.querySelectorAll('.team-input-wrapper'); const tc = trs.length; addTeamBtnEl.disabled = tc>=gameConfig.maxTeams; trs.forEach(tr => { const rb = tr.querySelector('.remove-team-btn'); if(rb)rb.disabled=tc<=gameConfig.minTeams; });}
+
         document.addEventListener('DOMContentLoaded', () => {
-            loadAudioSettings();
-            if(backgroundMusicAudioEl.paused) backgroundMusicAudioEl.play().catch(e => {});
+            loadAudioSettings(); loadHighScore();
+            document.body.addEventListener('click', initAudio, { once: true });
+            
+            backBtnEl.addEventListener('click', () => { playSound(allSfx[1]); mainMenu(); });
+            settingsBtnEl.addEventListener('click', () => { playSound(allSfx[1]); settingsModalEl.style.display = 'flex'; });
+            closeModalBtnEl.addEventListener('click', () => { playSound(allSfx[1]); settingsModalEl.style.display = 'none'; });
+            bgmVolumeSliderEl.addEventListener('input', (e) => { gameConfig.musicVolume = parseFloat(e.target.value); backgroundMusicAudioEl.volume = gameConfig.musicVolume; localStorage.setItem('musicVolume', gameConfig.musicVolume); });
+            sfxToggleBtnEl.addEventListener('click', () => { gameConfig.sfxEnabled = !gameConfig.sfxEnabled; sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; playSound(allSfx[1]); localStorage.setItem('sfxEnabled', gameConfig.sfxEnabled); });
+            
+            modeOptionsEl.forEach(opt => { opt.addEventListener('click', function(){ playSound(allSfx[1]); modeOptionsEl.forEach(o=>o.classList.remove('selected')); this.classList.add('selected'); gameState.gameMode=this.dataset.mode; const isMulti = gameState.gameMode === 'multi'; multiplayerStartAreaEl.style.display = isMulti ? 'block' : 'none'; singlePlayerSubOptionsEl.style.display = isMulti ? 'none' : 'block'; if(isMulti)updateTeamAddRemoveButtons(); });});
+            addTeamBtnEl.addEventListener('click', () => { playSound(allSfx[1]); const teamCount = teamNamesListEl.querySelectorAll('.team-input-wrapper').length; if (teamCount < gameConfig.maxTeams) { const wr = document.createElement('div'); wr.className='team-input-wrapper'; wr.innerHTML=`<input type="text" class="team-name-input" placeholder="Team ${teamCount+1}"><button class="remove-team-btn btn-danger"><i class="fas fa-times"></i></button>`; wr.querySelector('.remove-team-btn').onclick = function(){ playSound(allSfx[1]); this.parentElement.remove(); updateTeamAddRemoveButtons(); }; teamNamesListEl.appendChild(wr); updateTeamAddRemoveButtons(); } else { showFeedbackMessage(`Max ${gameConfig.maxTeams} teams.`, 'info');}});
+            
+            fiveRoundsBtnEl.addEventListener('click', () => startSinglePlayerGame('5rounds'));
+            infiniteModeBtnEl.addEventListener('click', () => startSinglePlayerGame('infinite'));
+            startMultiplayerGameBtnEl.addEventListener('click', () => { playSoundWithCallback(allSfx[0], startGame); });
+            siblingsBtnEl.addEventListener('click', () => makeChoice('siblings'));
+            datingBtnEl.addEventListener('click', () => makeChoice('dating'));
+            playAgainBtnEl.addEventListener('click', () => { playSoundWithCallback(allSfx[0], startGame);});
+            mainMenuBtnEl.addEventListener('click', () => { playSound(allSfx[1]); mainMenu(); });
+            visitStoreBtnEl.addEventListener('click', () => { playSound(allSfx[1]); window.location.href = '/store'; });
+            highscoreBtnEl.addEventListener('click', showHighScore);
+
             mainMenu();
         });
     </script>

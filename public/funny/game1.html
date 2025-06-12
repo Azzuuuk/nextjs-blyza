@@ -132,7 +132,7 @@
         button:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
         button:disabled { background: var(--text-medium); color: var(--text-light); cursor: not-allowed; opacity: 0.7; box-shadow: var(--shadow-chunky); }
 
-        .btn-primary, #start-game-btn, #reveal-price-btn, #next-round-btn { background-color: var(--blyza-sunny-yellow); box-shadow: var(--shadow-chunky); }
+        .btn-primary, #start-game-btn, #reveal-price-btn, #next-round-btn, #five-rounds-btn, #infinite-mode-btn { background-color: var(--blyza-sunny-yellow); box-shadow: var(--shadow-chunky); }
         .btn-secondary, #add-team-btn, #new-game-btn { background-color: var(--blyza-purple-secondary); color: var(--text-light); box-shadow: var(--shadow-chunky); }
         .btn-success, #play-again-btn { background-color: var(--blyza-keppel-accent); color: var(--text-light); box-shadow: var(--shadow-chunky); }
         .btn-info, #visit-store-btn { background-color: #4ECDC4; color: var(--text-dark); box-shadow: var(--shadow-chunky); }
@@ -280,6 +280,7 @@
         .icon-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black-stroke); }
         .icon-btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
         #settings-btn { top: 20px; right: 20px; }
+        #highscore-btn { top: 20px; right: 85px; background-color: var(--blyza-sunny-yellow); } /* NEW */
         #home-menu-btn, #back-btn { top: 20px; left: 20px; }
         #back-btn { display: none; }
         
@@ -355,6 +356,7 @@
             .guess-inputs, .score-display { grid-template-columns: 1fr; }
             .icon-btn { width: 48px; height: 48px; }
             #settings-btn { top: 12px; right: 12px; }
+            #highscore-btn { top: 12px; right: 70px; } /* NEW */
             #home-menu-btn, #back-btn { top: 12px; left: 12px; }
             .feedback-popup { font-size: 2rem; padding: 20px 30px; width: 90%; }
             .modal-content { padding: 20px; }
@@ -401,6 +403,9 @@
         <button id="back-btn" class="icon-btn" aria-label="Go Back" onclick="history.back()">
             <i class="fas fa-arrow-left"></i>
         </button>
+        <button id="highscore-btn" class="icon-btn" aria-label="Show High Score">
+            <i class="fas fa-star"></i>
+        </button>
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
         </button>
@@ -422,7 +427,7 @@
                 <div class="mode-option selected" data-mode="single">
                     <i class="fas fa-user"></i>
                     <h3>Single Player</h3>
-                    <p>5 rounds, play alone</p>
+                    <p>5 rounds or infinite mode</p>
                 </div>
                 <div class="mode-option" data-mode="multi">
                     <i class="fas fa-users"></i>
@@ -431,22 +436,28 @@
                 </div>
             </div>
             
-            <div id="team-inputs-container" style="display: none;">
-                <div class="team-inputs">
-                    <h3>Enter Team Names</h3>
-                    <div id="team-names-list">
-                        <div class="team-input-wrapper">
-                            <input type="text" class="team-name-input" placeholder="Team 1">
-                        </div>
-                        <div class="team-input-wrapper">
-                            <input type="text" class="team-name-input" placeholder="Team 2">
-                        </div>
-                    </div>
-                    <button id="add-team-btn">Add Team</button>
-                </div>
+            <div id="single-player-sub-options" style="margin-top: 20px;">
+                <button id="five-rounds-btn" class="btn-primary"><i class="fas fa-list-ol"></i> 5 Rounds</button>
+                <button id="infinite-mode-btn" class="btn-primary"><i class="fas fa-infinity"></i> Infinite Mode</button>
             </div>
             
-            <button id="start-game-btn"><i class="fas fa-play"></i> Start Game</button>
+            <div id="multiplayer-start-area" style="display: none;">
+                <div id="team-inputs-container">
+                    <div class="team-inputs">
+                        <h3>Enter Team Names</h3>
+                        <div id="team-names-list">
+                            <div class="team-input-wrapper">
+                                <input type="text" class="team-name-input" placeholder="Team 1">
+                            </div>
+                            <div class="team-input-wrapper">
+                                <input type="text" class="team-name-input" placeholder="Team 2">
+                            </div>
+                        </div>
+                        <button id="add-team-btn">Add Team</button>
+                    </div>
+                </div>
+                <button id="start-game-btn"><i class="fas fa-play"></i> Start Game</button>
+            </div>
         </div>
 
         <!-- Game Screen -->
@@ -557,6 +568,7 @@
         // Game state
         const gameState = {
             players: [], currentRound: 1, scores: {}, gameMode: 'single', currentItem: null,
+            singlePlayerSubType: '5rounds', // '5rounds' or 'infinite'
             items: [
                 { name: "Smartphone", category: "iPhone 16 Pro Max 256GB", price: 1199, image: "https://static.wixstatic.com/media/9ce3e5_9686ddc0bdfe431e8f8a0ec574da5879~mv2.jpg", description: "The latest flagship smartphone from Apple with A18 Pro chip and titanium design." },
                 { name: "Electric Car", category: "Tesla Cybertuck - Long Range", price: 69990, image: "https://static.wixstatic.com/media/9ce3e5_4cb87b6f65204052a9039c012f4dad19~mv2.jpg", description: "The Tesla Cybertruck Long Range is a rear-wheel-drive electric truck with 362 miles of range and a 0–60 mph time of 6.2 seconds." },
@@ -586,11 +598,16 @@
             usedItems: [], currentGuesses: {}
         };
         
-        let sfxEnabled = true, musicVolume = 0.3, audioContextStarted = false;
+        let sfxEnabled = true, musicVolume = 0.3, audioContextStarted = false, infiniteHighScore = 0;
         const screens = { start: document.getElementById('start-screen'), game: document.getElementById('game-screen'), results: document.getElementById('results-screen'), gameOver: document.getElementById('game-over-screen') };
-        const modeOptions = document.querySelectorAll('.mode-option'), teamInputsContainer = document.getElementById('team-inputs-container'), teamNamesList = document.getElementById('team-names-list'), addTeamBtn = document.getElementById('add-team-btn'), startGameBtn = document.getElementById('start-game-btn'), roundTypeText = document.getElementById('round-type-text'), roundNumberText = document.getElementById('round-number-text'), roundTotalText = document.getElementById('round-total-text'), currentScoreDisplay = document.getElementById('current-score-display'), currentScoreValue = document.getElementById('current-score-value'), leftCurtain = document.querySelector('.stage-curtains.left'), rightCurtain = document.querySelector('.stage-curtains.right'), itemCategoryText = document.getElementById('item-category-text'), itemImageDisplay = document.getElementById('item-image-display'), guessInputsArea = document.getElementById('guess-inputs-area'), revealPriceBtn = document.getElementById('reveal-price-btn'), resultItemImageDisplay = document.getElementById('result-item-image-display'), actualPriceValueEl = document.getElementById('actual-price-value'), itemDescriptionText = document.getElementById('item-description-text'), guessResultsArea = document.getElementById('guess-results-area'), scoreDisplayArea = document.getElementById('score-display-area'), nextRoundBtn = document.getElementById('next-round-btn'), gameOverTitleText = document.getElementById('game-over-title-text'), winMessageText = document.getElementById('win-message-text'), winnerTrophyDisplay = document.getElementById('winner-trophy-display'), winnerDetailsText = document.getElementById('winner-details-text'), finalScoresArea = document.getElementById('final-scores-area'), playAgainBtn = document.getElementById('play-again-btn'), newGameBtn = document.getElementById('new-game-btn'), visitStoreBtn = document.getElementById('visit-store-btn'), storeButtonWrapper = document.getElementById('store-button-wrapper-id'), settingsBtn = document.getElementById('settings-btn'), homeMenuBtn = document.getElementById('home-menu-btn'), backBtn = document.getElementById('back-btn'), settingsModal = document.getElementById('settings-modal'), closeModalBtn = document.getElementById('close-modal-btn'), bgmVolumeSlider = document.getElementById('bgm-volume-slider'), sfxToggleBtn = document.getElementById('sfx-toggle-btn'), backgroundMusic = document.getElementById('background-game-music');
+        const modeOptions = document.querySelectorAll('.mode-option'), teamNamesList = document.getElementById('team-names-list'), addTeamBtn = document.getElementById('add-team-btn'), startGameBtn = document.getElementById('start-game-btn'), roundTypeText = document.getElementById('round-type-text'), roundNumberText = document.getElementById('round-number-text'), roundTotalText = document.getElementById('round-total-text'), currentScoreDisplay = document.getElementById('current-score-display'), currentScoreValue = document.getElementById('current-score-value'), leftCurtain = document.querySelector('.stage-curtains.left'), rightCurtain = document.querySelector('.stage-curtains.right'), itemCategoryText = document.getElementById('item-category-text'), itemImageDisplay = document.getElementById('item-image-display'), guessInputsArea = document.getElementById('guess-inputs-area'), revealPriceBtn = document.getElementById('reveal-price-btn'), resultItemImageDisplay = document.getElementById('result-item-image-display'), actualPriceValueEl = document.getElementById('actual-price-value'), itemDescriptionText = document.getElementById('item-description-text'), guessResultsArea = document.getElementById('guess-results-area'), scoreDisplayArea = document.getElementById('score-display-area'), nextRoundBtn = document.getElementById('next-round-btn'), gameOverTitleText = document.getElementById('game-over-title-text'), winMessageText = document.getElementById('win-message-text'), winnerTrophyDisplay = document.getElementById('winner-trophy-display'), winnerDetailsText = document.getElementById('winner-details-text'), finalScoresArea = document.getElementById('final-scores-area'), playAgainBtn = document.getElementById('play-again-btn'), newGameBtn = document.getElementById('new-game-btn'), visitStoreBtn = document.getElementById('visit-store-btn'), storeButtonWrapper = document.getElementById('store-button-wrapper-id'), settingsBtn = document.getElementById('settings-btn'), homeMenuBtn = document.getElementById('home-menu-btn'), backBtn = document.getElementById('back-btn'), settingsModal = document.getElementById('settings-modal'), closeModalBtn = document.getElementById('close-modal-btn'), bgmVolumeSlider = document.getElementById('bgm-volume-slider'), sfxToggleBtn = document.getElementById('sfx-toggle-btn'), backgroundMusic = document.getElementById('background-game-music');
         const allSfx = [document.getElementById('start-game-sound'), document.getElementById('interaction-sound'), document.getElementById('reveal-correct-sound'), document.getElementById('reveal-wrong-sound'), document.getElementById('curtain-sound')];
         const feedbackPopup = document.getElementById('feedback-popup'), feedbackMessageTextEl = document.getElementById('feedback-message-text-el');
+        const highscoreBtn = document.getElementById('highscore-btn');
+        const singlePlayerSubOptions = document.getElementById('single-player-sub-options');
+        const multiplayerStartArea = document.getElementById('multiplayer-start-area');
+        const fiveRoundsBtn = document.getElementById('five-rounds-btn');
+        const infiniteModeBtn = document.getElementById('infinite-mode-btn');
         let treatYourselfElement = null;
 
         function initAudio() { if (audioContextStarted) return; audioContextStarted = true; console.log("Audio context unlocked."); backgroundMusic.play().catch(e => {}); allSfx.forEach(sound => { if(sound) { sound.volume = 0; sound.play().then(() => { sound.pause(); sound.currentTime = 0; sound.volume = 1; }).catch(e => {}); } }); }
@@ -599,7 +616,10 @@
         let feedbackTimeout; function showFeedbackMessage(message, type = '', duration = 2500) { feedbackMessageTextEl.textContent = message; feedbackPopup.className = 'feedback-popup'; if (type) feedbackPopup.classList.add(type); feedbackPopup.classList.add('show'); clearTimeout(feedbackTimeout); feedbackTimeout = setTimeout(() => { feedbackPopup.classList.remove('show'); }, duration); }
         function triggerConfetti() { const colors = ['var(--blyza-orange-primary)', 'var(--blyza-purple-secondary)', 'var(--blyza-keppel-accent)', 'var(--blyza-sunny-yellow)']; for (let i = 0; i < 100; i++) { const confetti = document.createElement('div'); confetti.classList.add('confetti-piece'); confetti.style.left = Math.random() * 100 + 'vw'; confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; const animDuration = Math.random() * 3 + 2; confetti.style.animationName = 'fallAndFade'; confetti.style.animationDuration = animDuration + 's'; confetti.style.animationDelay = Math.random() * 1 + 's'; document.body.appendChild(confetti); setTimeout(() => confetti.remove(), (animDuration + 1) * 1000); } }
         function loadAudioSettings() { const savedVol = localStorage.getItem('musicVolume'), savedSfx = localStorage.getItem('sfxEnabled'); if (savedVol !== null) musicVolume = parseFloat(savedVol); if (savedSfx !== null) sfxEnabled = savedSfx === 'true'; backgroundMusic.volume = musicVolume; bgmVolumeSlider.value = musicVolume; sfxToggleBtn.textContent = `SFX: ${sfxEnabled ? 'ON' : 'OFF'}`; }
-        
+        function loadHighScore() { const savedScore = localStorage.getItem('gtp_infinite_highscore'); infiniteHighScore = savedScore ? parseInt(savedScore, 10) : 0; }
+        function saveHighScore(score) { if (score > infiniteHighScore) { infiniteHighScore = score; localStorage.setItem('gtp_infinite_highscore', infiniteHighScore); } }
+        function showHighScore() { playSound(allSfx[1]); showFeedbackMessage(`Infinite High Score: ${infiniteHighScore}`, 'winner', 3000); }
+
         document.body.addEventListener('click', initAudio, { once: true });
         settingsBtn.addEventListener('click', () => { playSound(allSfx[1]); settingsModal.style.display = 'flex'; });
         closeModalBtn.addEventListener('click', () => { playSound(allSfx[1]); settingsModal.style.display = 'none'; });
@@ -609,25 +629,215 @@
         addTeamBtn.addEventListener('click', () => { playSound(allSfx[1]); addTeamInputField(); });
         startGameBtn.addEventListener('click', () => { playSoundWithCallback(allSfx[0], actualStartGame); });
         revealPriceBtn.addEventListener('click', revealPrice);
-        nextRoundBtn.addEventListener('click', () => { playSound(allSfx[1]); nextRound(); });
+        
+        // --- BUTTON EVENT LISTENERS ---
+        // **REMOVED** the old problematic event listener for nextRoundBtn
         playAgainBtn.addEventListener('click', () => { playSoundWithCallback(allSfx[0], playAgain); });
         newGameBtn.addEventListener('click', () => { playSoundWithCallback(allSfx[1], newGame); });
         visitStoreBtn.addEventListener('click', () => { playSound(allSfx[1]); window.location.href = '/store'; }); 
+        highscoreBtn.addEventListener('click', showHighScore);
+        fiveRoundsBtn.addEventListener('click', () => startSinglePlayerGame('5rounds'));
+        infiniteModeBtn.addEventListener('click', () => startSinglePlayerGame('infinite'));
 
-        function selectGameMode() { modeOptions.forEach(o => o.classList.remove('selected')); this.classList.add('selected'); gameState.gameMode = this.dataset.mode; teamInputsContainer.style.display = this.dataset.mode === 'multi' ? 'block' : 'none'; currentScoreDisplay.style.display = this.dataset.mode === 'single' ? 'block' : 'none'; if(this.dataset.mode === 'multi') updateTeamRemoveButtonsState(); }
+        function startSinglePlayerGame(subType) { gameState.singlePlayerSubType = subType; playSoundWithCallback(allSfx[0], actualStartGame); }
+        function selectGameMode() { modeOptions.forEach(o => o.classList.remove('selected')); this.classList.add('selected'); gameState.gameMode = this.dataset.mode; const isMulti = gameState.gameMode === 'multi'; multiplayerStartArea.style.display = isMulti ? 'block' : 'none'; singlePlayerSubOptions.style.display = isMulti ? 'none' : 'block'; if (isMulti) updateTeamRemoveButtonsState(); }
         function addTeamInputField() { if (teamNamesList.querySelectorAll('.team-input-wrapper').length >= 4) return; const w = document.createElement('div'); w.className = 'team-input-wrapper'; const i = document.createElement('input'); i.type = 'text'; i.className = 'team-name-input'; i.placeholder = `Team ${teamNamesList.children.length + 1}`; const r = document.createElement('button'); r.className = 'remove-team-btn'; r.innerHTML = '<i class="fas fa-times"></i>'; r.onclick = () => { playSound(allSfx[1]); w.remove(); updateTeamRemoveButtonsState(); }; w.append(i, r); teamNamesList.appendChild(w); updateTeamRemoveButtonsState(); }
         function updateTeamRemoveButtonsState() { const wrappers = teamNamesList.querySelectorAll('.team-input-wrapper'); addTeamBtn.disabled = wrappers.length >= 4; wrappers.forEach((w, i) => { let r = w.querySelector('.remove-team-btn'); if(i < 2 && r) r.remove(); else if(i >= 2 && !r){ const nr = document.createElement('button'); nr.className='remove-team-btn'; nr.innerHTML='<i class="fas fa-times"></i>'; nr.onclick=()=>{playSound(allSfx[1]); w.remove(); updateTeamRemoveButtonsState();}; w.appendChild(nr); r = nr; } if(r) r.disabled = wrappers.length <= 2; }); }
-        function actualStartGame() { if (gameState.gameMode === 'single') { gameState.players = ['You']; gameState.scores = { 'You': 0 }; roundTypeText.textContent = 'Round'; roundTotalText.textContent = '/5'; } else { gameState.players = Array.from(teamNamesList.querySelectorAll('.team-name-input')).map((i, idx) => i.value.trim() || `Team ${idx + 1}`); if (gameState.players.length < 2) return alert('You need at least 2 teams for multiplayer!'); gameState.scores = {}; gameState.players.forEach(p => gameState.scores[p] = 0); roundTypeText.textContent = 'Round'; roundTotalText.textContent = ''; } gameState.currentRound = 1; gameState.usedItems = []; gameState.currentGuesses = {}; screens.start.classList.remove('active'); screens.game.classList.add('active'); homeMenuBtn.style.display = 'none'; backBtn.style.display = 'flex'; if (treatYourselfElement) treatYourselfElement.style.display = 'none'; setupRound(); }
-        function setupRound() { leftCurtain.classList.remove('open'); rightCurtain.classList.remove('open'); itemImageDisplay.style.opacity = 0; itemCategoryText.style.opacity = 0; let available = gameState.items.filter(i => !gameState.usedItems.includes(i.name)); if (available.length === 0) { gameState.usedItems = []; available = [...gameState.items]; } gameState.currentItem = available[Math.floor(Math.random() * available.length)]; gameState.usedItems.push(gameState.currentItem.name); roundNumberText.textContent = gameState.currentRound; if (gameState.gameMode === 'single') currentScoreValue.textContent = gameState.scores['You']; itemCategoryText.textContent = gameState.currentItem.category; itemImageDisplay.src = gameState.currentItem.image; itemImageDisplay.alt = gameState.currentItem.name; guessInputsArea.innerHTML = ''; gameState.players.forEach((p, i) => { const ig = document.createElement('div'); ig.className = 'guess-input-group'; ig.innerHTML = `<div class="guess-label">${(gameState.gameMode === 'single' ? 'Your' : p + "'s")} guess:</div><div class="guess-input-container"><div class="dollar-sign">$</div><input type="number" class="price-input" placeholder="0.00" min="0" step="0.01" data-player-index="${i}"></div>`; guessInputsArea.appendChild(ig); }); document.querySelectorAll('.price-input').forEach(i => i.addEventListener('focus', () => playSound(allSfx[1]))); nextRoundBtn.textContent = 'Next Round'; setTimeout(() => { playSound(allSfx[4]); leftCurtain.classList.add('open'); rightCurtain.classList.add('open'); setTimeout(() => { itemImageDisplay.style.transition = 'opacity 0.5s ease'; itemCategoryText.style.transition = 'opacity 0.5s ease'; itemImageDisplay.style.opacity = 1; itemCategoryText.style.opacity = 1; }, 700); }, 500); }
+        
+        function actualStartGame() {
+            if (gameState.gameMode === 'single') {
+                gameState.players = ['You'];
+                gameState.scores = { 'You': 0 };
+                if (gameState.singlePlayerSubType === 'infinite') {
+                    roundTypeText.textContent = 'Score';
+                    roundNumberText.textContent = '0';
+                    roundTotalText.textContent = '';
+                    currentScoreDisplay.style.display = 'none';
+                } else { // 5 rounds
+                    roundTypeText.textContent = 'Round';
+                    roundTotalText.textContent = '/5';
+                    currentScoreDisplay.style.display = 'block';
+                }
+            } else { // Multiplayer
+                gameState.players = Array.from(teamNamesList.querySelectorAll('.team-name-input')).map((i, idx) => i.value.trim() || `Team ${idx + 1}`);
+                if (gameState.players.length < 2) return alert('You need at least 2 teams for multiplayer!');
+                gameState.scores = {};
+                gameState.players.forEach(p => gameState.scores[p] = 0);
+                roundTypeText.textContent = 'Round';
+                roundTotalText.textContent = '';
+                currentScoreDisplay.style.display = 'none';
+            }
+            gameState.currentRound = 1; gameState.usedItems = []; gameState.currentGuesses = {};
+            screens.start.classList.remove('active'); screens.game.classList.add('active');
+            homeMenuBtn.style.display = 'none'; backBtn.style.display = 'flex';
+            if (treatYourselfElement) treatYourselfElement.style.display = 'none';
+            setupRound();
+        }
+
+        function setupRound() {
+            leftCurtain.classList.remove('open'); rightCurtain.classList.remove('open');
+            itemImageDisplay.style.opacity = 0; itemCategoryText.style.opacity = 0;
+            let available = gameState.items.filter(i => !gameState.usedItems.includes(i.name));
+            if (available.length === 0) { gameState.usedItems = []; available = [...gameState.items]; }
+            gameState.currentItem = available[Math.floor(Math.random() * available.length)];
+            gameState.usedItems.push(gameState.currentItem.name);
+
+            if (gameState.gameMode === 'single') {
+                if (gameState.singlePlayerSubType === 'infinite') {
+                    roundNumberText.textContent = gameState.scores['You'];
+                } else {
+                    roundNumberText.textContent = gameState.currentRound;
+                    currentScoreValue.textContent = gameState.scores['You'];
+                }
+            } else {
+                roundNumberText.textContent = gameState.currentRound;
+            }
+            
+            itemCategoryText.textContent = gameState.currentItem.category;
+            itemImageDisplay.src = gameState.currentItem.image;
+            itemImageDisplay.alt = gameState.currentItem.name;
+            guessInputsArea.innerHTML = '';
+            gameState.players.forEach((p, i) => { const ig = document.createElement('div'); ig.className = 'guess-input-group'; ig.innerHTML = `<div class="guess-label">${(gameState.gameMode === 'single' ? 'Your' : p + "'s")} guess:</div><div class="guess-input-container"><div class="dollar-sign">$</div><input type="number" class="price-input" placeholder="0.00" min="0" step="0.01" data-player-index="${i}"></div>`; guessInputsArea.appendChild(ig); });
+            document.querySelectorAll('.price-input').forEach(i => i.addEventListener('focus', () => playSound(allSfx[1])));
+            
+            // --- FIX IMPLEMENTED HERE ---
+            // Set the button's behavior for a normal round
+            nextRoundBtn.textContent = 'Next Round';
+            nextRoundBtn.onclick = () => { playSound(allSfx[1]); nextRound(); };
+
+            setTimeout(() => { playSound(allSfx[4]); leftCurtain.classList.add('open'); rightCurtain.classList.add('open'); setTimeout(() => { itemImageDisplay.style.transition = 'opacity 0.5s ease'; itemCategoryText.style.transition = 'opacity 0.5s ease'; itemImageDisplay.style.opacity = 1; itemCategoryText.style.opacity = 1; }, 700); }, 500);
+        }
+
         function revealPrice() { gameState.currentGuesses = {}; let valid = true; document.querySelectorAll('.price-input').forEach(i => { const pName = gameState.players[i.dataset.playerIndex], val = parseFloat(i.value); if (isNaN(val) || val < 0) { valid = false; i.classList.add('error'); } else { i.classList.remove('error'); gameState.currentGuesses[pName] = val; } }); if (!valid) return alert('Please enter valid price guesses for all players!'); screens.game.classList.remove('active'); screens.results.classList.add('active'); backBtn.style.display = 'flex'; showResults(); }
-        function showResults() { resultItemImageDisplay.src = gameState.currentItem.image; actualPriceValueEl.textContent = gameState.currentItem.price.toLocaleString('en-US', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }); itemDescriptionText.textContent = `${gameState.currentItem.name}: ${gameState.currentItem.description}`; let closestPlayer = null, smallestDiff = Infinity; guessResultsArea.innerHTML = ''; Object.entries(gameState.currentGuesses).forEach(([p, g]) => { const diff = Math.abs(g - gameState.currentItem.price); if (diff < smallestDiff) { smallestDiff = diff; closestPlayer = p; } else if (diff === smallestDiff) { closestPlayer = null; } const card = document.createElement('div'); card.className = 'guess-result'; card.innerHTML = `<div><b>${(gameState.gameMode === 'single' ? 'You' : p)}</b></div><div>Guessed: $${g.toLocaleString(undefined, {minimumFractionDigits: 2})}</div><div class="difference-display">Difference: $${diff.toLocaleString(undefined, {minimumFractionDigits: 2})}</div>`; guessResultsArea.appendChild(card); }); if (gameState.gameMode === 'single') { if (Math.abs(gameState.currentGuesses['You'] - gameState.currentItem.price) / gameState.currentItem.price <= 0.15) { gameState.scores['You']++; guessResultsArea.children[0].classList.add('closest-guess'); guessResultsArea.children[0].innerHTML += `<div class="winner-badge"><i class="fas fa-trophy"></i> Within 15%! +1 point</div>`; playSound(allSfx[2]); showFeedbackMessage("You are Correct!", "correct"); } else { playSound(allSfx[3]); showFeedbackMessage("Incorrect!", "wrong"); } currentScoreValue.textContent = gameState.scores['You']; } else { if (closestPlayer) { const idx = gameState.players.indexOf(closestPlayer); if(idx !== -1) { guessResultsArea.children[idx].classList.add('closest-guess'); guessResultsArea.children[idx].innerHTML += `<div class="winner-badge"><i class="fas fa-trophy"></i> Closest Guess! +1 point</div>`; gameState.scores[closestPlayer]++; playSound(allSfx[2]); showFeedbackMessage(`${closestPlayer} is Closest!`, "winner"); } } else { showFeedbackMessage("It's a Close Call!", "", 2000); } } updateScoreDisplay(); if ((gameState.gameMode === 'single' && gameState.currentRound >= 5) || (gameState.gameMode === 'multi' && Math.max(...Object.values(gameState.scores)) >= 5)) nextRoundBtn.textContent = 'See Final Results'; }
+        
+        function showResults() {
+            resultItemImageDisplay.src = gameState.currentItem.image;
+            actualPriceValueEl.textContent = gameState.currentItem.price.toLocaleString('en-US', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            itemDescriptionText.textContent = `${gameState.currentItem.name}: ${gameState.currentItem.description}`;
+            guessResultsArea.innerHTML = '';
+
+            let isGameOver = false;
+            let beatTheGame = false;
+            let playerWasCorrect = false;
+
+            if (gameState.gameMode === 'single') {
+                const guess = gameState.currentGuesses['You'];
+                const diff = Math.abs(guess - gameState.currentItem.price);
+                const card = document.createElement('div');
+                card.className = 'guess-result';
+                card.innerHTML = `<div><b>You</b></div><div>Guessed: $${guess.toLocaleString(undefined, {minimumFractionDigits: 2})}</div><div class="difference-display">Difference: $${diff.toLocaleString(undefined, {minimumFractionDigits: 2})}</div>`;
+                guessResultsArea.appendChild(card);
+                
+                playerWasCorrect = (diff / gameState.currentItem.price) <= 0.15;
+                if (playerWasCorrect) {
+                    gameState.scores['You']++;
+                    card.classList.add('closest-guess');
+                    card.innerHTML += `<div class="winner-badge"><i class="fas fa-trophy"></i> Within 15%! +1 point</div>`;
+                    playSound(allSfx[2]);
+                    showFeedbackMessage("Correct!", "correct");
+                    if (gameState.singlePlayerSubType === 'infinite' && gameState.usedItems.length >= gameState.items.length) {
+                        isGameOver = true;
+                        beatTheGame = true;
+                    }
+                } else {
+                    playSound(allSfx[3]);
+                    showFeedbackMessage("Incorrect!", "wrong");
+                    if (gameState.singlePlayerSubType === 'infinite') {
+                        isGameOver = true;
+                    }
+                }
+                currentScoreValue.textContent = gameState.scores['You'];
+            } else { // Multiplayer logic
+                let closestPlayer = null, smallestDiff = Infinity;
+                Object.entries(gameState.currentGuesses).forEach(([p, g]) => { const diff = Math.abs(g - gameState.currentItem.price); if (diff < smallestDiff) { smallestDiff = diff; closestPlayer = p; } else if (diff === smallestDiff) { closestPlayer = null; } const card = document.createElement('div'); card.className = 'guess-result'; card.innerHTML = `<div><b>${p}</b></div><div>Guessed: $${g.toLocaleString(undefined, {minimumFractionDigits: 2})}</div><div class="difference-display">Difference: $${diff.toLocaleString(undefined, {minimumFractionDigits: 2})}</div>`; guessResultsArea.appendChild(card); });
+                if (closestPlayer) { const idx = gameState.players.indexOf(closestPlayer); if(idx !== -1) { guessResultsArea.children[idx].classList.add('closest-guess'); guessResultsArea.children[idx].innerHTML += `<div class="winner-badge"><i class="fas fa-trophy"></i> Closest Guess! +1 point</div>`; gameState.scores[closestPlayer]++; playSound(allSfx[2]); showFeedbackMessage(`${closestPlayer} is Closest!`, "winner"); } } else { showFeedbackMessage("It's a Close Call!", "", 2000); }
+            }
+            
+            updateScoreDisplay();
+
+            // Check final game over conditions AFTER processing the result
+            if (isGameOver || (gameState.singlePlayerSubType === '5rounds' && gameState.currentRound >= 5) || (gameState.gameMode === 'multi' && Math.max(...Object.values(gameState.scores)) >= 5)) {
+                isGameOver = true; // Make sure it's set
+            }
+            
+            // --- FIX IMPLEMENTED HERE ---
+            // If the game is over, change the button's text and its onclick function.
+            if (isGameOver) {
+                if (beatTheGame) {
+                    nextRoundBtn.textContent = 'You Beat The Game!';
+                } else if (gameState.singlePlayerSubType === 'infinite') {
+                    nextRoundBtn.textContent = 'See Final Score';
+                } else {
+                    nextRoundBtn.textContent = 'See Final Results';
+                }
+                nextRoundBtn.onclick = () => { playSound(allSfx[1]); showGameOver(); };
+            }
+        }
         function updateScoreDisplay() { scoreDisplayArea.innerHTML = ''; Object.entries(gameState.scores).forEach(([n, s]) => { const card = document.createElement('div'); card.className = 'score-card'; card.innerHTML = `<h4>${n}</h4><div class="text-2xl font-bold">${s}</div><div class="progress-bar"><div class="progress-fill" style="width: ${s/5*100}%"></div></div>`; scoreDisplayArea.appendChild(card); }); }
-        function nextRound() { if ((gameState.gameMode === 'single' && gameState.currentRound >= 5) || (gameState.gameMode === 'multi' && Math.max(...Object.values(gameState.scores)) >= 5)) showGameOver(); else { gameState.currentRound++; screens.results.classList.remove('active'); screens.game.classList.add('active'); backBtn.style.display = 'flex'; setupRound(); } }
-        function showGameOver() { screens.results.classList.remove('active'); screens.gameOver.classList.add('active'); backBtn.style.display = 'none'; homeMenuBtn.style.display = 'flex'; triggerConfetti(); if (!treatYourselfElement) { treatYourselfElement = document.createElement('div'); treatYourselfElement.className = 'treat-yourself-callout'; treatYourselfElement.innerHTML = `<span>Treat Yourself!</span> <i class="fas fa-arrow-down"></i>`; storeButtonWrapper.insertBefore(treatYourselfElement, visitStoreBtn); } treatYourselfElement.style.display = 'flex'; const maxScore = Math.max(...Object.values(gameState.scores)); if (gameState.gameMode === 'single') { const score = gameState.scores['You']; winMessageText.textContent = "Game Over!"; winnerDetailsText.textContent = `You scored ${score} points.`; winnerTrophyDisplay.textContent = score <= 1 ? '🗑️' : score <= 3 ? '🥈' : '🏆'; } else { const winners = Object.keys(gameState.scores).filter(p => gameState.scores[p] === maxScore); winMessageText.textContent = winners.length > 1 ? "It's a Tie!" : `${winners[0]} Wins!`; winnerDetailsText.textContent = `Congratulations on reaching ${maxScore} points!`; winnerTrophyDisplay.textContent = '🏆'; } finalScoresArea.innerHTML = ''; Object.entries(gameState.scores).forEach(([n, s]) => { const card = document.createElement('div'); card.className = `score-card ${s === maxScore && maxScore > 0 ? 'winner-glow' : ''}`; card.innerHTML = `<h4>${n}</h4><div class="text-3xl font-bold">${s}</div>`; finalScoresArea.appendChild(card); }); }
+        
+        function nextRound() {
+            gameState.currentRound++;
+            screens.results.classList.remove('active');
+            screens.game.classList.add('active');
+            backBtn.style.display = 'flex';
+            setupRound();
+        }
+        
+        function showGameOver() {
+            screens.results.classList.remove('active');
+            screens.gameOver.classList.add('active');
+            backBtn.style.display = 'none';
+            homeMenuBtn.style.display = 'flex';
+            triggerConfetti();
+            if (!treatYourselfElement) { treatYourselfElement = document.createElement('div'); treatYourselfElement.className = 'treat-yourself-callout'; treatYourselfElement.innerHTML = `<span>Treat Yourself!</span> <i class="fas fa-arrow-down"></i>`; storeButtonWrapper.insertBefore(treatYourselfElement, visitStoreBtn); } treatYourselfElement.style.display = 'flex';
+            
+            const score = gameState.scores['You'];
+            if (gameState.gameMode === 'single') {
+                if (gameState.singlePlayerSubType === 'infinite') {
+                    const beatTheGame = (gameState.usedItems.length >= gameState.items.length) && ((Math.abs(gameState.currentGuesses['You'] - gameState.currentItem.price) / gameState.currentItem.price) <= 0.15);
+                    saveHighScore(score); // Save score at the end of the game
+                    let isNewHighScore = score > infiniteHighScore && score === parseInt(localStorage.getItem('gtp_infinite_highscore'), 10);
+                    
+                    if (beatTheGame) {
+                        winMessageText.textContent = "You Beat The Game!";
+                        winnerDetailsText.innerHTML = `You correctly guessed all ${gameState.items.length} items! <br> Final Score: ${score}. ${isNewHighScore ? '<strong>New High Score!</strong>' : ''}`;
+                        winnerTrophyDisplay.textContent = '👑';
+                    } else {
+                        winMessageText.textContent = "Game Over!";
+                        winnerDetailsText.innerHTML = `Your Score: ${score}. ${isNewHighScore ? '<strong>New High Score!</strong>' : `High Score: ${infiniteHighScore}`}`;
+                        winnerTrophyDisplay.textContent = isNewHighScore ? '🏆' : '👍';
+                    }
+                } else { // 5-rounds mode
+                    winMessageText.textContent = "Game Over!";
+                    winnerDetailsText.textContent = `You scored ${score} out of 5.`;
+                    winnerTrophyDisplay.textContent = score <= 1 ? '🗑️' : score <= 3 ? '🥈' : '🏆';
+                }
+            } else { // Multiplayer mode
+                const maxScore = Math.max(...Object.values(gameState.scores));
+                const winners = Object.keys(gameState.scores).filter(p => gameState.scores[p] === maxScore);
+                winMessageText.textContent = winners.length > 1 ? "It's a Tie!" : `${winners[0]} Wins!`;
+                winnerDetailsText.textContent = `Congratulations on reaching ${maxScore} points!`;
+                winnerTrophyDisplay.textContent = '🏆';
+            }
+
+            finalScoresArea.innerHTML = '';
+            const maxFinalScore = Math.max(...Object.values(gameState.scores));
+            Object.entries(gameState.scores).forEach(([n, s]) => {
+                const card = document.createElement('div');
+                card.className = `score-card ${s === maxFinalScore && maxFinalScore > 0 ? 'winner-glow' : ''}`;
+                card.innerHTML = `<h4>${n}</h4><div class="text-3xl font-bold">${s}</div>`;
+                finalScoresArea.appendChild(card);
+            });
+        }
         function playAgain() { screens.gameOver.classList.remove('active'); screens.game.classList.add('active'); backBtn.style.display = 'flex'; if (treatYourselfElement) treatYourselfElement.style.display = 'none'; gameState.currentRound = 1; gameState.usedItems = []; Object.keys(gameState.scores).forEach(k => gameState.scores[k] = 0); setupRound(); }
         function newGame() { screens.gameOver.classList.remove('active'); screens.start.classList.add('active'); backBtn.style.display = 'none'; homeMenuBtn.style.display = 'flex'; if (treatYourselfElement) treatYourselfElement.style.display = 'none'; teamNamesList.innerHTML = `<div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 1"></div><div class="team-input-wrapper"><input type="text" class="team-name-input" placeholder="Team 2"></div>`; updateTeamRemoveButtonsState(); if (modeOptions.length > 0) modeOptions[0].click(); }
         
-        document.addEventListener('DOMContentLoaded', () => { loadAudioSettings(); updateTeamRemoveButtonsState(); if (modeOptions.length > 0) modeOptions[0].click(); });
+        document.addEventListener('DOMContentLoaded', () => { 
+            loadAudioSettings(); 
+            loadHighScore(); 
+            updateTeamRemoveButtonsState(); 
+            if (modeOptions.length > 0) modeOptions[0].click(); 
+        });
     </script>
     <script>
       window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };

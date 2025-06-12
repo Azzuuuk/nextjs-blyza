@@ -140,7 +140,7 @@
         button:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
         button:disabled { background: var(--text-medium); color: var(--text-light); cursor: not-allowed; opacity: 0.7; }
 
-        .btn-primary, #start-game-btn, #reveal-answer-btn, #next-round-btn { background-color: var(--blyza-sunny-yellow); }
+        .btn-primary, #start-game-btn, #reveal-answer-btn, #next-round-btn, #ten-rounds-btn, #infinite-mode-btn { background-color: var(--blyza-sunny-yellow); }
         .btn-secondary, #add-team-btn, #main-menu-nav-btn { background-color: var(--blyza-purple-secondary); color: var(--text-light); }
         .btn-success, #play-again-game-btn { background-color: var(--blyza-keppel-accent); color: var(--text-light); }
         .btn-info, #visit-store-btn { background-color: #4ECDC4; }
@@ -276,6 +276,7 @@
         .icon-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black-stroke); }
         .icon-btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
         #settings-btn { top: 20px; right: 20px; }
+        #highscore-btn { top: 20px; right: 85px; background-color: var(--blyza-sunny-yellow); } /* NEW */
         #back-to-games-btn, #back-to-menu-btn { top: 20px; left: 20px; }
         
         .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; }
@@ -302,7 +303,7 @@
         /* --- Responsive Adjustments --- */
         @media (max-width: 768px) {
             body { padding: 10px; }
-            .game-container { padding: 45px 15px 15px; } 
+            .game-container { padding: 50px 15px 15px; } 
             h1 { font-size: 2.2rem; margin-top: 5px; }
             .mode-option { max-width: 100%; min-width: unset; }
             .score-display, #team-names-grid { grid-template-columns: 1fr; }
@@ -310,6 +311,7 @@
             .option-btn:nth-child(3) { grid-column: auto; width: 100%; }
             .icon-btn { width: 48px; height: 48px; }
             #settings-btn { top: 12px; right: 12px; }
+            #highscore-btn { top: 12px; right: 70px; } /* NEW */
             #back-to-games-btn, #back-to-menu-btn { top: 12px; left: 12px; }
             .feedback-popup { font-size: 2rem; padding: 20px 30px; width: 90%; }
             .modal-content { padding: 20px; }
@@ -354,6 +356,9 @@
         <button id="back-to-menu-btn" class="icon-btn" aria-label="Back to Main Menu" title="Back to Main Menu" style="display: none;">
             <i class="fas fa-arrow-left"></i>
         </button>
+        <button id="highscore-btn" class="icon-btn" aria-label="Show High Score">
+            <i class="fas fa-star"></i>
+        </button>
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
         </button>
@@ -365,29 +370,37 @@
                 <p><strong>HOW TO PLAY:</strong></p>
                 <ul>
                     <li><i class="fas fa-map-marked-alt"></i> Guess the correct place shown from three options.</li>
-                    <li><i class="fas fa-user"></i> **Single Player:** 10 rounds. Score points for correct answers.</li>
+                    <li><i class="fas fa-user"></i> **Single Player:** Play classic 10 rounds or try the new Infinite Mode!</li>
                     <li><i class="fas fa-users"></i> **Multiplayer:** Up to 4 teams. Take turns. First to <strong>5 points</strong> wins!</li>
                 </ul>
             </div>
             <div class="game-mode-selection">
-                <div class="mode-option selected" data-mode="single"> <i class="fas fa-user"></i> <h3>Single Player</h3> <p>10 rounds</p> </div>
+                <div class="mode-option selected" data-mode="single"> <i class="fas fa-user"></i> <h3>Single Player</h3> <p>10 rounds or Infinite Mode</p> </div>
                 <div class="mode-option" data-mode="multi"> <i class="fas fa-users"></i> <h3>Multiplayer</h3> <p>With friends</p> </div>
             </div>
-            <div id="team-inputs-container" class="team-inputs-container" style="display: none;">
-                <h3 class="screen-title">Enter Team Names</h3>
-                <div id="team-names-grid">
-                    <div class="team-input"><input type="text" class="team-name-input" placeholder="Team 1"></div>
-                    <div class="team-input"><input type="text" class="team-name-input" placeholder="Team 2"></div>
-                </div>
-                <button id="add-team-btn" class="btn-secondary"><i class="fas fa-plus-circle"></i> Add Team</button>
+            
+            <div id="single-player-sub-options" style="margin-top: 20px;">
+                <button id="ten-rounds-btn" class="btn-primary"><i class="fas fa-list-ol"></i> 10 Rounds</button>
+                <button id="infinite-mode-btn" class="btn-primary"><i class="fas fa-infinity"></i> Infinite Mode</button>
             </div>
-            <button id="start-game-btn" class="btn-primary">Start Game <i class="fas fa-play"></i></button>
+            
+            <div id="multiplayer-start-area" style="display: none;">
+                <div id="team-inputs-container" class="team-inputs-container">
+                    <h3 class="screen-title">Enter Team Names</h3>
+                    <div id="team-names-grid">
+                        <div class="team-input"><input type="text" class="team-name-input" placeholder="Team 1"></div>
+                        <div class="team-input"><input type="text" class="team-name-input" placeholder="Team 2"></div>
+                    </div>
+                    <button id="add-team-btn" class="btn-secondary"><i class="fas fa-plus-circle"></i> Add Team</button>
+                </div>
+                <button id="start-game-btn" class="btn-primary">Start Game <i class="fas fa-play"></i></button>
+            </div>
         </div>
 
         <div id="game-screen" class="screen">
             <div class="game-info">
                 <div> <span id="round-type-text">Round</span> <span id="round-number-text">1</span> <span id="round-total-text">/10</span> </div>
-                <div> Score: <span id="current-score-text">0</span><span id="score-target-display-text"></span> </div>
+                <div id="score-display-text"> Score: <span id="current-score-text">0</span><span id="score-target-display-text"></span> </div>
             </div>
             <div id="current-player-display-text"></div>
             <div class="place-display-stage">
@@ -458,359 +471,334 @@
     <script>
         const gameConfig = { sfxEnabled: true, musicVolume: 0.2 };
         const gameState = {
-            players: [], currentRound: 1, scores: {}, gameMode: 'single', currentPlace: null,
+            players: [], currentRound: 0, scores: {}, gameMode: 'single', singlePlayerSubType: '10rounds', currentPlace: null,
             currentPlayerIndex: 0, usedPlaces: [], currentGuess: null,
-            places: [ /* Unchanged array of places */ 
-                 { image: "https://static.wixstatic.com/media/9ce3e5_09dcc3d095064b768a85d0a90d8d84f5~mv2.jpg", correctAnswer: "Baku, Azerbaijan", options: ["Baku, Azerbaijan", "Tbilisi, Georgia", "Astana, Kazakasthan"], description: "This vibrant capital city is known for its modern Flame Towers and the ancient walled Old City." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_f2ec9180c645479f8956038166065254~mv2.jpeg", correctAnswer: "Berlin, Germany", options: ["Prague, Czechia", "Berlin, Germany", "Vienna, Austria"], description: "A city steeped in history, it boasts iconic landmarks like the Brandenburg Gate." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_7e5c4a438e734b4aa5dae6078edcdf53~mv2.jpg", correctAnswer: "Amsterdam, Netherlands", options: ["Copenhagen, Denmark", "Bruges, Belgium", "Amsterdam, Netherlands"], description: "Famous for its intricate canal system, historic gabled houses, and vibrant artistic heritage." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_ba41ac2fcd5e4981820613bb79a42b99~mv2.webp", correctAnswer: "Bali, Indonesia", options: ["Bali, Indonesia", "Male, Maldives", "Puket, Thailand"], description: "This Island paradise is renowned for its stunning beaches, lush rice paddies, and spiritual retreats." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_bf28558e3ae84ad19328d5154ce60771~mv2.jpg", correctAnswer: "Colombo, Sri Lanka", options: ["Mumbai, India", "Colombo, Sri Lanka", "Ho Chi Minh City, Vietnam"], description: "The bustling commercial capital, featuring a mix of modern high-rises and colonial-era architecture." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_ab63cff93d4f4a2095c92d94a4ee1ac6~mv2.jpg", correctAnswer: "Cape Town, South Africa", options: ["Sydney, Australia", "Rio De Janeiro, Brazil", "Cape Town, South Africa"], description: "Nestled beneath the iconic Table Mountain, this city boasts stunning coastal scenery and diverse cultural heritage." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_3c2e1025e75f458e9d132c9d93a47aca~mv2.webp", correctAnswer: "Buenos Aires, Argentina", options: ["São Paulo, Brazil", "Chichen Itza, Mexico", "Buenos Aires, Argentina"], description: "Known as the Paris of South America, this capital is famous for its European-style architecture and passionate tango culture." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_19c1d2e7555d4505a4634f3514998711~mv2.jpg", correctAnswer: "Brussels, Belgium", options: ["Brussels, Belgium", "Geneva, Switzerland", "Berlin, Germany"], description: "The capital and a major center for European politics, famous for its Grand Place and delicious chocolate." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_be09b5bc9e2549b2b3ab549e769067af~mv2.webp", correctAnswer: "Dubai, UAE", options: ["Riaydh, Saudi Arabia", "Dubai, UAE", "Doha, Qatar"], description: "This ultramodern city is famous for its futuristic skyscrapers, luxury shopping, and artificial islands." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_f250e5739b334a57b519c1bdac4633c1~mv2.jpeg", correctAnswer: "Gdansk, Poland", options: ["Riga, Latvia", "Tallinn, Estonia", "Gdansk, Poland"], description: "A historic port city on the Baltic coast of Poland, known for its colorful Long Market and maritime history." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_2e10ed6e32ce4f76a1a17371346b121c~mv2.avif", correctAnswer: "Istanbul, Turkey", options: ["Istanbul, Turkey", "Cairo, Egypt", "Athens, Greece"], description: "Straddling two continents, this Turkish city boasts a rich history evident in its Hagia Sophia and Blue Mosque." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_667659900297423aacd1ce77923c4e3d~mv2.jpeg", correctAnswer: "Las Vegas, USA", options: ["Los Angeles, USA", "Las Vegas, USA", "Atlantic City, USA"], description: "Known as the Entertainment Capital of the World, this Nevada city is famous for its casinos, dazzling shows, and vibrant nightlife." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_68a46a12fd4343908c7d5c37c3d68aa3~mv2.avif", correctAnswer: "Lagos, Nigeria", options: ["Nairobi, Kenya", "Dhaka, Bangladesh", "Lagos, Nigeria"], description: "The sprawling and energetic economic hub, known for its bustling markets and vibrant music scene." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_9d66ca30b333461e85c94cc31a35c352~mv2.jpg", correctAnswer: "Manchester, UK", options: ["Manchester, UK", "Liverpool, UK", "London, UK"], description: "A major city in northwest England with a rich industrial heritage and a thriving contemporary music and arts scene." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_c9f7aba5e3f84f3cb0a72c6c931fdeef~mv2.jpg", correctAnswer: "Marseille, France", options: ["Genoa, Italy", "Marseille, France", "Valencia, Spain"], description: "France's second-largest city, a vibrant port with a rich cultural mix and the iconic Vieux-Port (Old Port)." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_9da172ba6d1b4a24872cea096995caca~mv2.jpg", correctAnswer: "Melbourne, Australia", options: ["Auckland, New Zealand", "Vancouver, Canada", "Melbourne, Australia"], description: "A stylish coastal city in southeastern Australia, known for its laneway cafes, vibrant arts scene, and major sporting events." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_5f9ee5bb1bfa45b1aa4c83e1b278b5a6~mv2.jpg", correctAnswer: "Osaka, Japan", options: ["Osaka, Japan", "Tokyo, Japan", "Taipei, Taiwan"], description: "A large port city and commercial center on the Japanese island of Honshu, known for its modern architecture, street food, and lively nightlife." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_4214e6a2c4be4d5cb19cd3687632ea17~mv2.avif", correctAnswer: "Muscat, Oman", options: ["Dammam, Saudi Arabia", "Muscat, Oman", "Jahra, Kuwait"], description: "The capital city of Oman, known for its ancient souks, beautiful mosques, and stunning coastal scenery." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_0a64c3d10bb642fbbe3e2bb44c9c453c~mv2.jpg", correctAnswer: "Porto, Portugal", options: ["Bilbao, Spain", "Tallinn, Estonia", "Porto, Portugal"], description: "A coastal city in northwest Portugal, famous for its port wine cellars and the Ribeira district's colorful, narrow streets along the Douro River." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_d9af5b619664458f9ea65841ef1f3c95~mv2.jpg", correctAnswer: "Rio de Janeiro, Brazil", options: ["Rio de Janeiro, Brazil", "Apopa, El Salvador", "Guanajuato, Mexico"], description: "Famous for its iconic Christ the Redeemer statue, Sugarloaf Mountain, and vibrant beaches like Copacabana and Ipanema." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_6362e11c604b42809cf8f2b62ac076f4~mv2.jpg", correctAnswer: "Prague, Czechia", options: ["Budapest, Hungary", "Prague, Czechia", "Krakow, Poland"], description: "The capital of the Czech Republic, renowned for its Old Town Square, Charles Bridge, and fairytale architecture." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_0e83b15b48c644bdb2fc21974aa67428~mv2.jpg", correctAnswer: "Seoul, South Korea", options: ["Beijing, China", "Tokyo, Japan", "Seoul, South Korea"], description: "The vibrant capital of South Korea, a dynamic mix of ancient temples, cutting-edge technology, and bustling street markets." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_02627aadd7534ce29f48f868ed3d02a7~mv2.jpg", correctAnswer: "Rome, Italy", options: ["Rome, Italy", "Lisbon, Portugal", "Madrid, Spain"], description: "The Eternal City, capital of Italy, home to ancient wonders like the Colosseum and the Roman Forum." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_e14ab9b84c0849d79a4f15bad4497d06~mv2.webp", correctAnswer: "Vancouver, Canada", options: ["Seattle, USA", "Vancouver, Canada", "Sydney, Australia"], description: "A vibrant coastal city in British Columbia, Canada, known for its stunning natural beauty, surrounded by mountains and the Pacific Ocean." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_15ea364d60264367b040d335d0327501~mv2.jpg", correctAnswer: "Tbilisi, Georgia", options: ["Yerevan, Armenia", "Tehran, Iran", "Tbilisi, Georgia"], description: "The ancient capital of Georgia, known for its diverse architecture reflecting centuries of history, thermal springs, and vibrant cultural scene." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_1f26ea3b95c447e7b13e70e1373dcbce~mv2.jpg", correctAnswer: "Yerevan, Armenia", options: ["Yerevan, Armenia", "Beirut, Lebanon", "Bishek, Kyrgyzstan"], description: "The ancient capital of Armenia, set in the highlands and known for its grand Soviet-era architecture and views of Mount Ararat." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_a81c9b272738498eabb5a59bbcf3fec8~mv2.jpg", correctAnswer: "Beijing, China", options: ["Hong Kong", "Beijing, China", "Bangok, Thailand"], description: "The capital of China, a city rich in history and culture, home to iconic sites like the Forbidden City and the Great Wall." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_af3fe5983f41472f85b2d498aef7dc6e~mv2.jpeg", correctAnswer: "Chicago, USA", options: ["Wellingtin, New Zealand", "Montreal, Canada", "Chicago, USA"], description: "Known for its bold architecture, blues music, and deep-dish pizza, this major city sits on Lake Michigan." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_9f26e4a72c734a72b7b029bcf139d08b~mv2.jpg", correctAnswer: "Hanoi, Vietnam", options: ["Hanoi, Vietnam", "Phnom Penh, Cambodia", "Kuala Lumpur, Malaysia"], description: "The capital of Vietnam, known for its Old Quarter, French colonial architecture, and serene lakes." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_aac6a86cb69742a49b66bdd8a7a8c2a5~mv2.jpg", correctAnswer: "Manila, Philippines", options: ["Jakarta, Indonesia", "Manila, Philippines", "Singapore"], description: "The bustling capital of the Philippines, a vibrant mix of historic Intramuros and modern skyscrapers." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_3667799d353e44fca42f49ccf8f5280e~mv2.avif", correctAnswer: "Hyderabad, India", options: ["Jamalpur, Bangladesh", "Lahore, Pakistan", "Hyderabad, India"], description: "A historic city in southern India, known for its pearl and diamond trading centers, and Charminar." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_babf7e1b0857429b889ee70355465717~mv2.jpg", correctAnswer: "Marrakech, Morocco", options: ["Marrakech, Morocco", "Tunis, Tunisia", "Cairo, Egypt"], description: "A major city in Morocco, known for its bustling Djemaa el-Fna square, vibrant souks, and beautiful mosques and gardens." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_52d8a4c923b749b89f4fafe933385cf6~mv2.jpg", correctAnswer: "Mexico City, Mexico", options: ["Lima, Peru", "Mexico City, Mexico", "Guayana, Venezuela"], description: "The sprawling, high-altitude capital of Mexico, known for its Aztec ruins, colonial architecture, and vibrant arts scene." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_f45206a737ea4a6cb6f1ed5a378d8f93~mv2.jpg", correctAnswer: "Oslo, Norway", options: ["Stockholm, Sweden", "Helsinki, Finland", "Oslo, Norway"], description: "The capital of Norway, situated at the head of the Oslofjord, known for its green spaces, museums, and maritime history." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_64f75787d8674c75803d1a6b9808b1e3~mv2.jpg", correctAnswer: "Algiers, Algeria", options: ["Algiers, Algeria", "Tripoli, Libya", "Casablanca, Morocco"], description: "The capital and largest city of Algeria, located on the Mediterranean coast, known for its whitewashed buildings and the Casbah." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_cebb14bc01db4375a8bda98e97a34b66~mv2.jpg", correctAnswer: "Apia, Samoa", options: ["Suva, Fiji", "Apia, Samoa", "Honiara, Solomon Islands"], description: "The capital and only city of Samoa, located on the northern coast of Upolu island, known for its relaxed pace and tropical surroundings." },
-                 { image: "https://static.wixstatic.com/media/9ce3e5_6efce60f140246008e8d78a8fdcb0a68~mv2.jpeg", correctAnswer: "Islamabad, Pakistan", options: ["Kabul, Afghanistan", "Almaty, Kazakasthan", "Islamabad, Pakistan"], description: "The modern capital city of Pakistan, known for its well-organized layout and the Faisal Mosque." }
-            ]
+            places: [ { image: "https://static.wixstatic.com/media/9ce3e5_09dcc3d095064b768a85d0a90d8d84f5~mv2.jpg", correctAnswer: "Baku, Azerbaijan", options: ["Baku, Azerbaijan", "Tbilisi, Georgia", "Astana, Kazakasthan"], description: "This vibrant capital city is known for its modern Flame Towers and the ancient walled Old City." }, { image: "https://static.wixstatic.com/media/9ce3e5_f2ec9180c645479f8956038166065254~mv2.jpeg", correctAnswer: "Berlin, Germany", options: ["Prague, Czechia", "Berlin, Germany", "Vienna, Austria"], description: "A city steeped in history, it boasts iconic landmarks like the Brandenburg Gate." }, { image: "https://static.wixstatic.com/media/9ce3e5_7e5c4a438e734b4aa5dae6078edcdf53~mv2.jpg", correctAnswer: "Amsterdam, Netherlands", options: ["Copenhagen, Denmark", "Bruges, Belgium", "Amsterdam, Netherlands"], description: "Famous for its intricate canal system, historic gabled houses, and vibrant artistic heritage." }, { image: "https://static.wixstatic.com/media/9ce3e5_ba41ac2fcd5e4981820613bb79a42b99~mv2.webp", correctAnswer: "Bali, Indonesia", options: ["Bali, Indonesia", "Male, Maldives", "Puket, Thailand"], description: "This Island paradise is renowned for its stunning beaches, lush rice paddies, and spiritual retreats." }, { image: "https://static.wixstatic.com/media/9ce3e5_bf28558e3ae84ad19328d5154ce60771~mv2.jpg", correctAnswer: "Colombo, Sri Lanka", options: ["Mumbai, India", "Colombo, Sri Lanka", "Ho Chi Minh City, Vietnam"], description: "The bustling commercial capital, featuring a mix of modern high-rises and colonial-era architecture." }, { image: "https://static.wixstatic.com/media/9ce3e5_ab63cff93d4f4a2095c92d4a4ee1ac6~mv2.jpg", correctAnswer: "Cape Town, South Africa", options: ["Sydney, Australia", "Rio De Janeiro, Brazil", "Cape Town, South Africa"], description: "Nestled beneath the iconic Table Mountain, this city boasts stunning coastal scenery and diverse cultural heritage." }, { image: "https://static.wixstatic.com/media/9ce3e5_3c2e1025e75f458e9d132c9d93a47aca~mv2.webp", correctAnswer: "Buenos Aires, Argentina", options: ["São Paulo, Brazil", "Chichen Itza, Mexico", "Buenos Aires, Argentina"], description: "Known as the Paris of South America, this capital is famous for its European-style architecture and passionate tango culture." }, { image: "https://static.wixstatic.com/media/9ce3e5_19c1d2e7555d4505a4634f3514998711~mv2.jpg", correctAnswer: "Brussels, Belgium", options: ["Brussels, Belgium", "Geneva, Switzerland", "Berlin, Germany"], description: "The capital and a major center for European politics, famous for its Grand Place and delicious chocolate." }, { image: "https://static.wixstatic.com/media/9ce3e5_be09b5bc9e2549b2b3ab549e769067af~mv2.webp", correctAnswer: "Dubai, UAE", options: ["Riaydh, Saudi Arabia", "Dubai, UAE", "Doha, Qatar"], description: "This ultramodern city is famous for its futuristic skyscrapers, luxury shopping, and artificial islands." }, { image: "https://static.wixstatic.com/media/9ce3e5_f250e5739b334a57b519c1bdac4633c1~mv2.jpeg", correctAnswer: "Gdansk, Poland", options: ["Riga, Latvia", "Tallinn, Estonia", "Gdansk, Poland"], description: "A historic port city on the Baltic coast of Poland, known for its colorful Long Market and maritime history." }, { image: "https://static.wixstatic.com/media/9ce3e5_2e10ed6e32ce4f76a1a17371346b121c~mv2.avif", correctAnswer: "Istanbul, Turkey", options: ["Istanbul, Turkey", "Cairo, Egypt", "Athens, Greece"], description: "Straddling two continents, this Turkish city boasts a rich history evident in its Hagia Sophia and Blue Mosque." }, { image: "https://static.wixstatic.com/media/9ce3e5_667659900297423aacd1ce77923c4e3d~mv2.jpeg", correctAnswer: "Las Vegas, USA", options: ["Los Angeles, USA", "Las Vegas, USA", "Atlantic City, USA"], description: "Known as the Entertainment Capital of the World, this Nevada city is famous for its casinos, dazzling shows, and vibrant nightlife." }, { image: "https://static.wixstatic.com/media/9ce3e5_68a46a12fd4343908c7d5c37c3d68aa3~mv2.avif", correctAnswer: "Lagos, Nigeria", options: ["Nairobi, Kenya", "Dhaka, Bangladesh", "Lagos, Nigeria"], description: "The sprawling and energetic economic hub, known for its bustling markets and vibrant music scene." }, { image: "https://static.wixstatic.com/media/9ce3e5_9d66ca30b333461e85c94cc31a35c352~mv2.jpg", correctAnswer: "Manchester, UK", options: ["Manchester, UK", "Liverpool, UK", "London, UK"], description: "A major city in northwest England with a rich industrial heritage and a thriving contemporary music and arts scene." }, { image: "https://static.wixstatic.com/media/9ce3e5_c9f7aba5e3f84f3cb0a72c6c931fdeef~mv2.jpg", correctAnswer: "Marseille, France", options: ["Genoa, Italy", "Marseille, France", "Valencia, Spain"], description: "France's second-largest city, a vibrant port with a rich cultural mix and the iconic Vieux-Port (Old Port)." }, { image: "https://static.wixstatic.com/media/9ce3e5_9da172ba6d1b4a24872cea096995caca~mv2.jpg", correctAnswer: "Melbourne, Australia", options: ["Auckland, New Zealand", "Vancouver, Canada", "Melbourne, Australia"], description: "A stylish coastal city in southeastern Australia, known for its laneway cafes, vibrant arts scene, and major sporting events." }, { image: "https://static.wixstatic.com/media/9ce3e5_5f9ee5bb1bfa45b1aa4c83e1b278b5a6~mv2.jpg", correctAnswer: "Osaka, Japan", options: ["Osaka, Japan", "Tokyo, Japan", "Taipei, Taiwan"], description: "A large port city and commercial center on the Japanese island of Honshu, known for its modern architecture, street food, and lively nightlife." }, { image: "https://static.wixstatic.com/media/9ce3e5_4214e6a2c4be4d5cb19cd3687632ea17~mv2.avif", correctAnswer: "Muscat, Oman", options: ["Dammam, Saudi Arabia", "Muscat, Oman", "Jahra, Kuwait"], description: "The capital city of Oman, known for its ancient souks, beautiful mosques, and stunning coastal scenery." }, { image: "https://static.wixstatic.com/media/9ce3e5_0a64c3d10bb642fbbe3e2bb44c9c453c~mv2.jpg", correctAnswer: "Porto, Portugal", options: ["Bilbao, Spain", "Tallinn, Estonia", "Porto, Portugal"], description: "A coastal city in northwest Portugal, famous for its port wine cellars and the Ribeira district's colorful, narrow streets along the Douro River." }, { image: "https://static.wixstatic.com/media/9ce3e5_d9af5b619664458f9ea65841ef1f3c95~mv2.jpg", correctAnswer: "Rio de Janeiro, Brazil", options: ["Rio de Janeiro, Brazil", "Apopa, El Salvador", "Guanajuato, Mexico"], description: "Famous for its iconic Christ the Redeemer statue, Sugarloaf Mountain, and vibrant beaches like Copacabana and Ipanema." }, { image: "https://static.wixstatic.com/media/9ce3e5_6362e11c604b42809cf8f2b62ac076f4~mv2.jpg", correctAnswer: "Prague, Czechia", options: ["Budapest, Hungary", "Prague, Czechia", "Krakow, Poland"], description: "The capital of the Czech Republic, renowned for its Old Town Square, Charles Bridge, and fairytale architecture." }, { image: "https://static.wixstatic.com/media/9ce3e5_0e83b15b48c644bdb2fc21974aa67428~mv2.jpg", correctAnswer: "Seoul, South Korea", options: ["Beijing, China", "Tokyo, Japan", "Seoul, South Korea"], description: "The vibrant capital of South Korea, a dynamic mix of ancient temples, cutting-edge technology, and bustling street markets." }, { image: "https://static.wixstatic.com/media/9ce3e5_02627aadd7534ce29f48f868ed3d02a7~mv2.jpg", correctAnswer: "Rome, Italy", options: ["Rome, Italy", "Lisbon, Portugal", "Madrid, Spain"], description: "The Eternal City, capital of Italy, home to ancient wonders like the Colosseum and the Roman Forum." }, { image: "https://static.wixstatic.com/media/9ce3e5_e14ab9b84c0849d79a4f15bad4497d06~mv2.webp", correctAnswer: "Vancouver, Canada", options: ["Seattle, USA", "Vancouver, Canada", "Sydney, Australia"], description: "A vibrant coastal city in British Columbia, Canada, known for its stunning natural beauty, surrounded by mountains and the Pacific Ocean." }, { image: "https://static.wixstatic.com/media/9ce3e5_15ea364d60264367b040d335d0327501~mv2.jpg", correctAnswer: "Tbilisi, Georgia", options: ["Yerevan, Armenia", "Tehran, Iran", "Tbilisi, Georgia"], description: "The ancient capital of Georgia, known for its diverse architecture reflecting centuries of history, thermal springs, and vibrant cultural scene." }, { image: "https://static.wixstatic.com/media/9ce3e5_1f26ea3b95c447e7b13e70e1373dcbce~mv2.jpg", correctAnswer: "Yerevan, Armenia", options: ["Yerevan, Armenia", "Beirut, Lebanon", "Bishek, Kyrgyzstan"], description: "The ancient capital of Armenia, set in the highlands and known for its grand Soviet-era architecture and views of Mount Ararat." }, { image: "https://static.wixstatic.com/media/9ce3e5_a81c9b272738498eabb5a59bbcf3fec8~mv2.jpg", correctAnswer: "Beijing, China", options: ["Hong Kong", "Beijing, China", "Bangok, Thailand"], description: "The capital of China, a city rich in history and culture, home to iconic sites like the Forbidden City and the Great Wall." }, { image: "https://static.wixstatic.com/media/9ce3e5_af3fe5983f41472f85b2d498aef7dc6e~mv2.jpeg", correctAnswer: "Chicago, USA", options: ["Wellingtin, New Zealand", "Montreal, Canada", "Chicago, USA"], description: "Known for its bold architecture, blues music, and deep-dish pizza, this major city sits on Lake Michigan." }, { image: "https://static.wixstatic.com/media/9ce3e5_9f26e4a72c734a72b7b029bcf139d08b~mv2.jpg", correctAnswer: "Hanoi, Vietnam", options: ["Hanoi, Vietnam", "Phnom Penh, Cambodia", "Kuala Lumpur, Malaysia"], description: "The capital of Vietnam, known for its Old Quarter, French colonial architecture, and serene lakes." }, { image: "https://static.wixstatic.com/media/9ce3e5_aac6a86cb69742a49b66bdd8a7a8c2a5~mv2.jpg", correctAnswer: "Manila, Philippines", options: ["Jakarta, Indonesia", "Manila, Philippines", "Singapore"], description: "The bustling capital of the Philippines, a vibrant mix of historic Intramuros and modern skyscrapers." }, { image: "https://static.wixstatic.com/media/9ce3e5_3667799d353e44fca42f49ccf8f5280e~mv2.avif", correctAnswer: "Hyderabad, India", options: ["Jamalpur, Bangladesh", "Lahore, Pakistan", "Hyderabad, India"], description: "A historic city in southern India, known for its pearl and diamond trading centers, and Charminar." }, { image: "https://static.wixstatic.com/media/9ce3e5_babf7e1b0857429b889ee70355465717~mv2.jpg", correctAnswer: "Marrakech, Morocco", options: ["Marrakech, Morocco", "Tunis, Tunisia", "Cairo, Egypt"], description: "A major city in Morocco, known for its bustling Djemaa el-Fna square, vibrant souks, and beautiful mosques and gardens." }, { image: "https://static.wixstatic.com/media/9ce3e5_52d8a4c923b749b89f4fafe933385cf6~mv2.jpg", correctAnswer: "Mexico City, Mexico", options: ["Lima, Peru", "Mexico City, Mexico", "Guayana, Venezuela"], description: "The sprawling, high-altitude capital of Mexico, known for its Aztec ruins, colonial architecture, and vibrant arts scene." }, { image: "https://static.wixstatic.com/media/9ce3e5_f45206a737ea4a6cb6f1ed5a378d8f93~mv2.jpg", correctAnswer: "Oslo, Norway", options: ["Stockholm, Sweden", "Helsinki, Finland", "Oslo, Norway"], description: "The capital of Norway, situated at the head of the Oslofjord, known for its green spaces, museums, and maritime history." }, { image: "https://static.wixstatic.com/media/9ce3e5_64f75787d8674c75803d1a6b9808b1e3~mv2.jpg", correctAnswer: "Algiers, Algeria", options: ["Algiers, Algeria", "Tripoli, Libya", "Casablanca, Morocco"], description: "The capital and largest city of Algeria, located on the Mediterranean coast, known for its whitewashed buildings and the Casbah." }, { image: "https://static.wixstatic.com/media/9ce3e5_cebb14bc01db4375a8bda98e97a34b66~mv2.jpg", correctAnswer: "Apia, Samoa", options: ["Suva, Fiji", "Apia, Samoa", "Honiara, Solomon Islands"], description: "The capital and only city of Samoa, located on the northern coast of Upolu island, known for its relaxed pace and tropical surroundings." }, { image: "https://static.wixstatic.com/media/9ce3e5_6efce60f140246008e8d78a8fdcb0a68~mv2.jpeg", correctAnswer: "Islamabad, Pakistan", options: ["Kabul, Afghanistan", "Almaty, Kazakasthan", "Islamabad, Pakistan"], description: "The modern capital city of Pakistan, known for its well-organized layout and the Faisal Mosque." } ]
         };
+        
+        let infiniteHighScore = 0;
 
-        const { screensEl, modeOptionsNodeListEl, teamInputsContainerEl, teamNamesGridEl, addTeamBtnEl, startGameBtnEl, roundTypeTextEl, roundNumberTextEl, roundTotalTextEl, currentScoreTextEl, scoreTargetDisplayTextEl, currentPlayerDisplayTextEl, placeImageDisplayEl, leftCurtainEl, rightCurtainEl, optionsContainerEl, revealAnswerBtnEl, resultPlaceImageDisplayEl, correctAnswerTextEl, placeDescriptionTextEl, guessResultsContainerEl, scoreDisplayResultsEl, nextRoundBtnEl, winMessageFinalTextEl, winnerSubtextEl, finalScoresDisplayEl, playAgainGameBtnEl, mainMenuNavBtnEl, storeButtonWrapperEl, visitStoreBtnEl, settingsBtnEl, settingsModalEl, closeModalBtnEl, bgmVolumeSliderEl, sfxToggleBtnEl, feedbackPopupEl, feedbackMessageTextPopupEl, backgroundMusicAudioEl, startGameSoundAudioEl, interactionSoundAudioEl, correctAnswerSoundAudioEl, wrongAnswerSoundAudioEl, winGameSoundAudioEl, curtainSoundAudioEl, backToGamesBtn, backToMenuBtn } = {
-            screensEl: { start: document.getElementById('start-screen'), game: document.getElementById('game-screen'), results: document.getElementById('results-screen'), gameOver: document.getElementById('game-over-screen') },
-            modeOptionsNodeListEl: document.querySelectorAll('.mode-option'),
-            teamInputsContainerEl: document.getElementById('team-inputs-container'),
-            teamNamesGridEl: document.getElementById('team-names-grid'),
-            addTeamBtnEl: document.getElementById('add-team-btn'),
-            startGameBtnEl: document.getElementById('start-game-btn'),
-            roundTypeTextEl: document.getElementById('round-type-text'),
-            roundNumberTextEl: document.getElementById('round-number-text'),
-            roundTotalTextEl: document.getElementById('round-total-text'),
-            currentScoreTextEl: document.getElementById('current-score-text'),
-            scoreTargetDisplayTextEl: document.getElementById('score-target-display-text'),
-            currentPlayerDisplayTextEl: document.getElementById('current-player-display-text'),
-            placeImageDisplayEl: document.getElementById('place-image-display'),
-            leftCurtainEl: document.querySelector('.place-display-stage .stage-curtains.left'),
-            rightCurtainEl: document.querySelector('.place-display-stage .stage-curtains.right'),
-            optionsContainerEl: document.getElementById('options-container-div'),
-            revealAnswerBtnEl: document.getElementById('reveal-answer-btn'),
-            resultPlaceImageDisplayEl: document.getElementById('result-place-image-display'),
-            correctAnswerTextEl: document.getElementById('correct-answer-text'),
-            placeDescriptionTextEl: document.getElementById('place-description-text'),
-            guessResultsContainerEl: document.getElementById('guess-results-container-div'),
-            scoreDisplayResultsEl: document.getElementById('score-display-results-div'),
-            nextRoundBtnEl: document.getElementById('next-round-btn'),
-            winMessageFinalTextEl: document.getElementById('win-message-final-text'),
-            winnerSubtextEl: document.getElementById('winner-subtext'),
-            finalScoresDisplayEl: document.getElementById('final-scores-display-div'),
-            playAgainGameBtnEl: document.getElementById('play-again-game-btn'),
-            mainMenuNavBtnEl: document.getElementById('main-menu-nav-btn'),
-            storeButtonWrapperEl: document.getElementById("store-button-wrapper"),
-            visitStoreBtnEl: document.getElementById('visit-store-btn'),
-            settingsBtnEl: document.getElementById('settings-btn'),
-            settingsModalEl: document.getElementById('settings-modal'),
-            closeModalBtnEl: document.getElementById('close-modal-btn'),
-            bgmVolumeSliderEl: document.getElementById('bgm-volume-slider'),
-            sfxToggleBtnEl: document.getElementById('sfx-toggle-btn'),
-            feedbackPopupEl: document.getElementById('feedback-popup'),
-            feedbackMessageTextPopupEl: document.getElementById('feedback-message-text-el'),
-            backgroundMusicAudioEl: document.getElementById('background-game-music'),
-            startGameSoundAudioEl: document.getElementById('start-game-sound'),
-            interactionSoundAudioEl: document.getElementById('interaction-sound'),
-            correctAnswerSoundAudioEl: document.getElementById('correct-answer-sound'),
-            wrongAnswerSoundAudioEl: document.getElementById('wrong-answer-sound'),
-            winGameSoundAudioEl: document.getElementById('win-game-sound'),
-            curtainSoundAudioEl: document.getElementById('curtain-sound'),
+        // --- DOM Elements --- //
+        const el = {
+            screens: { start: document.getElementById('start-screen'), game: document.getElementById('game-screen'), results: document.getElementById('results-screen'), gameOver: document.getElementById('game-over-screen') },
+            modeOptions: document.querySelectorAll('.mode-option'),
+            teamInputsContainer: document.getElementById('team-inputs-container'),
+            teamNamesGrid: document.getElementById('team-names-grid'),
+            addTeamBtn: document.getElementById('add-team-btn'),
+            startGameBtn: document.getElementById('start-game-btn'),
+            roundTypeText: document.getElementById('round-type-text'),
+            roundNumberText: document.getElementById('round-number-text'),
+            roundTotalText: document.getElementById('round-total-text'),
+            scoreDisplayText: document.getElementById('score-display-text'),
+            currentScoreText: document.getElementById('current-score-text'),
+            scoreTargetDisplayText: document.getElementById('score-target-display-text'),
+            currentPlayerDisplayText: document.getElementById('current-player-display-text'),
+            placeImageDisplay: document.getElementById('place-image-display'),
+            leftCurtain: document.querySelector('.place-display-stage .stage-curtains.left'),
+            rightCurtain: document.querySelector('.place-display-stage .stage-curtains.right'),
+            optionsContainer: document.getElementById('options-container-div'),
+            revealAnswerBtn: document.getElementById('reveal-answer-btn'),
+            resultPlaceImageDisplay: document.getElementById('result-place-image-display'),
+            correctAnswerText: document.getElementById('correct-answer-text'),
+            placeDescriptionText: document.getElementById('place-description-text'),
+            guessResultsContainer: document.getElementById('guess-results-container-div'),
+            scoreDisplayResults: document.getElementById('score-display-results-div'),
+            nextRoundBtn: document.getElementById('next-round-btn'),
+            winMessageFinalText: document.getElementById('win-message-final-text'),
+            winnerSubtext: document.getElementById('winner-subtext'),
+            finalScoresDisplay: document.getElementById('final-scores-display-div'),
+            playAgainGameBtn: document.getElementById('play-again-game-btn'),
+            mainMenuNavBtn: document.getElementById('main-menu-nav-btn'),
+            storeButtonWrapper: document.getElementById("store-button-wrapper"),
+            visitStoreBtn: document.getElementById('visit-store-btn'),
+            settingsBtn: document.getElementById('settings-btn'),
+            settingsModal: document.getElementById('settings-modal'),
+            closeModalBtn: document.getElementById('close-modal-btn'),
+            bgmVolumeSlider: document.getElementById('bgm-volume-slider'),
+            sfxToggleBtn: document.getElementById('sfx-toggle-btn'),
+            feedbackPopup: document.getElementById('feedback-popup'),
+            feedbackMessageText: document.getElementById('feedback-message-text-el'),
+            audio: { bgm: document.getElementById('background-game-music'), start: document.getElementById('start-game-sound'), interaction: document.getElementById('interaction-sound'), correct: document.getElementById('correct-answer-sound'), wrong: document.getElementById('wrong-answer-sound'), win: document.getElementById('win-game-sound'), curtain: document.getElementById('curtain-sound') },
             backToGamesBtn: document.getElementById('back-to-games-btn'),
             backToMenuBtn: document.getElementById('back-to-menu-btn'),
+            highscoreBtn: document.getElementById('highscore-btn'),
+            singlePlayerSubOptions: document.getElementById('single-player-sub-options'),
+            multiplayerStartArea: document.getElementById('multiplayer-start-area'),
+            tenRoundsBtn: document.getElementById('ten-rounds-btn'),
+            infiniteModeBtn: document.getElementById('infinite-mode-btn')
         };
-        let treatYourselfElement = null; // Defined here for correct scope
-
-        const playSound = (audio) => gameConfig.sfxEnabled && audio && (audio.currentTime = 0, audio.play().catch(e => {}));
-        const playSoundWithCallback = (audio, cb) => gameConfig.sfxEnabled && audio ? (audio.currentTime=0, audio.onended=cb, audio.play().catch(e=>cb())) : cb();
-
-        function initAudio() {
-            document.body.addEventListener('click', () => {
-                if (backgroundMusicAudioEl.paused) backgroundMusicAudioEl.play().catch(e=>{});
-            }, { once: true });
-        }
-
-        function loadAudioSettings() {
-            gameConfig.musicVolume = localStorage.getItem('musicVolume') || 0.2;
-            gameConfig.sfxEnabled = localStorage.getItem('sfxEnabled') !== 'false';
-            backgroundMusicAudioEl.volume = gameConfig.musicVolume;
-            bgmVolumeSliderEl.value = gameConfig.musicVolume;
-            sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
-        }
-
-        settingsBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'flex'; });
-        closeModalBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; });
-        bgmVolumeSliderEl.addEventListener('input', (e) => { gameConfig.musicVolume = e.target.value; backgroundMusicAudioEl.volume = gameConfig.musicVolume; localStorage.setItem('musicVolume', gameConfig.musicVolume); });
-        sfxToggleBtnEl.addEventListener('click', () => { gameConfig.sfxEnabled = !gameConfig.sfxEnabled; sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; playSound(interactionSoundAudioEl); localStorage.setItem('sfxEnabled', gameConfig.sfxEnabled); });
-
-        let feedbackTimeout;
-        function showFeedbackPopupMessage(message, type = '', duration = 2000) {
-            feedbackMessageTextPopupEl.textContent = message;
-            feedbackPopupEl.className = 'feedback-popup';
-            if (type) feedbackPopupEl.classList.add(type);
-            feedbackPopupEl.classList.add('show');
-            clearTimeout(feedbackTimeout);
-            feedbackTimeout = setTimeout(() => feedbackPopupEl.classList.remove('show'), duration);
-        }
-
-        function triggerConfetti() {
-            const colors = ['var(--blyza-orange-primary)', 'var(--blyza-purple-secondary)', 'var(--blyza-keppel-accent)', 'var(--blyza-sunny-yellow)'];
-            for (let i = 0; i < 100; i++) {
-                const confetto = document.createElement('div');
-                confetto.className = 'confetti-piece';
-                confetto.style.left = Math.random() * 100 + 'vw';
-                confetto.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                const animDur = Math.random() * 3 + 2;
-                confetto.style.animation = `fallAndFade ${animDur}s ${Math.random() * 1}s linear forwards`;
-                document.body.appendChild(confetto);
-                setTimeout(() => confetto.remove(), (animDur + 1) * 1000);
-            }
-        }
-
-        modeOptionsNodeListEl.forEach(opt => opt.addEventListener('click', function() { playSound(interactionSoundAudioEl); selectGameMode.call(this); }));
-        addTeamBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); addTeamInput(); });
-        startGameBtnEl.addEventListener('click', () => playSoundWithCallback(startGameSoundAudioEl, startGame));
-        revealAnswerBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); revealAnswer(); });
-        nextRoundBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); nextRound(); });
-        playAgainGameBtnEl.addEventListener('click', () => playSoundWithCallback(startGameSoundAudioEl, playAgain));
-        mainMenuNavBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); goToMainMenu(); });
-        visitStoreBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); window.location.href = '/store'; });
-        backToMenuBtn.addEventListener('click', () => { playSound(interactionSoundAudioEl); goToMainMenu(); });
-
-        function switchScreen(screenId) {
-            Object.values(screensEl).forEach(s => s.classList.remove('active'));
-            screensEl[screenId].classList.add('active');
-            backToGamesBtn.style.display = screenId === 'start' ? 'flex' : 'none';
-            backToMenuBtn.style.display = ['game', 'results'].includes(screenId) ? 'flex' : 'none';
-            if (treatYourselfElement) treatYourselfElement.style.display = screenId === 'gameOver' ? 'flex' : 'none';
-        }
+        let treatYourselfElement = null;
+        let audioContextStarted = false;
         
-        function selectGameMode() {
-            modeOptionsNodeListEl.forEach(opt => opt.classList.remove('selected'));
-            this.classList.add('selected');
-            gameState.gameMode = this.dataset.mode;
-            teamInputsContainerEl.style.display = gameState.gameMode === 'multi' ? 'block' : 'none';
-        }
+        const playSound = (audio) => { if (gameConfig.sfxEnabled && audio && audioContextStarted) { audio.currentTime = 0; audio.play().catch(e => {}); } };
+        const playSoundWithCallback = (audio, cb) => { if (gameConfig.sfxEnabled && audio && audioContextStarted) { audio.currentTime=0; audio.onended=cb; audio.play().catch(e=>cb()); } else { cb(); } };
+        function initAudio() { if (audioContextStarted) return; audioContextStarted = true; el.audio.bgm.play().catch(e => {}); }
+        
+        let feedbackTimeout;
+        function showFeedback(message, type = '', duration = 2000) { el.feedbackMessageText.textContent = message; el.feedbackPopup.className = 'feedback-popup show ' + type; clearTimeout(feedbackTimeout); feedbackTimeout = setTimeout(() => el.feedbackPopup.classList.remove('show'), duration); }
+        function triggerConfetti() { const c=['var(--blyza-orange-primary)','var(--blyza-purple-secondary)','var(--blyza-keppel-accent)'];for(let i=0;i<80;i++){const e=document.createElement('div');e.className='confetti-piece';e.style.left=100*Math.random()+'vw';e.style.backgroundColor=c[Math.floor(Math.random()*c.length)];const t=3*Math.random()+2;e.style.animation=`fallAndFade ${t}s ${Math.random()}s linear forwards`;document.body.appendChild(e);setTimeout(()=>e.remove(),1e3*(t+1))}}
+        function loadSettings() { gameConfig.musicVolume=localStorage.getItem('musicVolume')||0.2; gameConfig.sfxEnabled='false'!==localStorage.getItem('sfxEnabled'); el.audio.bgm.volume=gameConfig.musicVolume; el.bgmVolumeSlider.value=gameConfig.musicVolume; el.sfxToggleBtn.textContent=`SFX: ${gameConfig.sfxEnabled?'ON':'OFF'}` }
+        function loadHighScore() { const s=localStorage.getItem('witw_infinite_highscore'); infiniteHighScore=s?parseInt(s,10):0 }
+        function saveHighScore(s) { if(s > infiniteHighScore){ infiniteHighScore = s; localStorage.setItem('witw_infinite_highscore', s); return true; } return false; }
+        function showHighScore() { playSound(el.audio.interaction); showFeedback(`Infinite High Score: ${infiniteHighScore}`,'win-feedback',3000) }
 
-        function addTeamInput() {
-            const teamCount = teamNamesGridEl.children.length;
-            if (teamCount >= 4) return;
-            teamNamesGridEl.insertAdjacentHTML('beforeend', `<div class="team-input"><input type="text" class="team-name-input" placeholder="Team ${teamCount + 1}"></div>`);
-        }
-
+        function switchScreen(id) { Object.values(el.screens).forEach(s=>s.classList.remove('active')); el.screens[id].classList.add('active'); el.backToGamesBtn.style.display='start'===id?'flex':'none'; el.backToMenuBtn.style.display=['game','results'].includes(id)?'flex':'none'; if(treatYourselfElement)treatYourselfElement.style.display='gameOver'===id?'flex':'none' }
+        function selectGameMode() { el.modeOptions.forEach(o=>o.classList.remove('selected')); this.classList.add('selected'); gameState.gameMode=this.dataset.mode; const isMulti='multi'===gameState.gameMode; el.multiplayerStartArea.style.display=isMulti?'block':'none'; el.singlePlayerSubOptions.style.display=isMulti?'none':'block'; }
+        function addTeamInput() { if(el.teamNamesGrid.children.length>=4)return; el.teamNamesGrid.insertAdjacentHTML('beforeend',`<div class="team-input"><input type="text" class="team-name-input" placeholder="Team ${el.teamNamesGrid.children.length+1}"></div>`) }
+        
+        function startSinglePlayerGame(subType) { gameState.singlePlayerSubType = subType; playSoundWithCallback(el.audio.start, startGame); }
         function startGame() {
-            if (gameState.gameMode === 'single') {
-                gameState.players = ['You'];
-                gameState.scores = { 'You': 0 };
-            } else {
-                gameState.players = Array.from(teamNamesGridEl.querySelectorAll('.team-name-input')).map((input, i) => input.value.trim() || `Team ${i + 1}`);
-                if (gameState.players.length < 2) return alert('Multiplayer requires at least 2 teams!');
-                if (new Set(gameState.players).size !== gameState.players.length) return alert('Team names must be unique!');
-                gameState.scores = Object.fromEntries(gameState.players.map(p => [p, 0]));
-            }
-            Object.assign(gameState, { currentRound: 1, usedPlaces: [], currentPlayerIndex: 0 });
-            switchScreen('game');
+            if('single'===gameState.gameMode){gameState.players=['You'];gameState.scores={'You':0};}
+            else{gameState.players=Array.from(el.teamNamesGrid.querySelectorAll('.team-name-input')).map((t,e)=>t.value.trim()||`Team ${e+1}`);if(gameState.players.length<2){alert('Multiplayer requires at least 2 teams!'); return;}if(new Set(gameState.players).size!==gameState.players.length){alert('Team names must be unique!'); return;}gameState.scores=Object.fromEntries(gameState.players.map(p=>[p,0]));}
+            Object.assign(gameState,{currentRound:0,usedPlaces:[],currentPlayerIndex:0});
             setupRound();
         }
 
         function setupRound() {
-            [leftCurtainEl, rightCurtainEl].forEach(c => c.classList.remove('open'));
-            placeImageDisplayEl.classList.remove('visible');
-            placeImageDisplayEl.src = ""; // Prevent flash of old image
+            gameState.currentRound++;
             
+            // --- Reset UI elements for the new round ---
+            [el.leftCurtain, el.rightCurtain].forEach(c => c.classList.remove('open'));
+            el.placeImageDisplay.classList.remove('visible');
+            el.resultPlaceImageDisplay.classList.remove('visible'); // also hide result image
+            el.placeImageDisplay.src = "";
+
             let available = gameState.places.filter(p => !gameState.usedPlaces.includes(p.image));
-            if (!available.length) { gameState.usedPlaces = []; available = gameState.places; }
+            
+            // --- SAFETY CHECK: If no questions are left, end the game. This prevents a crash. ---
+            if (available.length === 0) {
+                // For infinite mode, we can reset. For others, it's an end condition.
+                if (gameState.singlePlayerSubType === 'infinite') {
+                    gameState.usedPlaces = [];
+                    available = gameState.places;
+                } else {
+                    showGameOver(gameState.singlePlayerSubType === 'infinite');
+                    return;
+                }
+            }
+            
             gameState.currentPlace = available[Math.floor(Math.random() * available.length)];
             gameState.usedPlaces.push(gameState.currentPlace.image);
-            
-            placeImageDisplayEl.src = gameState.currentPlace.image;
-            roundNumberTextEl.textContent = gameState.currentRound;
-            roundTotalTextEl.textContent = gameState.gameMode === 'single' ? '/10' : '';
-            scoreTargetDisplayTextEl.textContent = gameState.gameMode === 'multi' ? ' to 5' : '/10';
-            currentScoreTextEl.textContent = gameState.scores[gameState.players[gameState.currentPlayerIndex]];
-            currentPlayerDisplayTextEl.style.display = gameState.gameMode === 'multi' ? 'block' : 'none';
-            currentPlayerDisplayTextEl.textContent = gameState.gameMode === 'multi' ? `${gameState.players[gameState.currentPlayerIndex]}'s Turn` : '';
 
-            optionsContainerEl.innerHTML = '';
-            const options = [...gameState.currentPlace.options].sort(() => 0.5 - Math.random());
+            el.placeImageDisplay.src = gameState.currentPlace.image;
+
+            // --- Update UI Text based on game mode ---
+            if ('infinite' === gameState.singlePlayerSubType) {
+                el.roundTypeText.textContent = "Score";
+                el.roundNumberText.textContent = gameState.scores['You'];
+                el.roundTotalText.textContent = "";
+                el.scoreDisplayText.style.display = 'none';
+            } else {
+                el.roundTypeText.textContent = "Round";
+                el.roundNumberText.textContent = gameState.currentRound;
+                el.roundTotalText.textContent = 'multi' === gameState.gameMode ? '' : '/10';
+                el.scoreDisplayText.style.display = 'single' === gameState.gameMode ? 'inline' : 'none';
+                el.currentScoreText.textContent = gameState.scores[gameState.players[gameState.currentPlayerIndex]];
+            }
+            el.scoreTargetDisplayText.textContent = 'multi' === gameState.gameMode ? ' to 5' : '';
+            
+            el.currentPlayerDisplayText.style.display = 'multi' === gameState.gameMode ? 'block' : 'none';
+            if ('multi' === gameState.gameMode) {
+                el.currentPlayerDisplayText.textContent = `${gameState.players[gameState.currentPlayerIndex]}'s Turn`;
+            }
+
+            // --- Create and display options ---
+            el.optionsContainer.innerHTML = '';
+            const options = [...gameState.currentPlace.options].sort(() => .5 - Math.random());
             options.forEach((opt, i) => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 btn.dataset.option = opt;
-                btn.style.animationDelay = `${i * 100}ms`;
+                btn.style.animationDelay = `${100 * i}ms`;
                 btn.innerHTML = `<i class="far fa-circle"></i> ${opt}`;
-                btn.addEventListener('click', handleOptionSelect);
-                optionsContainerEl.appendChild(btn);
+                btn.onclick = handleOptionSelect;
+                el.optionsContainer.appendChild(btn);
             });
             
-            revealAnswerBtnEl.style.display = 'none';
-            nextRoundBtnEl.disabled = true;
+            el.revealAnswerBtn.style.display = 'none';
+            switchScreen('game');
 
+            // --- Animate curtains open ---
             setTimeout(() => {
-                playSound(curtainSoundAudioEl);
-                [leftCurtainEl, rightCurtainEl].forEach(c => c.classList.add('open'));
-                placeImageDisplayEl.classList.add('visible');
+                playSound(el.audio.curtain);
+                [el.leftCurtain, el.rightCurtain].forEach(c => c.classList.add('open'));
+                el.placeImageDisplay.classList.add('visible');
             }, 500);
         }
 
-        function handleOptionSelect(e) {
-            playSound(interactionSoundAudioEl);
-            const selectedBtn = e.currentTarget;
-            gameState.currentGuess = selectedBtn.dataset.option;
-            optionsContainerEl.querySelectorAll('.option-btn').forEach(btn => {
-                btn.disabled = true;
-                btn.querySelector('i').className = 'far fa-circle';
-            });
-            selectedBtn.querySelector('i').className = 'fas fa-check-circle';
-            revealAnswerBtnEl.style.display = 'inline-flex';
+        function handleOptionSelect(e) { 
+            playSound(el.audio.interaction); 
+            const selectedButton = e.currentTarget; 
+            gameState.currentGuess = selectedButton.dataset.option; 
+            el.optionsContainer.querySelectorAll('.option-btn').forEach(b => { 
+                b.disabled = true; 
+                b.querySelector('i').className = 'far fa-circle'; 
+            }); 
+            selectedButton.querySelector('i').className = 'fas fa-check-circle'; 
+            el.revealAnswerBtn.style.display = 'inline-flex'; 
         }
-
+        
         function revealAnswer() {
-            const correct = gameState.currentGuess === gameState.currentPlace.correctAnswer;
-            playSound(correct ? correctAnswerSoundAudioEl : wrongAnswerSoundAudioEl);
-            showFeedbackPopupMessage(correct ? 'Correct!' : 'Incorrect!', correct ? 'correct-feedback' : 'incorrect-feedback');
+            const isCorrect = gameState.currentGuess === gameState.currentPlace.correctAnswer;
+            playSound(isCorrect ? el.audio.correct : el.audio.wrong);
+            showFeedback(isCorrect ? 'Correct!' : 'Incorrect!', isCorrect ? 'correct-feedback' : 'incorrect-feedback');
             
-            optionsContainerEl.querySelectorAll('.option-btn').forEach(btn => {
-                const isCorrectAnswer = btn.dataset.option === gameState.currentPlace.correctAnswer;
-                const isSelected = btn.dataset.option === gameState.currentGuess;
-                if (isCorrectAnswer) btn.classList.add('correct');
-                else if (isSelected) btn.classList.add('incorrect');
+            el.optionsContainer.querySelectorAll('.option-btn').forEach(btn => { 
+                if (btn.dataset.option === gameState.currentPlace.correctAnswer) btn.classList.add('correct');
+                else if (btn.dataset.option === gameState.currentGuess) btn.classList.add('incorrect');
             });
+            
+            if (isCorrect) {
+                gameState.scores[gameState.players[gameState.currentPlayerIndex]]++;
+                if (gameState.singlePlayerSubType === 'infinite') {
+                    saveHighScore(gameState.scores['You']);
+                }
+            }
 
-            if (correct) gameState.scores[gameState.players[gameState.currentPlayerIndex]]++;
-
-            setTimeout(() => { switchScreen('results'); showResultsScreenUI(); }, 2000);
+            setTimeout(() => {
+                switchScreen('results');
+                showResultsScreenUI();
+            }, 2000);
         }
 
         function showResultsScreenUI() {
-            resultPlaceImageDisplayEl.src = gameState.currentPlace.image;
-            resultPlaceImageDisplayEl.classList.add('visible');
-            correctAnswerTextEl.textContent = gameState.currentPlace.correctAnswer;
-            placeDescriptionTextEl.textContent = gameState.currentPlace.description;
-
-            const correct = gameState.currentGuess === gameState.currentPlace.correctAnswer;
-            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-            guessResultsContainerEl.innerHTML = `
-                <div class="guess-result ${correct ? 'correct-guess' : ''}">
-                    <div class="player-name">${gameState.gameMode === 'single' ? 'Your Guess:' : `${currentPlayer}'s Guess:`}</div>
-                    <div class="guess-text">${gameState.currentGuess || 'No guess'}</div>
-                    <div class="result-feedback-text">${correct ? '<i class="fas fa-check-circle"></i> Correct! +1 point' : '<i class="fas fa-times-circle"></i> Incorrect!'}</div>
-                </div>`;
+            // Update the results screen with the current round's info
+            el.resultPlaceImageDisplay.src = gameState.currentPlace.image; 
+            el.resultPlaceImageDisplay.classList.add('visible'); 
+            el.correctAnswerText.textContent = gameState.currentPlace.correctAnswer; 
+            el.placeDescriptionText.textContent = gameState.currentPlace.description;
             
-            scoreDisplayResultsEl.innerHTML = '';
+            const isCorrect = gameState.currentGuess === gameState.currentPlace.correctAnswer;
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            el.guessResultsContainer.innerHTML = `<div class="guess-result ${isCorrect ? 'correct-guess': ''}">
+                <div class="player-name">${'single' === gameState.gameMode ? 'Your Guess:' : `${currentPlayer}'s Guess:`}</div>
+                <div class="guess-text">${gameState.currentGuess || 'No guess'}</div>
+                <div class="result-feedback-text">${isCorrect ? '<i class="fas fa-check-circle"></i> Correct! +1 point' : '<i class="fas fa-times-circle"></i> Incorrect!'}</div>
+            </div>`;
+            
+            el.scoreDisplayResults.innerHTML = ''; 
             Object.entries(gameState.scores).forEach(([name, score]) => {
-                const max = gameState.gameMode === 'single' ? 10 : 5;
-                scoreDisplayResultsEl.innerHTML += `
-                    <div class="score-card">
-                        <div class="team-name-score">${name}</div>
-                        <div class="score-value-display">${score}</div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: ${score/max*100}%"></div></div>
-                    </div>`;
+                const max = (gameState.singlePlayerSubType === '10rounds' || gameState.gameMode === 'single') ? 10 : 5;
+                el.scoreDisplayResults.innerHTML += `<div class="score-card">
+                    <div class="team-name-score">${name}</div>
+                    <div class="score-value-display">${score}</div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: ${gameState.singlePlayerSubType === 'infinite' ? '100' : (score / max * 100)}%"></div></div>
+                </div>`;
             });
             
-            const winCondition = gameState.gameMode === 'single' ? gameState.currentRound >= 10 : Math.max(...Object.values(gameState.scores)) >= 5;
-            nextRoundBtnEl.innerHTML = winCondition ? 'See Final Results <i class="fas fa-trophy"></i>' : 'Next Round <i class="fas fa-arrow-right"></i>';
-            nextRoundBtnEl.disabled = false;
+            // --- CENTRALIZED GAME OVER LOGIC ---
+            let isGameOver = false;
+            let beatTheGame = false; // Special flag for winning infinite mode
+
+            if (gameState.gameMode === 'multi' && Math.max(...Object.values(gameState.scores)) >= 5) {
+                isGameOver = true;
+            } else if (gameState.singlePlayerSubType === '10rounds' && gameState.currentRound >= 10) {
+                isGameOver = true;
+            } else if (gameState.singlePlayerSubType === 'infinite') {
+                if (!isCorrect) {
+                    isGameOver = true; // Wrong answer in infinite mode ends the game
+                } else if (gameState.usedPlaces.length >= gameState.places.length) {
+                    isGameOver = true;
+                    beatTheGame = true; // Correctly answered all questions
+                }
+            }
+
+            if (isGameOver) {
+                el.nextRoundBtn.innerHTML = 'See Final Results <i class="fas fa-trophy"></i>';
+                el.nextRoundBtn.onclick = () => showGameOver(beatTheGame);
+            } else {
+                el.nextRoundBtn.innerHTML = 'Next Round <i class="fas fa-arrow-right"></i>';
+                el.nextRoundBtn.onclick = nextRound;
+            }
+            el.nextRoundBtn.disabled = false;
         }
 
-        function nextRound() {
-            const winCondition = gameState.gameMode === 'single' ? gameState.currentRound >= 10 : Math.max(...Object.values(gameState.scores)) >= 5;
-            if (winCondition) return showGameOver();
-            
-            gameState.currentRound++;
-            if (gameState.gameMode === 'multi') gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
-            switchScreen('game');
+        function nextRound() { 
+            playSound(el.audio.interaction); 
+            if ('multi' === gameState.gameMode) {
+                gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length; 
+            }
             setupRound();
         }
 
-               function showGameOver() {
-            playSound(winGameSoundAudioEl);
+        function showGameOver(beatTheGame = false) {
+            playSound(el.audio.win); 
             triggerConfetti();
-            switchScreen('gameOver');
-            
             const maxScore = Math.max(...Object.values(gameState.scores));
             const winners = Object.keys(gameState.scores).filter(p => gameState.scores[p] === maxScore);
 
-            // --- MODIFIED LOGIC ---
             if (gameState.gameMode === 'single') {
-                winMessageFinalTextEl.textContent = "Game Over!"; // This is the requested change
-                winnerSubtextEl.textContent = `You scored ${maxScore} out of 10!`;
-                showFeedbackPopupMessage('Game Over!', 'win-feedback', 3000);
-            } else {
-                // Keep original multiplayer logic
+                if (gameState.singlePlayerSubType === 'infinite') {
+                    const isNewHighScore = saveHighScore(maxScore);
+                    if (beatTheGame) {
+                        el.winMessageFinalText.textContent = "You Beat The Game!";
+                        el.winnerSubtext.innerHTML = `You correctly identified all ${gameState.places.length} locations! <br>Final Score: ${maxScore}. ${isNewHighScore ? '<strong>New High Score!</strong>' : ''}`;
+                    } else {
+                        el.winMessageFinalText.textContent = "Game Over!";
+                        el.winnerSubtext.innerHTML = `Your Score: ${maxScore}. ${isNewHighScore ? '<strong>New High Score!</strong>' : `High Score: ${infiniteHighScore}`}`;
+                    }
+                } else { // 10 rounds mode
+                    el.winMessageFinalText.textContent = "Game Complete!";
+                    el.winnerSubtext.textContent = `You scored ${maxScore} out of 10!`;
+                }
+            } else { // Multiplayer
                 if (winners.length > 1) {
-                    winMessageFinalTextEl.textContent = "It's a Tie!";
-                    winnerSubtextEl.textContent = `${winners.join(' and ')} both finished with ${maxScore} points. Well played!`;
-                    showFeedbackPopupMessage("It's a Tie Game!", 'win-feedback', 3000);
+                    el.winMessageFinalText.textContent = "It's a Tie!";
+                    el.winnerSubtext.textContent = `${winners.join(' and ')} both finished with ${maxScore} points.`;
+                } else if (winners.length === 1 && maxScore > 0) {
+                    el.winMessageFinalText.textContent = `${winners[0]} Wins!`;
+                    el.winnerSubtext.textContent = `Congratulations on reaching ${maxScore} points!`;
                 } else {
-                    winMessageFinalTextEl.textContent = `${winners[0]} Wins!`;
-                    winnerSubtextEl.textContent = `Congratulations on reaching ${maxScore} points!`;
-                    showFeedbackPopupMessage(`${winners[0]} Wins!`, 'win-feedback', 3000);
+                    el.winMessageFinalText.textContent = "Game Over!";
+                    el.winnerSubtext.textContent = "Better luck next time!";
                 }
             }
-            // --- END OF MODIFIED LOGIC ---
-
-            finalScoresDisplayEl.innerHTML = '';
+            
+            el.finalScoresDisplay.innerHTML = '';
             Object.entries(gameState.scores).forEach(([name, score]) => {
-                finalScoresDisplayEl.innerHTML += `
-                    <div class="score-card ${winners.includes(name) ? 'winner-glow' : ''}">
-                        <div class="team-name-score">${name}</div>
-                        <div class="score-value-display">${score}</div>
-                    </div>`;
+                el.finalScoresDisplay.innerHTML += `<div class="score-card ${winners.includes(name) && maxScore > 0 ? 'winner-glow' : ''}">
+                    <div class="team-name-score">${name}</div>
+                    <div class="score-value-display">${score}</div>
+                </div>`;
             });
             
             if (!treatYourselfElement) {
                 treatYourselfElement = document.createElement('div');
                 treatYourselfElement.className = 'treat-yourself-callout';
                 treatYourselfElement.innerHTML = `<span>Treat Yourself!</span> <i class="fas fa-arrow-down"></i>`;
-                storeButtonWrapperEl.insertBefore(treatYourselfElement, visitStoreBtnEl);
+                el.storeButtonWrapper.insertBefore(treatYourselfElement, el.visitStoreBtn);
             }
-            treatYourselfElement.style.display = 'flex';
+            switchScreen('gameOver');
         }
 
-        function playAgain() {
+        function playAgain() { 
             if (treatYourselfElement) treatYourselfElement.style.display = 'none';
+            // We reuse the same game mode settings and just call startGame to reset state
             startGame();
         }
-
-        function goToMainMenu() {
+        function goToMainMenu() { 
             if (treatYourselfElement) treatYourselfElement.style.display = 'none';
-            switchScreen('start');
+            switchScreen('start'); 
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadAudioSettings();
-            initAudio();
+            loadSettings(); loadHighScore();
+            document.body.addEventListener('click', initAudio, { once: true });
+            el.settingsBtn.addEventListener('click', () => { playSound(el.audio.interaction); el.settingsModal.style.display = 'flex'; });
+            el.closeModalBtn.addEventListener('click', () => { playSound(el.audio.interaction); el.settingsModal.style.display = 'none'; });
+            el.bgmVolumeSlider.addEventListener('input', (e) => { gameConfig.musicVolume=e.target.value; el.audio.bgm.volume=gameConfig.musicVolume; localStorage.setItem('musicVolume',gameConfig.musicVolume); });
+            el.sfxToggleBtn.addEventListener('click', () => { gameConfig.sfxEnabled=!gameConfig.sfxEnabled; el.sfxToggleBtn.textContent=`SFX: ${gameConfig.sfxEnabled?'ON':'OFF'}`; playSound(el.audio.interaction); localStorage.setItem('sfxEnabled',gameConfig.sfxEnabled); });
+            el.modeOptions.forEach(opt => opt.addEventListener('click', function(){playSound(el.audio.interaction);selectGameMode.call(this)}));
+            el.addTeamBtn.addEventListener('click', () => { playSound(el.audio.interaction); addTeamInput(); });
+            el.tenRoundsBtn.addEventListener('click', () => startSinglePlayerGame('10rounds'));
+            el.infiniteModeBtn.addEventListener('click', () => startSinglePlayerGame('infinite'));
+            el.startGameBtn.addEventListener('click', () => playSoundWithCallback(el.audio.start, startGame));
+            el.revealAnswerBtn.addEventListener('click', () => { playSound(el.audio.interaction); revealAnswer(); });
+            el.playAgainGameBtn.addEventListener('click', () => playSoundWithCallback(el.audio.start, playAgain));
+            el.mainMenuNavBtn.addEventListener('click', () => { playSound(el.audio.interaction); goToMainMenu(); });
+            el.visitStoreBtn.addEventListener('click', () => { playSound(el.audio.interaction); window.location.href='/store'; });
+            el.backToMenuBtn.addEventListener('click', () => { playSound(el.audio.interaction); goToMainMenu(); });
+            el.highscoreBtn.addEventListener('click', showHighScore);
             switchScreen('start');
         });
     </script>

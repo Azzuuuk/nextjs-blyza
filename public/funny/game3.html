@@ -117,7 +117,7 @@
         button:active:not(:disabled), .choice-btn:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
         button:disabled, .choice-btn:disabled { background: var(--text-medium) !important; color: var(--text-light) !important; cursor: not-allowed; opacity: 0.7; box-shadow: var(--shadow-chunky); }
 
-        .btn-primary, #start-game-btn, #next-round-btn { background-color: var(--blyza-sunny-yellow); box-shadow: var(--shadow-chunky); }
+        .btn-primary, #start-game-btn, #next-round-btn, #five-rounds-btn, #infinite-mode-btn { background-color: var(--blyza-sunny-yellow); box-shadow: var(--shadow-chunky); }
         .btn-secondary, #add-team-btn, #new-game-menu-btn { background-color: var(--blyza-purple-secondary); color: var(--text-light); box-shadow: var(--shadow-chunky); }
         .btn-success, .choice-btn.btn-success { background-color: var(--blyza-keppel-accent); color: var(--text-light); box-shadow: var(--shadow-chunky); }
         .btn-danger, .choice-btn.btn-danger { background-color: var(--blyza-quickfire-red); color: var(--text-light); box-shadow: var(--shadow-chunky); }
@@ -153,18 +153,15 @@
         /* --- Game Screen & Stage --- */
         .game-info {
             display: flex; justify-content: center; align-items: center; flex-wrap: wrap;
-            gap: 20px; /* MODIFIED: Added gap */
-            margin-bottom: 15px; /* MODIFIED: adjusted margin */
+            gap: 20px; margin-bottom: 15px;
             background: rgba(0,0,0,0.1); padding: 10px 15px;
             border-radius: 8px; font-size: 1.1rem; font-family: var(--font-heading-alt);
             color: var(--text-dark); border: 2px solid var(--black-stroke);
         }
         #turn-indicator {
-            font-size: 1.2rem; /* MODIFIED */
-            color: var(--blyza-purple-secondary);
-            margin: -10px auto 10px auto;
-            font-family: var(--font-heading-alt); /* MODIFIED */
-            text-shadow: 1px 1px 0px rgba(0,0,0,0.1); /* MODIFIED */
+            font-size: 1.2rem; color: var(--blyza-purple-secondary);
+            margin: -10px auto 10px auto; font-family: var(--font-heading-alt);
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
         }
         .item-stage-container {
             background: var(--darker-grey-bg); padding: 20px; border-radius: var(--border-radius-game);
@@ -227,6 +224,7 @@
         .icon-btn { position: absolute; background-color: var(--blyza-purple-secondary); color: var(--text-light); border-radius: 50%; width: 55px; height: 55px; font-size: 1.2rem; cursor: pointer; transition: all 0.1s ease; display: flex; justify-content: center; align-items: center; z-index: 100; text-decoration: none; border: 3px solid var(--black-stroke); box-shadow: var(--shadow-chunky); }
         .icon-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black-stroke); }
         #settings-btn { top: 20px; right: 20px; }
+        #highscore-btn { top: 20px; right: 85px; background-color: var(--blyza-sunny-yellow); } /* NEW */
         #home-menu-btn, #back-btn { top: 20px; left: 20px; }
         .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; }
         .modal-content { background-color: var(--darker-grey-bg); margin: auto; padding: 25px; border: 3px solid var(--black-stroke); border-radius: var(--border-radius-game); width: 90%; max-width: 450px; box-shadow: 8px 8px 0px rgba(0,0,0,0.4); position: relative; color: var(--text-light); }
@@ -249,7 +247,7 @@
         /* Responsive */
         @media (max-width: 768px) {
             body { align-items: flex-start; padding-top: 30px; }
-            .game-container { padding: 20px 15px; }
+            .game-container { padding: 50px 15px 20px 15px; }
             h1 { font-size: 2.2rem; }
             .game-mode-selection { flex-direction: column; align-items: center; }
             .mode-option { max-width: 100%; }
@@ -259,6 +257,7 @@
             .game-over-buttons-container button { width: 90%; }
             .icon-btn { width: 48px; height: 48px; }
             #settings-btn { top: 12px; right: 12px; }
+            #highscore-btn { top: 12px; right: 70px; } /* NEW */
             #home-menu-btn, #back-btn { top: 12px; left: 12px; }
             .bg-game-element { display: none; }
         }
@@ -281,6 +280,9 @@
         <button id="back-btn" class="icon-btn" aria-label="Go Back" style="display: none;">
             <i class="fas fa-arrow-left"></i>
         </button>
+        <button id="highscore-btn" class="icon-btn" aria-label="Show High Score">
+            <i class="fas fa-star"></i>
+        </button>
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
         </button>
@@ -296,14 +298,13 @@
                     <li><i class="fas fa-brain"></i> Decide if it's real or AI-generated.</li>
                     <li><i class="fas fa-check-circle"></i> Get 1 point for each correct guess.</li>
                     <li><i class="fas fa-users"></i> Play solo or with up to 4 teams!</li>
-                    <li><i class="fas fa-trophy"></i> 5 rounds - highest score wins!</li>
                 </ul>
             </div>
             <div class="game-mode-selection">
                 <div class="mode-option selected" data-mode="single">
                     <i class="fas fa-user"></i>
                     <h3>Single Player</h3>
-                    <p>Play 5 rounds alone</p>
+                    <p>5 rounds or infinite mode</p>
                 </div>
                 <div class="mode-option" data-mode="multi">
                     <i class="fas fa-users"></i>
@@ -311,21 +312,29 @@
                     <p>Up to 4 teams</p>
                 </div>
             </div>
-            <div id="team-inputs-container" style="display: none;">
-                <div class="team-inputs">
-                    <h3>Enter Team Names</h3>
-                    <div id="team-names-list">
-                        <div class="team-input-wrapper">
-                            <input type="text" class="team-name-input" placeholder="Team 1">
-                        </div>
-                        <div class="team-input-wrapper">
-                            <input type="text" class="team-name-input" placeholder="Team 2">
-                        </div>
-                    </div>
-                    <button id="add-team-btn" class="btn-secondary">Add Team</button>
-                </div>
+            
+            <div id="single-player-sub-options" style="margin-top: 15px;">
+                <button id="five-rounds-btn" class="btn-primary"><i class="fas fa-list-ol"></i> 5 Rounds</button>
+                <button id="infinite-mode-btn" class="btn-primary"><i class="fas fa-infinity"></i> Infinite Mode</button>
             </div>
-            <button id="start-game-btn" class="btn-primary">Start Game <i class="fas fa-play"></i></button>
+
+            <div id="multiplayer-start-area" style="display: none;">
+                <div id="team-inputs-container">
+                    <div class="team-inputs">
+                        <h3>Enter Team Names</h3>
+                        <div id="team-names-list">
+                            <div class="team-input-wrapper">
+                                <input type="text" class="team-name-input" placeholder="Team 1">
+                            </div>
+                            <div class="team-input-wrapper">
+                                <input type="text" class="team-name-input" placeholder="Team 2">
+                            </div>
+                        </div>
+                        <button id="add-team-btn" class="btn-secondary">Add Team</button>
+                    </div>
+                </div>
+                <button id="start-game-btn" class="btn-primary">Start Game <i class="fas fa-play"></i></button>
+            </div>
         </div>
 
         <!-- Game Screen -->
@@ -409,16 +418,21 @@
     
     <script>
         // --- GAME STATE AND CONSTANTS ---
-        const gameState = { gameMode: 'single', players: [], scores: {}, currentRound: 0, maxRounds: 5, currentMedia: null, usedItems: [], currentPlayerIndexInRound: 0, roundPlayerChoices: {}, singlePlayerChoice: null,
+        const gameState = { gameMode: 'single', singlePlayerSubType: '5rounds', players: [], scores: {}, currentRound: 0, maxRounds: 5, currentMedia: null, usedItems: [], currentPlayerIndexInRound: 0, roundPlayerChoices: {}, singlePlayerChoice: null,
             mediaItems: [
                  { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_d76ca16cd1db4a6da7d6292106a05590~mv2.jpg", description: "Popstar", isAI: false }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_df76be4f583d4f3e9a28dd3bd2c29510~mv2.jpg", description: "Master Oogway", isAI: false }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_8cf5eac3afde48ccab0a4b0c5a98dff6~mv2.png", description: "2.6 Million Dollar Mansion", isAI: true }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_52c88e7ede90479e9a22f96402606ca7~mv2.png", description: "What they lookin at?", isAI: true }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_bf87f7d4df874b408b8951c097206815~mv2.webp", description: "Maroon 5 concert", isAI: false }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_fab2c9bbd5b7483997e21730454bdf91~mv2.png", description: "Street photography", isAI: true }, { type: "video", url: "https://video.wixstatic.com/video/9ce3e5_dad23f0a7a114f20ae21fe809b01be11/1080p/mp4/file.mp4", description: "Jelly", isAI: true }, { type: "video", url: "https://video.wixstatic.com/video/9ce3e5_6ad18c17069842519f5ab861d920c365/1080p/mp4/file.mp4", description: "Love the beach", isAI: false }, { type: "video", url: "https://video.wixstatic.com/video/9ce3e5_e39cfbcaee614f1b90c82cf2a881b7a4/1080p/mp4/file.mp4", description: "YUUMMMM", isAI: true }, { type: "video", url: "https://video.wixstatic.com/video/9ce3e5_10b41ddbc09f481c8de2bdf59a02cefb/1080p/mp4/file.mp4", description: "Climbed that", isAI: false }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_92ef479506ab405aacddff5802111667~mv2.jpg", description: "Technologia", isAI: false }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_24e52e5bf9a14a7994be19537fb33dd2~mv2.jpg", description: "Sky full of stars", isAI: false }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_3dab047a6fcc4f8d97a73d41bb79c761~mv2.jpg", description: "Post Hike", isAI: false }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_b6a751547d6f48ea9b484f4c05409ad9~mv2.webp", description: "Space Invasion?", isAI: false }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_de96da45b2214773b27a35e58dcd7ea3~mv2.webp", description: "Adorablee", isAI: false }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_5c02118aa9cd4d8eb22e7621c155cd6a~mv2.webp", description: "Yumm", isAI: false }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_9cbcd84aa0634d9bb7d8ef14e3df8d4d~mv2.webp", description: "Future winter Olympian", isAI: false }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_f8226cd46b144ae3af8a91dff52cfcdd~mv2.png", description: "Sunkissed", isAI: true }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_f62a99e9d5b24e5587079d32ab023855~mv2.png", description: "Every wallpaper in 2013", isAI: true }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_160fdd4b9e8748e7ae0322524a350e04~mv2.png", description: "Sahara", isAI: true }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_d785956c74ee4e62b8eb7d80e56499ed~mv2.png", description: "Everybody's childhood crush", isAI: true }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_214a8f44c9b0446bbe197e95185f28de~mv2.png", description: "Oranges", isAI: true }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_e0f42595978145cc926f661e873258e6~mv2.png", description: "Family pic", isAI: true }, { type: "image", url: "https://static.wixstatic.com/media/9ce3e5_1593625b415c49639afd56cb7589063b~mv2.webp", description: "Golden State", isAI: true }, { type: "video", url: "https://video.wixstatic.com/video/9ce3e5_64edf447f7c8472db0696145d04d817e/1080p/mp4/file.mp4", description: "Aspiring videographer", isAI: true }, { type: "video", url: "https://video.wixstatic.com/video/9ce3e5_a287874449c34b02bed1968be7adc58f/1080p/mp4/file.mp4", description: "Bloooom", isAI: true }, { type: "video", url: "https://video.wixstatic.com/video/9ce3e5_f4dd37888eec481dac346561454c6529/1080p/mp4/file.mp4", description: "I wanna go there", isAI: true }, { type: "video", url: "https://video.wixstatic.com/video/9ce3e5_9bd6c1e8834b401bbf7aae87c201afa4/1080p/mp4/file.mp4", description: "Bloom Bloom", isAI: false }, { type: "video", url: "https://video.wixstatic.com/video/9ce3e5_6a0da61044284d8686ae7e8d3bbfa17d/1080p/mp4/file.mp4", description: "where is this?", isAI: false }, { type: "video", url: "https://video.wixstatic.com/video/9ce3e5_2976d3ab2dbd4675bb0b46c506055548/1080p/mp4/file.mp4", description: "Lapsie", isAI: false },
              ]
         };
-        let sfxEnabled = true, musicVolume = 0.2, audioContextStarted = false;
+        let sfxEnabled = true, musicVolume = 0.2, audioContextStarted = false, infiniteHighScore = 0;
         
         const screens = { start: document.getElementById('start-screen'), game: document.getElementById('game-screen'), results: document.getElementById('results-screen'), gameOver: document.getElementById('game-over-screen') };
         const homeMenuBtn = document.getElementById('home-menu-btn'), backBtn = document.getElementById('back-btn'), modeOptions = document.querySelectorAll('.mode-option'), teamInputsContainer = document.getElementById('team-inputs-container'), teamNamesList = document.getElementById('team-names-list'), addTeamBtn = document.getElementById('add-team-btn'), startGameBtn = document.getElementById('start-game-btn'), roundInfoText = document.getElementById('round-info-text'), scoreInfoText = document.getElementById('score-info-text'), turnIndicator = document.getElementById('turn-indicator'), roundNumberEl = document.getElementById('round-number-el'), currentScoreEl = document.getElementById('current-score-el'), mediaDescriptionEl = document.getElementById('media-description-el'), mediaImageEl = document.getElementById('media-image-el'), mediaVideoEl = document.getElementById('media-video-el'), realBtn = document.getElementById('real-btn'), aiBtn = document.getElementById('ai-btn'), leftCurtain = document.querySelector('.stage-curtains.left'), rightCurtain = document.querySelector('.stage-curtains.right'), resultImageEl = document.getElementById('result-image-el'), resultVideoEl = document.getElementById('result-video-el'), answerDisplayEl = document.getElementById('answer-display-el'), feedbackSummaryEl = document.getElementById('feedback-summary-el'), detailedFeedbackAreaEl = document.getElementById('detailed-feedback-area-el'), roundScoreDisplayEl = document.getElementById('round-score-display-el'), nextRoundBtn = document.getElementById('next-round-btn'), winMessageTextEl = document.getElementById('win-message-text-el'), winnerTrophyEl = document.getElementById('winner-trophy-el'), finalMessageDetailsEl = document.getElementById('final-message-details-el'), finalScoreDisplayEl = document.getElementById('final-score-display-el'), playAgainBtn = document.getElementById('play-again-btn'), newGameMenuBtn = document.getElementById('new-game-menu-btn'), visitStoreBtn = document.getElementById('visit-store-btn'), settingsBtn = document.getElementById('settings-btn'), settingsModal = document.getElementById('settings-modal'), closeModalBtn = document.getElementById('close-modal-btn'), bgmVolumeSlider = document.getElementById('bgm-volume-slider'), sfxToggleBtn = document.getElementById('sfx-toggle-btn'), backgroundMusic = document.getElementById('background-game-music'), feedbackPopup = document.getElementById('feedback-popup'), feedbackMessageTextEl = document.getElementById('feedback-message-text-el');
         const allSfx = [document.getElementById('start-game-sound'), document.getElementById('interaction-sound'), document.getElementById('correct-answer-sound'), document.getElementById('incorrect-answer-sound'), document.getElementById('curtain-sound'), document.getElementById('confetti-sound')];
+        const highscoreBtn = document.getElementById('highscore-btn');
+        const singlePlayerSubOptions = document.getElementById('single-player-sub-options');
+        const multiplayerStartArea = document.getElementById('multiplayer-start-area');
+        const fiveRoundsBtn = document.getElementById('five-rounds-btn');
+        const infiniteModeBtn = document.getElementById('infinite-mode-btn');
         let feedbackTimeout;
         
         function initAudio() { if (audioContextStarted) return; audioContextStarted = true; backgroundMusic.play().catch(e => {}); allSfx.forEach(s => { if(s) { s.volume=0; s.play().then(() => {s.pause(); s.currentTime=0; s.volume=1;}).catch(e=>{}); } }); }
@@ -426,17 +440,162 @@
         function playSoundWithCallback(audio, callback, ...args) { if (sfxEnabled && audio && audioContextStarted) { audio.currentTime = 0; let ran = false; const runCb = () => { if (!ran) { ran = true; if(t) clearTimeout(t); if(callback) callback(...args); } }; audio.onended = runCb; const t = setTimeout(runCb, (audio.duration && isFinite(audio.duration)) ? audio.duration*1000+200 : 500); audio.play().catch(e=>{runCb()}); } else { if(callback) callback(...args); } }
         function showFeedback(msg, type='info', dur=2200) { feedbackMessageTextEl.textContent=msg; feedbackPopup.className='feedback-popup'; if(type) feedbackPopup.classList.add(type); feedbackPopup.classList.add('show'); clearTimeout(feedbackTimeout); feedbackTimeout=setTimeout(()=>feedbackPopup.classList.remove('show'), dur); }
         function triggerConfetti() { playSound(allSfx[5]); const colors = ['var(--blyza-orange-primary)', 'var(--blyza-purple-secondary)', 'var(--blyza-keppel-accent)']; for (let i=0; i<80; i++) { const c=document.createElement('div'); c.className='confetti-piece'; c.style.left=Math.random()*100+'vw'; c.style.backgroundColor=colors[Math.floor(Math.random()*colors.length)]; const a=Math.random()*2.5+1.5; c.style.animation=`fallAndFade ${a}s linear forwards ${Math.random()*0.8}s`; document.body.appendChild(c); setTimeout(()=>c.remove(), a*1000+1000); } }
+        function loadHighScore() { const savedScore = localStorage.getItem('roa_infinite_highscore'); infiniteHighScore = savedScore ? parseInt(savedScore, 10) : 0; }
+        function saveHighScore(score) { if (score > infiniteHighScore) { infiniteHighScore = score; localStorage.setItem('roa_infinite_highscore', infiniteHighScore); } }
+        function showHighScore() { playSound(allSfx[1]); showFeedback(`Infinite High Score: ${infiniteHighScore}`, 'info', 3000); }
 
         function switchScreen(id) { Object.values(screens).forEach(s => s.classList.remove('active')); screens[id].classList.add('active'); const isStart = id === 'start'; homeMenuBtn.style.display = isStart ? 'flex' : 'none'; backBtn.style.display = isStart ? 'none' : 'flex'; }
-        function actualStartGame() { gameState.currentRound=0; gameState.usedItems=[]; gameState.scores={}; if(gameState.gameMode === 'single') { gameState.players = ['You']; } else { gameState.players = Array.from(teamNamesList.querySelectorAll('.team-name-input')).map((i,idx)=>i.value.trim()||`Team ${idx+1}`); if(gameState.players.length < 2) return showFeedback('Multiplayer needs at least 2 teams!', 'incorrect'); } gameState.players.forEach(p => gameState.scores[p]=0); nextRoundBtn.innerHTML='Next Round <i class="fas fa-arrow-right"></i>'; setupRound(); }
-        function setupRound() { gameState.currentRound++; if (gameState.currentRound > gameState.maxRounds) return showGameOver(); leftCurtain.classList.remove('open'); rightCurtain.classList.remove('open'); [mediaImageEl, mediaVideoEl, mediaDescriptionEl].forEach(el=>el.classList.remove('visible')); let available = gameState.mediaItems.filter(i => !gameState.usedItems.includes(i.url)); if (available.length===0) {gameState.usedItems=[]; available=[...gameState.mediaItems];} gameState.currentMedia = available[Math.floor(Math.random()*available.length)]; gameState.usedItems.push(gameState.currentMedia.url); gameState.singlePlayerChoice=null; gameState.roundPlayerChoices={}; gameState.currentPlayerIndexInRound=0; roundNumberEl.textContent=gameState.currentRound; if (gameState.gameMode==='single'){scoreInfoText.style.display='block'; currentScoreEl.textContent=gameState.scores[gameState.players[0]]; turnIndicator.style.display='none';} else {scoreInfoText.style.display='none'; turnIndicator.style.display='block'; updateTurnIndicator();} mediaDescriptionEl.textContent=gameState.currentMedia.description; mediaImageEl.style.display='none'; mediaVideoEl.style.display='none'; mediaVideoEl.pause(); mediaVideoEl.currentTime=0; if(gameState.currentMedia.type==='image'){mediaImageEl.src=gameState.currentMedia.url;}else{mediaVideoEl.src=gameState.currentMedia.url;} realBtn.disabled=false; aiBtn.disabled=false; switchScreen('game'); setTimeout(()=>{playSound(allSfx[4]); leftCurtain.classList.add('open'); rightCurtain.classList.add('open'); setTimeout(()=>{if(gameState.currentMedia.type==='image'){mediaImageEl.style.display='block'; mediaImageEl.classList.add('visible');}else{mediaVideoEl.style.display='block'; mediaVideoEl.classList.add('visible'); mediaVideoEl.play().catch(e=>{});} mediaDescriptionEl.classList.add('visible');}, 700);}, 300); }
+        
+        function startSinglePlayerGame(subType) { gameState.singlePlayerSubType = subType; playSoundWithCallback(allSfx[0], actualStartGame); }
+        
+        function actualStartGame() { 
+            gameState.currentRound=0; gameState.usedItems=[]; gameState.scores={}; 
+            if(gameState.gameMode === 'single') { 
+                gameState.players = ['You']; 
+            } else { 
+                gameState.players = Array.from(teamNamesList.querySelectorAll('.team-name-input')).map((i,idx)=>i.value.trim()||`Team ${idx+1}`); 
+                if(gameState.players.length < 2) return showFeedback('Multiplayer needs at least 2 teams!', 'incorrect'); 
+            } 
+            gameState.players.forEach(p => gameState.scores[p]=0); 
+            nextRoundBtn.innerHTML='Next Round <i class="fas fa-arrow-right"></i>'; 
+            setupRound(); 
+        }
+
+        function setupRound() {
+            if (gameState.gameMode === 'single' && gameState.singlePlayerSubType === '5rounds' && gameState.currentRound >= gameState.maxRounds) {
+                return showGameOver();
+            }
+            gameState.currentRound++;
+            
+            leftCurtain.classList.remove('open'); rightCurtain.classList.remove('open');
+            [mediaImageEl, mediaVideoEl, mediaDescriptionEl].forEach(el=>el.classList.remove('visible'));
+            
+            let available = gameState.mediaItems.filter(i => !gameState.usedItems.includes(i.url));
+            if (available.length===0) {
+                if (gameState.singlePlayerSubType === 'infinite') {
+                    return showGameOver(true); // Beat the game
+                }
+                gameState.usedItems=[]; 
+                available=[...gameState.mediaItems];
+            }
+            gameState.currentMedia = available[Math.floor(Math.random()*available.length)];
+            gameState.usedItems.push(gameState.currentMedia.url);
+            
+            gameState.singlePlayerChoice=null; gameState.roundPlayerChoices={}; gameState.currentPlayerIndexInRound=0;
+            
+            if (gameState.gameMode==='single'){
+                turnIndicator.style.display='none';
+                if (gameState.singlePlayerSubType === 'infinite') {
+                    roundInfoText.style.display = 'none';
+                    scoreInfoText.style.display = 'block';
+                    scoreInfoText.innerHTML = `Score: <span id="current-score-el">${gameState.scores[gameState.players[0]]}</span>`;
+                } else {
+                    roundInfoText.style.display = 'block';
+                    scoreInfoText.style.display = 'block';
+                    roundInfoText.innerHTML = `Round <span id="round-number-el">${gameState.currentRound}</span>/${gameState.maxRounds}`;
+                    scoreInfoText.innerHTML = `Score: <span id="current-score-el">${gameState.scores[gameState.players[0]]}</span>`;
+                }
+            } else {
+                scoreInfoText.style.display='none';
+                turnIndicator.style.display='block';
+                roundInfoText.style.display = 'block';
+                roundInfoText.innerHTML = `Round <span id="round-number-el">${gameState.currentRound}</span>`;
+                updateTurnIndicator();
+            }
+
+            mediaDescriptionEl.textContent=gameState.currentMedia.description;
+            mediaImageEl.style.display='none'; mediaVideoEl.style.display='none'; mediaVideoEl.pause(); mediaVideoEl.currentTime=0;
+            if(gameState.currentMedia.type==='image'){mediaImageEl.src=gameState.currentMedia.url;}else{mediaVideoEl.src=gameState.currentMedia.url;}
+            realBtn.disabled=false; aiBtn.disabled=false;
+            
+            switchScreen('game');
+            setTimeout(()=>{playSound(allSfx[4]); leftCurtain.classList.add('open'); rightCurtain.classList.add('open'); setTimeout(()=>{if(gameState.currentMedia.type==='image'){mediaImageEl.style.display='block'; mediaImageEl.classList.add('visible');}else{mediaVideoEl.style.display='block'; mediaVideoEl.classList.add('visible'); mediaVideoEl.play().catch(e=>{});} mediaDescriptionEl.classList.add('visible');}, 700);}, 300);
+        }
         function updateTurnIndicator() { if (gameState.gameMode === 'multi') turnIndicator.textContent = `${gameState.players[gameState.currentPlayerIndexInRound]}'s turn:`; }
         function makeChoice(choice) { playSound(allSfx[1]); realBtn.disabled = true; aiBtn.disabled = true; if (gameState.gameMode === 'single') { gameState.singlePlayerChoice = choice; processAndShowResults(); } else { gameState.roundPlayerChoices[gameState.players[gameState.currentPlayerIndexInRound]] = choice; gameState.currentPlayerIndexInRound++; if (gameState.currentPlayerIndexInRound < gameState.players.length) { updateTurnIndicator(); setTimeout(() => { realBtn.disabled=false; aiBtn.disabled=false; }, 300); } else { processAndShowResults(); } } }
-        function processAndShowResults() { if(gameState.currentMedia.type==='video'){mediaVideoEl.pause(); resultVideoEl.pause();} let msg="", type="info"; if(gameState.gameMode==='single'){const p=gameState.players[0], isCorrect=(gameState.singlePlayerChoice==='real'&&!gameState.currentMedia.isAI)||(gameState.singlePlayerChoice==='ai'&&gameState.currentMedia.isAI); if(isCorrect){gameState.scores[p]++; playSound(allSfx[2]); msg="Correct!"; type="correct";}else{playSound(allSfx[3]); msg="Incorrect!"; type="incorrect";}}else{const correctPlayers=[]; gameState.players.forEach(p=>{const choice=gameState.roundPlayerChoices[p], isCorrect=(choice==='real'&&!gameState.currentMedia.isAI)||(choice==='ai'&&gameState.currentMedia.isAI); if(isCorrect){gameState.scores[p]++; correctPlayers.push(p);}}); if(correctPlayers.length>0){playSound(allSfx[2]); msg = correctPlayers.length===1?`${correctPlayers[0]} got it right!`:correctPlayers.length===gameState.players.length?`Everyone got it right!`:`${correctPlayers.join(' & ')} got it right!`; type="correct";}else{playSound(allSfx[3]); msg="No one got it right!"; type="incorrect";}} showFeedback(msg, type); populateResults(); switchScreen('results'); }
-        function populateResults() { [resultImageEl, resultVideoEl].forEach(el=>{el.style.display='none'; el.classList.add('visible');}); resultVideoEl.pause(); resultVideoEl.currentTime=0; if(gameState.currentMedia.type==='image'){resultImageEl.src=gameState.currentMedia.url; resultImageEl.style.display='block';}else{resultVideoEl.src=gameState.currentMedia.url; resultVideoEl.style.display='block'; resultVideoEl.play().catch(e=>{});} answerDisplayEl.className='answer-display'; if(gameState.currentMedia.isAI){answerDisplayEl.innerHTML=`<i class="fas fa-robot"></i> AI-Generated!`; answerDisplayEl.classList.add('answer-ai');}else{answerDisplayEl.innerHTML=`<i class="fas fa-check-circle"></i> Real!`; answerDisplayEl.classList.add('answer-real');} feedbackSummaryEl.style.display='none'; detailedFeedbackAreaEl.style.display='none'; detailedFeedbackAreaEl.innerHTML=''; if(gameState.gameMode==='single'){feedbackSummaryEl.style.display='flex'; feedbackSummaryEl.className='feedback-summary'; const isCorrect=(gameState.singlePlayerChoice==='real'&&!gameState.currentMedia.isAI)||(gameState.singlePlayerChoice==='ai'&&gameState.currentMedia.isAI); if(isCorrect){feedbackSummaryEl.innerHTML=`<i class="fas fa-check-circle"></i> You guessed correctly!`; feedbackSummaryEl.classList.add('feedback-correct');}else{feedbackSummaryEl.innerHTML=`<i class="fas fa-times-circle"></i> Incorrect! You chose ${gameState.singlePlayerChoice}.`; feedbackSummaryEl.classList.add('feedback-incorrect');}}else{detailedFeedbackAreaEl.style.display='block'; gameState.players.forEach(p=>{const choice=gameState.roundPlayerChoices[p]; if(!choice)return; const isCorrect=(choice==='real'&&!gameState.currentMedia.isAI)||(choice==='ai'&&gameState.currentMedia.isAI), entry=document.createElement('div'); entry.className=`player-feedback-entry ${isCorrect?'correct':'incorrect'}`; entry.innerHTML=`<i class="fas fa-${isCorrect?'check':'times'}"></i> <strong>${p}</strong> chose: ${choice}.`; detailedFeedbackAreaEl.appendChild(entry);});} roundScoreDisplayEl.innerHTML=''; gameState.players.forEach(p=>{const scoreCard=document.createElement('div'); scoreCard.className='score-card'; scoreCard.innerHTML=`<h4>${p}</h4><div class="score-value">${gameState.scores[p]}</div><div class="progress-bar"><div class="progress-fill" style="width: ${gameState.scores[p]/gameState.maxRounds*100}%"></div></div>`; roundScoreDisplayEl.appendChild(scoreCard);}); if(gameState.currentRound>=gameState.maxRounds){nextRoundBtn.innerHTML='See Final Results <i class="fas fa-trophy"></i>';}else{nextRoundBtn.innerHTML='Next Round <i class="fas fa-arrow-right"></i>';} }
-        function showGameOver() { finalScoreDisplayEl.innerHTML=''; let maxScore=Math.max(...Object.values(gameState.scores)); gameState.players.forEach(p=>{const card=document.createElement('div'); card.className='score-card'; if(gameState.scores[p]===maxScore&&maxScore>0&&gameState.players.length>1)card.classList.add('winner-glow'); else if(gameState.gameMode==='single'&&gameState.scores[p]>=Math.ceil(gameState.maxRounds*0.6))card.classList.add('winner-glow'); card.innerHTML=`<h4>${p}</h4><div class="score-value">${gameState.scores[p]}</div>`; finalScoreDisplayEl.appendChild(card);}); if(gameState.gameMode==='single'){const score=gameState.scores[gameState.players[0]]; if(score===gameState.maxRounds){winMessageTextEl.textContent="Perfect Score!"; finalMessageDetailsEl.textContent="You're an expert!"; winnerTrophyEl.textContent='🌟';}else if(score>=Math.ceil(gameState.maxRounds*0.6)){winMessageTextEl.textContent="Great Job!"; finalMessageDetailsEl.textContent=`You got ${score} out of ${gameState.maxRounds}.`; winnerTrophyEl.textContent='🏆';}else{winMessageTextEl.textContent="Nice Try!"; finalMessageDetailsEl.textContent=`You got ${score} out of ${gameState.maxRounds}.`; winnerTrophyEl.textContent='👍';}}else{const winners=gameState.players.filter(p=>gameState.scores[p]===maxScore&&maxScore>0); if(winners.length===1){winMessageTextEl.textContent=`${winners[0]} Wins!`; finalMessageDetailsEl.textContent=`With a top score of ${maxScore}!`;}else if(winners.length>1){winMessageTextEl.textContent="It's a Tie!"; finalMessageDetailsEl.textContent=`${winners.join(' & ')} all scored ${maxScore}!`;}else{winMessageTextEl.textContent="Game Complete!"; finalMessageDetailsEl.textContent="Better luck next time!";} winnerTrophyEl.textContent='🎉';} triggerConfetti(); switchScreen('gameOver'); }
         
+        function processAndShowResults() {
+            if(gameState.currentMedia.type==='video'){mediaVideoEl.pause(); resultVideoEl.pause();}
+            let msg="", type="info", isGameOver = false;
+            
+            if(gameState.gameMode==='single'){
+                const p=gameState.players[0];
+                const isCorrect=(gameState.singlePlayerChoice==='real'&&!gameState.currentMedia.isAI)||(gameState.singlePlayerChoice==='ai'&&gameState.currentMedia.isAI);
+                if(isCorrect){
+                    gameState.scores[p]++;
+                    playSound(allSfx[2]); msg="Correct!"; type="correct";
+                } else {
+                    playSound(allSfx[3]); msg="Incorrect!"; type="incorrect";
+                    if (gameState.singlePlayerSubType === 'infinite') {
+                        isGameOver = true;
+                    }
+                }
+            } else {
+                const correctPlayers=[];
+                gameState.players.forEach(p=>{const choice=gameState.roundPlayerChoices[p], isCorrect=(choice==='real'&&!gameState.currentMedia.isAI)||(choice==='ai'&&gameState.currentMedia.isAI); if(isCorrect){gameState.scores[p]++; correctPlayers.push(p);}});
+                if(correctPlayers.length>0){playSound(allSfx[2]); msg = correctPlayers.length===1?`${correctPlayers[0]} got it right!`:correctPlayers.length===gameState.players.length?`Everyone got it right!`:`${correctPlayers.join(' & ')} got it right!`; type="correct";}else{playSound(allSfx[3]); msg="No one got it right!"; type="incorrect";}
+            }
+            
+            showFeedback(msg, type);
+            populateResults();
+
+            if (isGameOver || (gameState.gameMode === 'single' && gameState.singlePlayerSubType === '5rounds' && gameState.currentRound >= gameState.maxRounds)) {
+                nextRoundBtn.innerHTML = 'See Final Results <i class="fas fa-trophy"></i>';
+                nextRoundBtn.onclick = () => showGameOver();
+            } else if (gameState.gameMode === 'multi' && gameState.currentRound >= gameState.maxRounds) {
+                 nextRoundBtn.innerHTML = 'See Final Results <i class="fas fa-trophy"></i>';
+                nextRoundBtn.onclick = () => showGameOver();
+            } else {
+                nextRoundBtn.innerHTML = 'Next Round <i class="fas fa-arrow-right"></i>';
+                nextRoundBtn.onclick = () => setupRound();
+            }
+            
+            switchScreen('results');
+        }
+
+        function populateResults() { [resultImageEl, resultVideoEl].forEach(el=>{el.style.display='none'; el.classList.add('visible');}); resultVideoEl.pause(); resultVideoEl.currentTime=0; if(gameState.currentMedia.type==='image'){resultImageEl.src=gameState.currentMedia.url; resultImageEl.style.display='block';}else{resultVideoEl.src=gameState.currentMedia.url; resultVideoEl.style.display='block'; resultVideoEl.play().catch(e=>{});} answerDisplayEl.className='answer-display'; if(gameState.currentMedia.isAI){answerDisplayEl.innerHTML=`<i class="fas fa-robot"></i> AI-Generated!`; answerDisplayEl.classList.add('answer-ai');}else{answerDisplayEl.innerHTML=`<i class="fas fa-check-circle"></i> Real!`; answerDisplayEl.classList.add('answer-real');} feedbackSummaryEl.style.display='none'; detailedFeedbackAreaEl.style.display='none'; detailedFeedbackAreaEl.innerHTML=''; if(gameState.gameMode==='single'){feedbackSummaryEl.style.display='flex'; feedbackSummaryEl.className='feedback-summary'; const isCorrect=(gameState.singlePlayerChoice==='real'&&!gameState.currentMedia.isAI)||(gameState.singlePlayerChoice==='ai'&&gameState.currentMedia.isAI); if(isCorrect){feedbackSummaryEl.innerHTML=`<i class="fas fa-check-circle"></i> You guessed correctly!`; feedbackSummaryEl.classList.add('feedback-correct');}else{feedbackSummaryEl.innerHTML=`<i class="fas fa-times-circle"></i> Incorrect! You chose ${gameState.singlePlayerChoice}.`; feedbackSummaryEl.classList.add('feedback-incorrect');}}else{detailedFeedbackAreaEl.style.display='block'; gameState.players.forEach(p=>{const choice=gameState.roundPlayerChoices[p]; if(!choice)return; const isCorrect=(choice==='real'&&!gameState.currentMedia.isAI)||(choice==='ai'&&gameState.currentMedia.isAI), entry=document.createElement('div'); entry.className=`player-feedback-entry ${isCorrect?'correct':'incorrect'}`; entry.innerHTML=`<i class="fas fa-${isCorrect?'check':'times'}"></i> <strong>${p}</strong> chose: ${choice}.`; detailedFeedbackAreaEl.appendChild(entry);});} roundScoreDisplayEl.innerHTML=''; gameState.players.forEach(p=>{const scoreCard=document.createElement('div'); scoreCard.className='score-card'; scoreCard.innerHTML=`<h4>${p}</h4><div class="score-value">${gameState.scores[p]}</div><div class="progress-bar"><div class="progress-fill" style="width: ${gameState.scores[p]/gameState.maxRounds*100}%"></div></div>`; roundScoreDisplayEl.appendChild(scoreCard);});}
+        
+        function showGameOver(beatTheGame = false) {
+            finalScoreDisplayEl.innerHTML='';
+            let maxScore = -1;
+            if(Object.values(gameState.scores).length > 0) {
+                maxScore = Math.max(...Object.values(gameState.scores));
+            }
+            
+            gameState.players.forEach(p=>{const card=document.createElement('div'); card.className='score-card'; if(gameState.scores[p]===maxScore&&maxScore>0&&gameState.players.length>1)card.classList.add('winner-glow'); else if(gameState.gameMode==='single' && gameState.singlePlayerSubType === '5rounds' && gameState.scores[p]>=Math.ceil(gameState.maxRounds*0.6))card.classList.add('winner-glow'); card.innerHTML=`<h4>${p}</h4><div class="score-value">${gameState.scores[p]}</div>`; finalScoreDisplayEl.appendChild(card);});
+            
+            if(gameState.gameMode==='single'){
+                const score=gameState.scores[gameState.players[0]];
+                if (gameState.singlePlayerSubType === 'infinite') {
+                    saveHighScore(score);
+                    let isNewHighScore = score > 0 && score === infiniteHighScore;
+                    if (beatTheGame) {
+                        winMessageTextEl.textContent = "You Beat The Game!";
+                        finalMessageDetailsEl.innerHTML = `You correctly identified all ${gameState.mediaItems.length} items! <br>Final Score: ${score}. ${isNewHighScore ? '<strong>New High Score!</strong>' : ''}`;
+                        winnerTrophyEl.textContent = '👑';
+                    } else {
+                        winMessageTextEl.textContent="Game Over!";
+                        finalMessageDetailsEl.innerHTML = `Your Score: ${score}. ${isNewHighScore ? '<strong>New High Score!</strong>' : `High Score: ${infiniteHighScore}`}`;
+                        winnerTrophyEl.textContent = isNewHighScore ? '🏆' : '👍';
+                    }
+                } else { // 5-rounds mode
+                    if(score===gameState.maxRounds){winMessageTextEl.textContent="Perfect Score!"; finalMessageDetailsEl.textContent="You're an expert!"; winnerTrophyEl.textContent='🌟';}
+                    else if(score>=Math.ceil(gameState.maxRounds*0.6)){winMessageTextEl.textContent="Great Job!"; finalMessageDetailsEl.textContent=`You got ${score} out of ${gameState.maxRounds}.`; winnerTrophyEl.textContent='🏆';}
+                    else{winMessageTextEl.textContent="Nice Try!"; finalMessageDetailsEl.textContent=`You got ${score} out of ${gameState.maxRounds}.`; winnerTrophyEl.textContent='👍';}
+                }
+            } else { // Multiplayer
+                const winners=gameState.players.filter(p=>gameState.scores[p]===maxScore&&maxScore>0);
+                if(winners.length===1){winMessageTextEl.textContent=`${winners[0]} Wins!`; finalMessageDetailsEl.textContent=`With a top score of ${maxScore}!`;}
+                else if(winners.length>1){winMessageTextEl.textContent="It's a Tie!"; finalMessageDetailsEl.textContent=`${winners.join(' & ')} all scored ${maxScore}!`;}
+                else{winMessageTextEl.textContent="Game Complete!"; finalMessageDetailsEl.textContent="Better luck next time!";}
+                winnerTrophyEl.textContent='🎉';
+            }
+            triggerConfetti();
+            switchScreen('gameOver');
+        }
+
         document.addEventListener('DOMContentLoaded', () => { 
+            loadHighScore();
             const savedVol = localStorage.getItem('musicVolume'), savedSfx = localStorage.getItem('sfxEnabled');
             if(savedVol !== null) musicVolume = parseFloat(savedVol);
             if(savedSfx !== null) sfxEnabled = savedSfx === 'true';
@@ -448,14 +607,48 @@
             closeModalBtn.addEventListener('click', () => { playSound(allSfx[1]); settingsModal.style.display = 'none'; });
             bgmVolumeSlider.addEventListener('input', (e) => { musicVolume = parseFloat(e.target.value); backgroundMusic.volume = musicVolume; localStorage.setItem('musicVolume', musicVolume); });
             sfxToggleBtn.addEventListener('click', () => { sfxEnabled = !sfxEnabled; sfxToggleBtn.textContent = `SFX: ${sfxEnabled ? 'ON' : 'OFF'}`; playSound(allSfx[1]); localStorage.setItem('sfxEnabled', sfxEnabled); });
+            highscoreBtn.addEventListener('click', showHighScore);
 
-            modeOptions.forEach(opt => opt.addEventListener('click', function(){ playSound(allSfx[1]); modeOptions.forEach(o=>o.classList.remove('selected')); this.classList.add('selected'); gameState.gameMode = this.dataset.mode; teamInputsContainer.style.display = gameState.gameMode==='multi'?'block':'none'; if(gameState.gameMode==='multi')updateTeamRemoveButtonsState();}));
-            function updateTeamRemoveButtonsState(){const wrappers=teamNamesList.children; addTeamBtn.disabled=wrappers.length>=4; Array.from(wrappers).forEach(w=>w.querySelector('.remove-team-btn').disabled=wrappers.length<=2);}
-            addTeamBtn.addEventListener('click', () => {playSound(allSfx[1]); const teamCount=teamNamesList.children.length; if(teamCount>=4)return; const wrapper=document.createElement('div'); wrapper.className='team-input-wrapper'; wrapper.innerHTML=`<input type="text" class="team-name-input" placeholder="Team ${teamCount+1}"><button class="remove-team-btn btn-danger"><i class="fas fa-times"></i></button>`; wrapper.querySelector('.remove-team-btn').onclick = ()=>{playSound(allSfx[1]); wrapper.remove(); updateTeamRemoveButtonsState();}; teamNamesList.appendChild(wrapper); updateTeamRemoveButtonsState();});
+            modeOptions.forEach(opt => opt.addEventListener('click', function(){ 
+                playSound(allSfx[1]); 
+                modeOptions.forEach(o=>o.classList.remove('selected')); 
+                this.classList.add('selected'); 
+                gameState.gameMode = this.dataset.mode; 
+                const isMulti = gameState.gameMode === 'multi';
+                multiplayerStartArea.style.display = isMulti ? 'block' : 'none';
+                singlePlayerSubOptions.style.display = isMulti ? 'none' : 'block';
+                if(isMulti) updateTeamRemoveButtonsState();
+            }));
+            
+            function updateTeamRemoveButtonsState(){
+                const wrappers = teamNamesList.querySelectorAll('.team-input-wrapper');
+                addTeamBtn.disabled = wrappers.length >= 4;
+                wrappers.forEach((wrapper, index) => {
+                    const removeBtn = wrapper.querySelector('.remove-team-btn');
+                    if (removeBtn) {
+                        removeBtn.disabled = wrappers.length <= 2;
+                    }
+                });
+            }
+
+            addTeamBtn.addEventListener('click', () => {
+                playSound(allSfx[1]); 
+                const teamCount=teamNamesList.children.length; 
+                if(teamCount>=4)return; 
+                const wrapper=document.createElement('div'); 
+                wrapper.className='team-input-wrapper'; 
+                wrapper.innerHTML=`<input type="text" class="team-name-input" placeholder="Team ${teamCount+1}"><button class="remove-team-btn btn-danger"><i class="fas fa-times"></i></button>`; 
+                wrapper.querySelector('.remove-team-btn').onclick = ()=>{playSound(allSfx[1]); wrapper.remove(); updateTeamRemoveButtonsState();}; 
+                teamNamesList.appendChild(wrapper); 
+                updateTeamRemoveButtonsState();
+            });
+
+            fiveRoundsBtn.addEventListener('click', () => startSinglePlayerGame('5rounds'));
+            infiniteModeBtn.addEventListener('click', () => startSinglePlayerGame('infinite'));
             startGameBtn.addEventListener('click', () => playSoundWithCallback(allSfx[0], actualStartGame));
             realBtn.addEventListener('click', () => makeChoice('real'));
             aiBtn.addEventListener('click', () => makeChoice('ai'));
-            nextRoundBtn.addEventListener('click', () => { playSound(allSfx[1]); if(gameState.currentMedia.type==='video')resultVideoEl.pause(); if(gameState.currentRound>=gameState.maxRounds)showGameOver(); else setupRound(); });
+            nextRoundBtn.addEventListener('click', () => { playSound(allSfx[1]); if(gameState.currentMedia.type==='video')resultVideoEl.pause(); setupRound(); });
             playAgainBtn.addEventListener('click', () => playSoundWithCallback(allSfx[0], actualStartGame));
             newGameMenuBtn.addEventListener('click', () => { playSound(allSfx[1]); switchScreen('start'); });
             visitStoreBtn.addEventListener('click', () => { playSound(allSfx[1]); window.location.href = '/store'; });
@@ -463,6 +656,7 @@
             
             updateTeamRemoveButtonsState();
             switchScreen('start');
+            modeOptions[0].click(); // Default to single player view
         });
     </script>
     <script>

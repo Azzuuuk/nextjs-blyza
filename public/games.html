@@ -91,7 +91,8 @@
     }
 
     /* --- Search & Filters (Funky Style) --- */
-    .search-bar { max-width: 600px; margin: 0 auto 30px; position: relative; }
+    .search-container { max-width: 700px; margin: 0 auto 30px; display: flex; align-items: center; gap: 15px; }
+    .search-bar { flex-grow: 1; position: relative; }
     .search-input {
         width: 100%; padding: 15px 20px; padding-left: 55px; border-radius: 50px;
         border: 3px solid var(--black-stroke); background: var(--text-light);
@@ -101,6 +102,17 @@
     .search-input::placeholder { color: var(--text-medium); }
     .search-input:focus { outline: none; border-color: var(--blyza-orange-primary); box-shadow: 0 0 0 3px var(--blyza-sunny-yellow); }
     .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--blyza-orange-primary); font-size: 1.3rem; }
+    #surprise-me-btn {
+        font-family: var(--font-heading-alt);
+        background-color: var(--blyza-neon-pink); color: var(--text-light);
+        border: 3px solid var(--black-stroke); border-radius: 8px;
+        padding: 12px 20px; white-space: nowrap;
+        box-shadow: var(--shadow-chunky); transition: transform 0.1s ease, box-shadow 0.1s ease;
+        cursor: pointer;
+    }
+    #surprise-me-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black-stroke); }
+    #surprise-me-btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
+
 
     .category-filter { display: flex; justify-content: center; gap: 12px; margin-bottom: 40px; flex-wrap: wrap; padding: 0 15px; }
     .category-btn {
@@ -121,55 +133,30 @@
     .category-btn.active[data-category="Social & Deception"] { background: var(--blyza-keppel-accent); color: var(--text-light); }
     .category-btn.active[data-category="Quickfire"] { background: var(--blyza-quickfire-red); color: var(--text-light); }
     
-    /* --- Game Grid & Cards (The Main Event!) --- UPDATED SECTION --- */
+    /* --- Game Grid & Cards (The Main Event!) --- */
     .games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5em; padding: 20px; margin-bottom: 80px;}
 
-    /* The outer .game-card-item now ONLY handles the floating animation. */
     .game-card-item {
-        animation-name: floatCard;
-        animation-duration: 6s;
-        animation-timing-function: ease-in-out;
-        animation-iteration-count: infinite;
-        /* It's also a flex container to help center the inner card if needed */
-        display: flex; 
-        flex-direction: column;
+        animation-name: floatCard; animation-duration: 6s; animation-timing-function: ease-in-out; animation-iteration-count: infinite;
+        display: flex; flex-direction: column;
     }
-
-    /* This is the new inner wrapper for the visible card content. */
     .game-card-content {
-        background: linear-gradient(145deg, #fdfefe, #e9ecef);
-        border-radius: var(--border-radius-game);
-        border: 3px solid var(--text-dark);
-        box-shadow: var(--shadow-chunky);
-        padding: 1.5em;
-        text-align: center;
-        cursor: pointer;
-        position: relative;
-        color: var(--text-dark);
-        display: flex;
-        flex-direction: column;
-        height: 100%; /* Ensures all cards have same height in a grid row */
-        /* The transition for the hover effect lives here */
+        background: linear-gradient(145deg, #fdfefe, #e9ecef); border-radius: var(--border-radius-game);
+        border: 3px solid var(--text-dark); box-shadow: var(--shadow-chunky); padding: 1.5em;
+        text-align: center; cursor: pointer; position: relative; color: var(--text-dark);
+        display: flex; flex-direction: column; height: 100%; 
         transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     }
-
-    /* The hover effect is triggered on the parent, but APPLIED to the inner content. */
     .game-card-item:hover .game-card-content {
         transform: translateY(-8px) scale(1.03);
         box-shadow: 6px 6px 0px var(--blyza-sunny-yellow);
         border-color: var(--blyza-orange-primary);
     }
-    
     .game-icon { 
         font-size: 3rem; color: var(--blyza-orange-primary); margin: 0 auto 0.5em; 
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s ease;
     }
-    /* The icon hover is also triggered by hovering the parent item */
-    .game-card-item:hover .game-icon {
-        transform: scale(1.25) rotate(15deg);
-        color: var(--blyza-neon-pink);
-    }
-
+    .game-card-item:hover .game-icon { transform: scale(1.25) rotate(15deg); color: var(--blyza-neon-pink); }
     .game-title { font-family: var(--font-heading-alt); font-size: 1.5rem; color: var(--text-dark); margin-bottom: 0.5em; }
     .game-title a { color: inherit; text-decoration: none; }
     .game-description { color: var(--text-medium); font-size: 0.95rem; margin-bottom: 1em; flex-grow: 1; }
@@ -190,7 +177,6 @@
     @keyframes floatCard { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     .games-grid .game-card-item:nth-child(even) { animation-delay: 1.5s; }
     .games-grid .game-card-item:nth-child(3n) { animation-delay: 0.8s; }
-    /* --- END OF UPDATED CARD SECTION --- */
 
     /* --- Floating Buttons (Retro Style) --- */
     .btn-retro-floating {
@@ -204,12 +190,13 @@
     .store-btn-container { position: fixed; top: 20px; right: 20px; z-index: 100; }
     .store-btn { background-color: var(--blyza-sunny-yellow); color: var(--text-dark); box-shadow: 4px 4px 0px var(--black-stroke); border-radius: 8px; }
     .store-btn:hover { box-shadow: 2px 2px 0px var(--black-stroke); }
-    .settings-btn-container { position: fixed; top: 20px; left: 20px; z-index: 100; }
-    .settings-btn {
+    .top-left-buttons-container { position: fixed; top: 20px; left: 20px; z-index: 100; display: flex; gap: 10px; }
+    .settings-btn, .favorites-btn {
         background-color: var(--blyza-purple-secondary); color: var(--text-light); box-shadow: 4px 4px 0px var(--black-stroke);
         border-radius: 50%; width: 55px; height: 55px; padding: 0; justify-content: center;
     }
-    .settings-btn:hover { box-shadow: 2px 2px 0px var(--black-stroke); }
+    .favorites-btn { background-color: var(--blyza-neon-pink); }
+    .settings-btn:hover, .favorites-btn:hover { box-shadow: 2px 2px 0px var(--black-stroke); }
 
     /* --- Modal Styles (Updated) --- */
     .modal {
@@ -228,7 +215,7 @@
         -webkit-text-stroke: 1.5px var(--black-stroke); text-stroke: 1.5px var(--black-stroke);
         text-align: center; margin-bottom: 25px; font-size: 2rem;
     }
-    .setting-item { margin-bottom: 18px; display: flex; flex-direction: column; }
+    .setting-item, .favorites-list li { margin-bottom: 18px; display: flex; flex-direction: column; }
     .setting-item label { margin-bottom: 10px; font-weight: 600; font-size: 1rem; }
     .close-modal-btn { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.2s; }
     .close-modal-btn:hover { color: var(--text-light); }
@@ -244,14 +231,31 @@
     input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 10px; cursor: pointer; background: rgba(0,0,0,0.3); border-radius: 5px; border: 2px solid var(--black-stroke); }
     input[type=range]::-webkit-slider-thumb { border: 2px solid var(--black-stroke); height: 22px; width: 22px; border-radius: 50%; background: var(--blyza-orange-primary); cursor: pointer; -webkit-appearance: none; margin-top: -9px; }
 
+    /* New Favorites Modal Styles */
+    .favorites-list { list-style: none; padding: 0; max-height: 50vh; overflow-y: auto; }
+    .favorites-list li {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 12px 15px;
+        border-radius: 8px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        border: 2px solid var(--blyza-purple-secondary);
+    }
+    .favorites-list .game-name { font-weight: 700; font-size: 1.1rem; }
+    .favorites-list .play-count { font-family: var(--font-logo); font-size: 1.3rem; color: var(--blyza-sunny-yellow); }
+    .no-favorites-message { text-align: center; color: var(--text-medium); font-weight: 500; }
+
     @media (max-width: 767.98px) {
         .page-header { padding: 80px 15px 30px; }
         .games-grid { grid-template-columns: 1fr; gap: 2em; }
         .store-btn-container { top: 15px; right: 15px; }
-        .settings-btn-container { top: 15px; left: 15px; }
+        .top-left-buttons-container { top: 15px; left: 15px; }
         .btn-retro-floating { font-size: 1rem; padding: 0.6em 1.2em; }
-        .settings-btn { width: 48px; height: 48px; }
+        .settings-btn, .favorites-btn { width: 48px; height: 48px; }
         .bg-game-element { display: none; }
+        #surprise-me-btn { font-size: 0.9rem; padding: 10px 15px; }
     }
 </style>
 </head>
@@ -274,9 +278,12 @@
             </a>
         </div>
     
-        <div class="settings-btn-container">
+        <div class="top-left-buttons-container">
             <button id="settings-open-btn" class="settings-btn btn-retro-floating" aria-label="Open Settings">
                 <i class="fas fa-cog"></i>
+            </button>
+            <button id="favorites-open-btn" class="favorites-btn btn-retro-floating" aria-label="Open My Favourite Games">
+                <i class="fas fa-heart"></i>
             </button>
         </div>
     
@@ -287,9 +294,12 @@
         </div>
     
         <div class="container">
-            <div class="search-bar">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Search for a game...">
+            <div class="search-container">
+                <div class="search-bar">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search for a game...">
+                </div>
+                <button id="surprise-me-btn"><i class="fas fa-dice"></i> Surprise Me!</button>
             </div>
         
             <div class="category-filter">
@@ -537,6 +547,18 @@
         </div>
     </div>
 
+    <!-- NEW: Favorites Modal -->
+    <div id="favorites-modal" class="modal">
+        <div class="modal-content">
+            <span id="favorites-close-btn" class="close-modal-btn">×</span>
+            <h2>My Favourite Games</h2>
+            <ul id="favorites-list" class="favorites-list">
+                <!-- Favorite games will be populated here by JavaScript -->
+            </ul>
+        </div>
+    </div>
+
+
     <!-- Audio Players -->
     <audio id="background-music" loop><source src="https://static.wixstatic.com/mp3/9ce3e5_973dcdec546a44b594013ec040a9eb20.mp3" type="audio/mpeg"></audio>
     <audio id="category-select-sound"><source src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" type="audio/wav"></audio>
@@ -546,6 +568,7 @@
     document.addEventListener('DOMContentLoaded', () => {
 
         const gameConfig = { sfxEnabled: true, musicVolume: 0.3 };
+        let playCounts = {}; // NEW: Object to hold play counts
 
         const searchInput = document.querySelector('.search-input');
         const gameCards = document.querySelectorAll('.game-card-item');
@@ -558,6 +581,25 @@
         const sfxToggleBtn = document.getElementById('sfx-toggle-btn');
         const categorySelectSound = document.getElementById('category-select-sound');
         const itemSelectSound = document.getElementById('item-select-sound');
+        // NEW element selectors
+        const surpriseMeBtn = document.getElementById('surprise-me-btn');
+        const favoritesOpenBtn = document.getElementById('favorites-open-btn');
+        const favoritesModal = document.getElementById('favorites-modal');
+        const favoritesCloseBtn = document.getElementById('favorites-close-btn');
+        const favoritesList = document.getElementById('favorites-list');
+
+        // NEW: Function to load play counts from localStorage
+        const loadPlayCounts = () => {
+            const storedCounts = localStorage.getItem('blyzaGamePlays');
+            if (storedCounts) {
+                playCounts = JSON.parse(storedCounts);
+            }
+        };
+
+        // NEW: Function to save play counts to localStorage
+        const savePlayCounts = () => {
+            localStorage.setItem('blyzaGamePlays', JSON.stringify(playCounts));
+        };
 
         const playSound = (audioElement) => {
             if (gameConfig.sfxEnabled && audioElement) {
@@ -570,12 +612,22 @@
             if (!linkElement || !soundElement) return;
             linkElement.addEventListener('click', function(event) {
                 event.preventDefault();
-                const targetUrl = this.href;
+                
+                // --- THIS IS THE FIX ---
+                // Use getAttribute('href') to get the relative path (e.g., "/games/game1")
+                // instead of .href which gives the full URL.
+                const targetUrl = this.getAttribute('href'); 
+                const navigationUrl = this.href; // Still use the full URL for navigation
+
+                // Track the play count using the relative path
+                playCounts[targetUrl] = (playCounts[targetUrl] || 0) + 1;
+                savePlayCounts();
+
                 let navigated = false;
-                const navigate = () => { if (!navigated) { navigated = true; window.location.href = targetUrl; } };
+                const navigate = () => { if (!navigated) { navigated = true; window.location.href = navigationUrl; } };
                 playSound(soundElement);
                 soundElement.onended = navigate;
-                setTimeout(navigate, 400);
+                setTimeout(navigate, 400); // Failsafe navigation
             });
         };
         
@@ -585,7 +637,6 @@
                 gameCards.forEach(card => {
                     const title = card.querySelector('.game-title').textContent.toLowerCase();
                     const description = card.querySelector('.game-description').textContent.toLowerCase();
-                    // NOTE: Updated display property to 'flex' to match the new parent.
                     const isVisible = title.includes(searchTerm) || description.includes(searchTerm);
                     card.style.display = isVisible ? 'flex' : 'none';
                     card.style.animationPlayState = searchTerm ? 'paused' : 'running';
@@ -601,7 +652,6 @@
                     button.classList.add('active');
                     const selectedCategory = button.dataset.category;
                     gameCards.forEach(card => {
-                        // NOTE: Updated display property to 'flex' to match the new parent.
                         card.style.display = (selectedCategory === 'All Games' || card.dataset.category === selectedCategory) ? 'flex' : 'none';
                     });
                 });
@@ -610,9 +660,7 @@
 
         if (gameCards.length) {
             gameCards.forEach(card => {
-                // The click listener is on the outer card, which is correct.
                 card.addEventListener('click', (event) => {
-                    // Clicks on anything inside the card that isn't a link should trigger the main link.
                     if (event.target.tagName !== 'A') {
                         const link = card.querySelector('.game-title a');
                         if (link) link.click();
@@ -625,16 +673,59 @@
         const storeButton = document.querySelector('.store-btn');
         if (storeButton) handleLinkWithSound(storeButton, itemSelectSound);
         
-        if (settingsOpenBtn && settingsModal && settingsCloseBtn) {
-            const toggleModal = () => {
+        // --- MODAL HANDLING ---
+        const setupModal = (openBtn, modal, closeBtn) => {
+            if (!openBtn || !modal || !closeBtn) return;
+            const toggleModal = (populateCallback) => {
                 playSound(categorySelectSound);
-                settingsModal.style.display = (settingsModal.style.display === 'flex') ? 'none' : 'flex';
+                const isOpening = modal.style.display !== 'flex';
+                modal.style.display = isOpening ? 'flex' : 'none';
+                if (isOpening && typeof populateCallback === 'function') {
+                    populateCallback();
+                }
             };
-            settingsOpenBtn.addEventListener('click', toggleModal);
-            settingsCloseBtn.addEventListener('click', toggleModal);
-            window.addEventListener('click', (e) => { if (e.target === settingsModal) toggleModal(); });
+            openBtn.addEventListener('click', () => toggleModal(modal.id === 'favorites-modal' ? populateFavoritesModal : null));
+            closeBtn.addEventListener('click', () => toggleModal(null));
+            window.addEventListener('click', (e) => { if (e.target === modal) toggleModal(null); });
+        };
+
+        setupModal(settingsOpenBtn, settingsModal, settingsCloseBtn);
+        setupModal(favoritesOpenBtn, favoritesModal, favoritesCloseBtn);
+
+        // --- NEW: "Surprise Me" and "Favorites" Logic ---
+        if (surpriseMeBtn) {
+            surpriseMeBtn.addEventListener('click', () => {
+                const availableGameLinks = Array.from(document.querySelectorAll('.games-grid .game-card-item .game-title a'));
+                if (availableGameLinks.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * availableGameLinks.length);
+                    availableGameLinks[randomIndex].click(); // This will trigger the sound and tracking via handleLinkWithSound
+                }
+            });
         }
-        
+
+        const populateFavoritesModal = () => {
+            favoritesList.innerHTML = ''; // Clear previous list
+            const sortedGames = Object.entries(playCounts).sort(([, a], [, b]) => b - a);
+            
+            if (sortedGames.length === 0) {
+                favoritesList.innerHTML = `<li class="no-favorites-message">You haven't played any games yet! Go on, try one!</li>`;
+                return;
+            }
+
+            sortedGames.forEach(([gameHref, count]) => {
+                // The selector now correctly finds the element because gameHref is "/games/game1" etc.
+                const gameTitleEl = document.querySelector(`.game-title a[href="${gameHref}"]`);
+                const gameTitle = gameTitleEl ? gameTitleEl.textContent : 'Unknown Game';
+
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <span class="game-name">${gameTitle}</span>
+                    <span class="play-count"><i class="fas fa-play"></i> ${count}</span>
+                `;
+                favoritesList.appendChild(listItem);
+            });
+        };
+
         const updateSfxButton = () => {
             if (!sfxToggleBtn) return;
             sfxToggleBtn.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
@@ -659,6 +750,9 @@
             });
         }
         
+        // --- INITIALIZATION ---
+        loadPlayCounts(); // Load play counts on page load
+
         const savedVolume = localStorage.getItem('musicVolume');
         const savedSfxEnabled = localStorage.getItem('sfxEnabled');
         if (savedVolume !== null) gameConfig.musicVolume = parseFloat(savedVolume);
@@ -666,11 +760,23 @@
 
         if (backgroundMusic) {
              backgroundMusic.volume = gameConfig.musicVolume;
-             backgroundMusic.play().catch(e => console.log("BGM autoplay prevented. User must interact with the page first."));
+             // Delay play to allow user interaction, more robust against browser policies
+             document.body.addEventListener('click', () => {
+                if(backgroundMusic.paused) {
+                    backgroundMusic.play().catch(e => console.log("BGM autoplay prevented."));
+                }
+             }, { once: true });
         }
         if(bgmVolumeSlider) bgmVolumeSlider.value = gameConfig.musicVolume;
         updateSfxButton();
     });
     </script>
+    
+    <!-- VERCEL ANALYTICS SCRIPT -->
+    <script>
+      window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };
+    </script>
+    <script src="/_vercel/insights/script.js" defer></script>
+    
 </body>
 </html>

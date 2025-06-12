@@ -138,7 +138,7 @@
         button:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
         button:disabled { background: var(--text-medium); color: var(--text-light); cursor: not-allowed; opacity: 0.7; }
 
-        .btn-primary, #start-game-btn, #action-btn { background-color: var(--blyza-sunny-yellow); }
+        .btn-primary, #start-game-btn, #action-btn, #ten-rounds-btn, #infinite-mode-btn { background-color: var(--blyza-sunny-yellow); }
         .btn-secondary, #main-menu-nav-btn { background-color: var(--blyza-purple-secondary); color: var(--text-light); }
         .btn-success, #play-again-game-btn { background-color: var(--blyza-keppel-accent); color: var(--text-light); }
         .btn-info, #visit-store-btn { background-color: #4ECDC4; }
@@ -212,8 +212,9 @@
             font-size: 1.6rem; margin-bottom: 15px;
         }
         .flag-image {
-            max-height: 180px; max-width: 90%; object-fit: contain; border-radius: 8px; margin: 10px 0;
+            height: 180px; width: 100%; object-fit: contain; border-radius: 8px; margin: 10px 0;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.5s ease-in 0.8s;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
         }
         .flag-image.visible { opacity: 1; }
 
@@ -248,6 +249,7 @@
         .icon-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black-stroke); }
         .icon-btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
         #settings-btn { top: 20px; right: 20px; }
+        #highscore-btn { top: 20px; right: 85px; background-color: var(--blyza-sunny-yellow); }
         #back-to-games-btn, #back-to-menu-btn { top: 20px; left: 20px; }
         
         .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; }
@@ -274,19 +276,20 @@
         /* --- Responsive Adjustments --- */
         @media (max-width: 768px) {
             body { padding: 10px; }
-            .game-container { padding: 45px 15px 15px; } 
+            .game-container { padding: 50px 15px 15px; } 
             h1 { font-size: 2.2rem; margin-top: 5px; }
             .mode-option { max-width: 100%; min-width: unset; }
             .final-score-display, #team-names-grid { grid-template-columns: 1fr; }
             .options-container { grid-template-columns: 1fr; }
             .icon-btn { width: 48px; height: 48px; }
             #settings-btn { top: 12px; right: 12px; }
+            #highscore-btn { top: 12px; right: 70px; }
             #back-to-games-btn, #back-to-menu-btn { top: 12px; left: 12px; }
             .feedback-popup { font-size: 2rem; padding: 20px 30px; width: 90%; }
             .modal-content { padding: 20px; }
             .game-over-buttons-container { flex-direction: column; align-items: center; }
             .game-over-buttons-container button { width: 90%; }
-            .flag-image { max-height: 150px; }
+            .flag-image { height: 150px; }
             .place-tv-screen h3 { font-size: 1.5rem; }
             .win-message { font-size: 2.2rem; }
             .bg-game-element { display: none; }
@@ -325,6 +328,9 @@
         <button id="back-to-menu-btn" class="icon-btn" aria-label="Back to Main Menu" title="Back to Main Menu" style="display: none;">
             <i class="fas fa-arrow-left"></i>
         </button>
+        <button id="highscore-btn" class="icon-btn" aria-label="Show High Score">
+            <i class="fas fa-star"></i>
+        </button>
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
             <i class="fas fa-cog"></i>
         </button>
@@ -337,22 +343,30 @@
                 <p><strong>HOW TO PLAY:</strong></p>
                 <ul>
                     <li><i class="fas fa-flag-checkered"></i> Guess the country for the flag shown from four options.</li>
-                    <li><i class="fas fa-user"></i> **Single Player:** 10 rounds. How many can you get right?</li>
+                    <li><i class="fas fa-user"></i> **Single Player:** Play classic 10 rounds or try the new Infinite Mode!</li>
                     <li><i class="fas fa-users"></i> **Multiplayer:** Two teams take turns. First to <strong>5 points</strong> wins!</li>
                 </ul>
             </div>
             <div class="game-mode-selection">
-                <div class="mode-option selected" data-mode="single"> <i class="fas fa-user"></i> <h3>Single Player</h3> <p>10 rounds</p> </div>
+                <div class="mode-option selected" data-mode="single"> <i class="fas fa-user"></i> <h3>Single Player</h3> <p>10 rounds or Infinite</p> </div>
                 <div class="mode-option" data-mode="multi"> <i class="fas fa-users"></i> <h3>Multiplayer</h3> <p>With a friend</p> </div>
             </div>
-            <div id="team-inputs-container" class="team-inputs-container" style="display: none;">
-                <h3 class="screen-title">Enter Team Names</h3>
-                <div id="team-names-grid">
-                    <div class="team-input"><input type="text" class="team-name-input" placeholder="Team 1"></div>
-                    <div class="team-input"><input type="text" class="team-name-input" placeholder="Team 2"></div>
-                </div>
+            
+            <div id="single-player-sub-options" style="margin-top: 20px;">
+                <button id="ten-rounds-btn" class="btn-primary"><i class="fas fa-list-ol"></i> 10 Rounds</button>
+                <button id="infinite-mode-btn" class="btn-primary"><i class="fas fa-infinity"></i> Infinite Mode</button>
             </div>
-            <button id="start-game-btn" class="btn-primary">Start Game <i class="fas fa-play"></i></button>
+
+            <div id="multiplayer-start-area" style="display: none;">
+                <div id="team-inputs-container" class="team-inputs-container">
+                    <h3 class="screen-title">Enter Team Names</h3>
+                    <div id="team-names-grid">
+                        <div class="team-input"><input type="text" class="team-name-input" placeholder="Team 1"></div>
+                        <div class="team-input"><input type="text" class="team-name-input" placeholder="Team 2"></div>
+                    </div>
+                </div>
+                <button id="start-game-btn" class="btn-primary">Start Multiplayer <i class="fas fa-play"></i></button>
+            </div>
         </div>
 
         <!-- Game Screen -->
@@ -410,9 +424,12 @@
         const gameState = {
             teams: [], currentTeamIndex: 0, currentFlag: null,
             remainingFlags: [], usedFlags: [], gameMode: 'single',
+            singlePlayerSubType: '10rounds', // NEW: '10rounds' or 'infinite'
             puzzlesPlayed: 0, winningScore: 5, maxRounds: 10,
             roundPhase: 'guessing', currentGuess: null
         };
+        let infiniteHighScore = 0; // NEW
+
         const flagData = [ { country: "United States", code: "us", options: ["Canada", "United States", "Mexico", "Brazil"] }, { country: "France", code: "fr", options: ["France", "Belgium", "Netherlands", "Luxembourg"] }, { country: "Japan", code: "jp", options: ["Japan", "China", "South Korea", "Vietnam"] }, { country: "Brazil", code: "br", options: ["Brazil", "Argentina", "Colombia", "Peru"] }, { country: "Australia", code: "au", options: ["Australia", "New Zealand", "Fiji", "Samoa"] }, { country: "Germany", code: "de", options: ["Germany", "Austria", "Switzerland", "Poland"] }, { country: "Italy", code: "it", options: ["Italy", "Spain", "Portugal", "Greece"] }, { country: "South Africa", code: "za", options: ["South Africa", "Nigeria", "Kenya", "Egypt"] }, { country: "India", code: "in", options: ["India", "Pakistan", "Bangladesh", "Sri Lanka"] }, { country: "Canada", code: "ca", options: ["Canada", "United States", "Mexico", "Greenland"] }, { country: "United Kingdom", code: "gb", options: ["United Kingdom", "Ireland", "France", "Iceland"] }, { country: "China", code: "cn", options: ["China", "Japan", "South Korea", "Mongolia"] },
              { country : "Afghanistan", code : "af", options : ["Uzbekistan", "Turkmenistan", "Afghanistan", "Azerbaijan"] }, { country : "Åland Islands", code : "ax", options : ["Finland", "Åland Islands", "Denmark", "Iceland"] }, { country : "Albania", code : "al", options : ["Albania", "Montenegro", "Kosovo", "Serbia"] }, { country : "Algeria", code : "dz", options : ["Pakistan", "Algeria", "Algiers", "Azerbaijan"] }, { country : "American Samoa", code : "as", options : ["Guam", "Nepal", "Ethiopia", "American Samoa"] }, { country : "Andorra", code : "ad", options : ["Moldova", "Andorra", "Chad", "Romania"] }, { country : "Angola", code : "ao", options : ["Andorra", "Mozambique", "Angola", "Afghanistan"] }, { country : "Anguilla", code : "ai", options : ["British Virgin Islands", "Queensland", "Anguilla", "Victoria"] }, { country : "Antarctica", code : "aq", options : ["Cyprus", "Antarctica", "Australia", "United Islands"] }, { country : "Antigua and Barbuda", code : "ag", options : ["Antigua and Barbuda", "Bahamas", "Barbados", "Rocky Islands"] },
              { country : "Argentina", code : "ar", options : ["El Salvador", "Guatemala", "Florentina", "Argentina"] }, { country : "Armenia", code : "am", options : ["Columbia", "Armenia", "Hungary", "Romania"] }, { country : "Aruba", code : "aw", options : ["Aruba", "Fiji", "Cyprus", "Bahamas"] }, { country : "Austria", code : "at", options : ["Austria", "Latvia", "Peru", "Monaco"] }, { country : "Azerbaijan", code : "az", options : ["Baku", "Tajikistan", "Azerbaijan", "Turkmenistan"] }, { country : "Bahamas", code : "bs", options : ["Barbados", "Bahamas", "Saint Lucia", "Dominica"] }, { country : "Bhutan", code : "bt", options : ["Bhutan", "Myanmar", "Sri Lanka", "Mongolia"] }, { country : "Bahrain", code : "bh", options : ["Bahrain", "Qatar", "Kuwait", "Yemen"] }, { country : "Bangladesh", code : "bd", options : ["Sri Lanka", "Bangladesh", "Japan", "Dhaka"] }, { country : "Barbados", code : "bb", options : ["Barbados", "Bahamas", "Andorra", "Dominican Republic"] },
@@ -435,53 +452,62 @@
         ];
 
         // DOM Elements
-        const screensEl = { start: document.getElementById('start-screen'), game: document.getElementById('game-screen'), gameOver: document.getElementById('game-over-screen') };
-        const modeOptionsNodeListEl = document.querySelectorAll('.mode-option');
-        const teamInputsContainerEl = document.getElementById('team-inputs-container');
-        const teamNamesGridEl = document.getElementById('team-names-grid');
-        const startGameBtnEl = document.getElementById('start-game-btn');
-        const gameInfoBarEl = document.getElementById('game-info-bar');
-        const flagImageDisplayEl = document.getElementById('flag-image-display');
-        const leftCurtainEl = document.querySelector('.place-display-stage .stage-curtains.left');
-        const rightCurtainEl = document.querySelector('.place-display-stage .stage-curtains.right');
-        const optionsContainerEl = document.getElementById('options-container');
-        const actionBtnEl = document.getElementById('action-btn');
-        const gameOverTitleEl = document.getElementById('game-over-title');
-        const winMessageFinalTextEl = document.getElementById('win-message-final-text');
-        const winnerTrophyIconEl = document.getElementById('winner-trophy-icon');
-        const winnerSubtextEl = document.getElementById('winner-subtext');
-        const finalScoresDisplayEl = document.getElementById('final-scores-display-div');
-        const playAgainGameBtnEl = document.getElementById('play-again-game-btn');
-        const mainMenuNavBtnEl = document.getElementById('main-menu-nav-btn');
-        const visitStoreBtnEl = document.getElementById('visit-store-btn');
-        const settingsBtnEl = document.getElementById('settings-btn');
-        const settingsModalEl = document.getElementById('settings-modal');
-        const closeModalBtnEl = document.getElementById('close-modal-btn');
-        const bgmVolumeSliderEl = document.getElementById('bgm-volume-slider');
-        const sfxToggleBtnEl = document.getElementById('sfx-toggle-btn');
-        const feedbackPopupEl = document.getElementById('feedback-popup');
-        const feedbackMessageTextPopupEl = document.getElementById('feedback-message-text-el');
-        const backgroundMusicAudioEl = document.getElementById('background-game-music');
-        const startGameSoundAudioEl = document.getElementById('start-game-sound');
-        const interactionSoundAudioEl = document.getElementById('interaction-sound');
-        const correctAnswerSoundAudioEl = document.getElementById('correct-answer-sound');
-        const wrongAnswerSoundAudioEl = document.getElementById('wrong-answer-sound');
-        const winGameSoundAudioEl = document.getElementById('win-game-sound');
-        const curtainSoundAudioEl = document.getElementById('curtain-sound');
-        const backToGamesBtn = document.getElementById('back-to-games-btn');
-        const backToMenuBtn = document.getElementById('back-to-menu-btn');
+        const el = {
+            screens: { start: document.getElementById('start-screen'), game: document.getElementById('game-screen'), gameOver: document.getElementById('game-over-screen') },
+            modeOptions: document.querySelectorAll('.mode-option'),
+            singlePlayerSubOptions: document.getElementById('single-player-sub-options'),
+            multiplayerStartArea: document.getElementById('multiplayer-start-area'),
+            teamInputsContainer: document.getElementById('team-inputs-container'),
+            teamNamesGrid: document.getElementById('team-names-grid'),
+            startGameBtn: document.getElementById('start-game-btn'),
+            tenRoundsBtn: document.getElementById('ten-rounds-btn'),
+            infiniteModeBtn: document.getElementById('infinite-mode-btn'),
+            gameInfoBar: document.getElementById('game-info-bar'),
+            flagImageDisplay: document.getElementById('flag-image-display'),
+            leftCurtain: document.querySelector('.place-display-stage .stage-curtains.left'),
+            rightCurtain: document.querySelector('.place-display-stage .stage-curtains.right'),
+            optionsContainer: document.getElementById('options-container'),
+            actionBtn: document.getElementById('action-btn'),
+            gameOverTitle: document.getElementById('game-over-title'),
+            winMessageFinalText: document.getElementById('win-message-final-text'),
+            winnerTrophyIcon: document.getElementById('winner-trophy-icon'),
+            winnerSubtext: document.getElementById('winner-subtext'),
+            finalScoresDisplay: document.getElementById('final-scores-display-div'),
+            playAgainGameBtn: document.getElementById('play-again-game-btn'),
+            mainMenuNavBtn: document.getElementById('main-menu-nav-btn'),
+            visitStoreBtn: document.getElementById('visit-store-btn'),
+            settingsBtn: document.getElementById('settings-btn'),
+            highscoreBtn: document.getElementById('highscore-btn'),
+            settingsModal: document.getElementById('settings-modal'),
+            closeModalBtn: document.getElementById('close-modal-btn'),
+            bgmVolumeSlider: document.getElementById('bgm-volume-slider'),
+            sfxToggleBtn: document.getElementById('sfx-toggle-btn'),
+            feedbackPopup: document.getElementById('feedback-popup'),
+            feedbackMessageText: document.getElementById('feedback-message-text-el'),
+            audio: {
+                bgm: document.getElementById('background-game-music'),
+                start: document.getElementById('start-game-sound'),
+                interaction: document.getElementById('interaction-sound'),
+                correct: document.getElementById('correct-answer-sound'),
+                wrong: document.getElementById('wrong-answer-sound'),
+                win: document.getElementById('win-game-sound'),
+                curtain: document.getElementById('curtain-sound'),
+            },
+            backToGamesBtn: document.getElementById('back-to-games-btn'),
+            backToMenuBtn: document.getElementById('back-to-menu-btn'),
+        };
 
         const playSound = (audio) => gameConfig.sfxEnabled && audio && (audio.currentTime = 0, audio.play().catch(e => {}));
-        const initBackgroundMusic = () => { if(backgroundMusicAudioEl.paused) {backgroundMusicAudioEl.volume = gameConfig.musicVolume; backgroundMusicAudioEl.play().catch(e => {});} };
+        const initBackgroundMusic = () => { if(el.audio.bgm.paused) {el.audio.bgm.volume = gameConfig.musicVolume; el.audio.bgm.play().catch(e => {});} };
         
         let feedbackTimeoutHandle;
-        const showFeedbackPopupMessage = (message, type = '', duration = 1500) => {
-            feedbackMessageTextPopupEl.textContent = message;
-            feedbackPopupEl.className = 'feedback-popup';
-            if (type) feedbackPopupEl.classList.add(type);
-            feedbackPopupEl.classList.add('show');
+        const showFeedback = (message, type = '', duration = 1500) => {
+            el.feedbackMessageText.textContent = message;
+            el.feedbackPopup.className = 'feedback-popup';
+            if (type) el.feedbackPopup.classList.add(type);
+            el.feedbackPopup.classList.add('show');
             clearTimeout(feedbackTimeoutHandle);
-            feedbackTimeoutHandle = setTimeout(() => feedbackPopupEl.classList.remove('show'), duration - 100);
+            feedbackTimeoutHandle = setTimeout(() => el.feedbackPopup.classList.remove('show'), duration - 100);
         };
         const triggerConfetti = () => {
             const colors = ['var(--blyza-orange-primary)', 'var(--blyza-purple-secondary)', 'var(--blyza-keppel-accent)', 'var(--blyza-sunny-yellow)'];
@@ -498,56 +524,66 @@
         };
         const shuffleArray = (arr) => arr.sort(() => Math.random() - 0.5);
 
+        const loadHighScore = () => { const score = localStorage.getItem('gtf_infinite_highscore'); infiniteHighScore = score ? parseInt(score, 10) : 0; };
+        const saveHighScore = (score) => { if (score > infiniteHighScore) { infiniteHighScore = score; localStorage.setItem('gtf_infinite_highscore', score); return true; } return false; };
+        const showHighScore = () => { playSound(el.audio.interaction); showFeedback(`Infinite High Score: ${infiniteHighScore}`, 'win-feedback', 3000); };
+        
         const switchScreen = (screenId) => {
-            Object.values(screensEl).forEach(s => s.classList.remove('active'));
-            screensEl[screenId].classList.add('active');
-            backToGamesBtn.style.display = (screenId === 'start') ? 'flex' : 'none';
-            backToMenuBtn.style.display = (screenId === 'game') ? 'flex' : 'none';
+            Object.values(el.screens).forEach(s => s.classList.remove('active'));
+            el.screens[screenId].classList.add('active');
+            el.backToGamesBtn.style.display = (screenId === 'start') ? 'flex' : 'none';
+            el.backToMenuBtn.style.display = (screenId === 'game') ? 'flex' : 'none';
         };
 
         const selectGameMode = (e) => {
-            modeOptionsNodeListEl.forEach(option => option.classList.remove('selected'));
+            el.modeOptions.forEach(option => option.classList.remove('selected'));
             e.currentTarget.classList.add('selected');
             gameState.gameMode = e.currentTarget.dataset.mode;
-            teamInputsContainerEl.style.display = gameState.gameMode === 'multi' ? 'block' : 'none';
+            const isMulti = gameState.gameMode === 'multi';
+            el.multiplayerStartArea.style.display = isMulti ? 'block' : 'none';
+            el.singlePlayerSubOptions.style.display = isMulti ? 'none' : 'block';
         };
 
+        const startMultiplayerGame = () => {
+            const team1Name = el.teamNamesGrid.querySelectorAll('.team-name-input')[0].value.trim() || "Team 1";
+            const team2Name = el.teamNamesGrid.querySelectorAll('.team-name-input')[1].value.trim() || "Team 2";
+            if (team1Name === team2Name) { alert("Team names must be different!"); return; }
+            gameState.teams = [{ name: team1Name, score: 0 }, { name: team2Name, score: 0 }];
+            startGame();
+        };
+
+        const startSinglePlayerGame = (subType) => {
+            gameState.singlePlayerSubType = subType;
+            gameState.teams = [{ name: "You", score: 0 }];
+            startGame();
+        };
+        
         const startGame = () => {
-            if (gameState.gameMode === 'single') {
-                gameState.teams = [{ name: "You", score: 0 }];
-            } else {
-                const team1Name = teamNamesGridEl.querySelectorAll('.team-name-input')[0].value.trim() || "Team 1";
-                const team2Name = teamNamesGridEl.querySelectorAll('.team-name-input')[1].value.trim() || "Team 2";
-                if (team1Name === team2Name) { alert("Team names must be different!"); return; }
-                gameState.teams = [{ name: team1Name, score: 0 }, { name: team2Name, score: 0 }];
-            }
             Object.assign(gameState, { currentTeamIndex: 0, puzzlesPlayed: 0, remainingFlags: [...flagData], usedFlags: [] });
             gameState.teams.forEach(t => t.score = 0);
             shuffleArray(gameState.remainingFlags);
             initBackgroundMusic();
-            playSound(startGameSoundAudioEl);
+            playSound(el.audio.start);
             switchScreen('game');
             setupRound();
         };
 
         const setupRound = () => {
             Object.assign(gameState, { roundPhase: 'guessing', currentGuess: null });
-            leftCurtainEl.classList.remove('open');
-            rightCurtainEl.classList.remove('open');
-            flagImageDisplayEl.classList.remove('visible');
-            flagImageDisplayEl.src = "";
+            el.leftCurtain.classList.remove('open');
+            el.rightCurtain.classList.remove('open');
+            el.flagImageDisplay.classList.remove('visible');
+            el.flagImageDisplay.src = "";
             if (gameState.remainingFlags.length === 0) {
-                if (gameState.usedFlags.length > 0) {
-                    gameState.remainingFlags = [...gameState.usedFlags];
-                    gameState.usedFlags = [];
-                    shuffleArray(gameState.remainingFlags);
-                } else { showGameOver(); return; }
+                gameState.remainingFlags = [...gameState.usedFlags];
+                gameState.usedFlags = [];
+                shuffleArray(gameState.remainingFlags);
             }
             gameState.currentFlag = gameState.remainingFlags.pop();
             gameState.usedFlags.push(gameState.currentFlag);
-            flagImageDisplayEl.src = `https://flagcdn.com/w320/${gameState.currentFlag.code.toLowerCase()}.png`;
-            optionsContainerEl.innerHTML = '';
-            actionBtnEl.style.display = 'none';
+            el.flagImageDisplay.src = `https://flagcdn.com/w320/${gameState.currentFlag.code.toLowerCase()}.png`;
+            el.optionsContainer.innerHTML = '';
+            el.actionBtn.style.display = 'none';
             const options = [...gameState.currentFlag.options];
             shuffleArray(options);
             options.forEach((optionText, i) => {
@@ -557,66 +593,95 @@
                 optionBtn.dataset.option = optionText;
                 optionBtn.style.animationDelay = `${i * 100 + 500}ms`;
                 optionBtn.addEventListener('click', handleOptionSelect);
-                optionsContainerEl.appendChild(optionBtn);
+                el.optionsContainer.appendChild(optionBtn);
             });
             updateGameInfoUI();
             setTimeout(() => {
-                playSound(curtainSoundAudioEl);
-                leftCurtainEl.classList.add('open');
-                rightCurtainEl.classList.add('open');
-                flagImageDisplayEl.classList.add('visible');
+                playSound(el.audio.curtain);
+                el.leftCurtain.classList.add('open');
+                el.rightCurtain.classList.add('open');
+                el.flagImageDisplay.classList.add('visible');
             }, 300);
         };
 
         const handleOptionSelect = (e) => {
-            playSound(interactionSoundAudioEl);
+            playSound(el.audio.interaction);
             gameState.currentGuess = e.currentTarget.dataset.option;
             document.querySelectorAll('#options-container .option-btn').forEach(btn => {
                 btn.disabled = true;
-                btn.style.opacity = (btn === e.currentTarget) ? 1 : 0.6;
+                btn.style.opacity = (btn.dataset.option === gameState.currentGuess) ? 1 : 0.6;
             });
-            actionBtnEl.innerHTML = 'Reveal Answer <i class="fas fa-eye"></i>';
-            actionBtnEl.style.display = 'inline-flex';
-            actionBtnEl.disabled = false;
+            el.actionBtn.innerHTML = 'Reveal Answer <i class="fas fa-eye"></i>';
+            el.actionBtn.style.display = 'inline-flex';
+            el.actionBtn.disabled = false;
         };
 
         const revealAnswer = () => {
             gameState.roundPhase = 'revealed';
-            actionBtnEl.disabled = true;
+            el.actionBtn.disabled = true;
             const isCorrect = gameState.currentGuess === gameState.currentFlag.country;
+            
             if (isCorrect) {
-                playSound(correctAnswerSoundAudioEl);
+                playSound(el.audio.correct);
                 gameState.teams[gameState.currentTeamIndex].score++;
-                showFeedbackPopupMessage('Correct!', 'correct-feedback', 2000);
+                showFeedback('Correct!', 'correct-feedback', 2000);
+                if (gameState.singlePlayerSubType === 'infinite') {
+                    saveHighScore(gameState.teams[0].score);
+                }
             } else {
-                playSound(wrongAnswerSoundAudioEl);
-                showFeedbackPopupMessage('Incorrect!', 'incorrect-feedback', 2000);
+                playSound(el.audio.wrong);
+                showFeedback('Incorrect!', 'incorrect-feedback', 2000);
             }
+
             if (gameState.gameMode === 'single') gameState.puzzlesPlayed++;
+            
             document.querySelectorAll('#options-container .option-btn').forEach(btn => {
                 if (btn.dataset.option === gameState.currentFlag.country) btn.classList.add('correct');
                 else if (btn.dataset.option === gameState.currentGuess) btn.classList.add('incorrect');
             });
+            
             updateGameInfoUI();
+            
             setTimeout(() => {
+                let isGameOver = false;
                 const maxScore = Math.max(...gameState.teams.map(t => t.score));
-                if ((gameState.gameMode === 'single' && gameState.puzzlesPlayed >= gameState.maxRounds) ||
-                    (gameState.gameMode === 'multi' && maxScore >= gameState.winningScore)) {
-                    actionBtnEl.innerHTML = 'See Final Results <i class="fas fa-trophy"></i>';
-                } else {
-                    actionBtnEl.innerHTML = 'Next Flag <i class="fas fa-arrow-right"></i>';
+
+                if (gameState.singlePlayerSubType === '10rounds' && gameState.puzzlesPlayed >= gameState.maxRounds) {
+                    isGameOver = true;
+                } else if (gameState.singlePlayerSubType === 'infinite' && !isCorrect) {
+                    isGameOver = true;
+                } else if (gameState.gameMode === 'multi' && maxScore >= gameState.winningScore) {
+                    isGameOver = true;
                 }
-                actionBtnEl.disabled = false;
+
+                if (isGameOver) {
+                    el.actionBtn.innerHTML = 'See Final Results <i class="fas fa-trophy"></i>';
+                } else {
+                    el.actionBtn.innerHTML = 'Next Flag <i class="fas fa-arrow-right"></i>';
+                }
+                el.actionBtn.disabled = false;
             }, 1800);
         };
 
         const nextRound = () => {
+            const isCorrect = gameState.currentGuess === gameState.currentFlag.country;
             const maxScore = Math.max(...gameState.teams.map(t => t.score));
-            if ((gameState.gameMode === 'single' && gameState.puzzlesPlayed >= gameState.maxRounds) ||
-                (gameState.gameMode === 'multi' && maxScore >= gameState.winningScore)) {
+            let isGameOver = false;
+
+            if (gameState.singlePlayerSubType === '10rounds' && gameState.puzzlesPlayed >= gameState.maxRounds) {
+                isGameOver = true;
+            } else if (gameState.singlePlayerSubType === 'infinite' && !isCorrect) {
+                isGameOver = true;
+            } else if (gameState.gameMode === 'multi' && maxScore >= gameState.winningScore) {
+                isGameOver = true;
+            }
+
+            if (isGameOver) {
                 showGameOver();
             } else {
-                if (gameState.gameMode === 'multi') gameState.currentTeamIndex = (gameState.currentTeamIndex + 1) % gameState.teams.length;
+                if (gameState.gameMode === 'multi') {
+                    gameState.currentTeamIndex = (gameState.currentTeamIndex + 1) % gameState.teams.length;
+                }
                 setupRound();
             }
         };
@@ -624,10 +689,14 @@
         const processAction = () => gameState.roundPhase === 'guessing' ? revealAnswer() : nextRound();
 
         const updateGameInfoUI = () => {
-            gameInfoBarEl.innerHTML = '';
+            el.gameInfoBar.innerHTML = '';
             if (gameState.gameMode === 'single') {
-                gameInfoBarEl.innerHTML = `<div>Round: ${gameState.puzzlesPlayed + 1}/${gameState.maxRounds}</div><div>Score: ${gameState.teams[0].score}</div>`;
-            } else {
+                if (gameState.singlePlayerSubType === '10rounds') {
+                    el.gameInfoBar.innerHTML = `<div>Round: ${gameState.puzzlesPlayed + 1}/${gameState.maxRounds}</div><div>Score: ${gameState.teams[0].score}</div>`;
+                } else { // Infinite mode
+                    el.gameInfoBar.innerHTML = `<div>Score: ${gameState.teams[0].score}</div><div>High Score: ${infiniteHighScore}</div>`;
+                }
+            } else { // Multiplayer
                 const turnBox = document.createElement('div');
                 turnBox.className = 'score-box';
                 turnBox.textContent = `${gameState.teams[gameState.currentTeamIndex].name}'s Turn`;
@@ -640,72 +709,94 @@
                     scoreBox.textContent = `${team.name}: ${team.score}`;
                     scoresContainer.appendChild(scoreBox);
                 });
-                gameInfoBarEl.append(turnBox, scoresContainer);
+                el.gameInfoBar.append(turnBox, scoresContainer);
             }
         };
 
         const showGameOver = () => {
-            playSound(winGameSoundAudioEl);
+            playSound(el.audio.win);
             switchScreen('gameOver');
-            const maxScore = Math.max(...gameState.teams.map(t => t.score));
-            if (gameState.gameMode === 'single') {
-                winMessageFinalTextEl.textContent = 'Game Over!';
-                winnerSubtextEl.textContent = `You scored ${maxScore} out of ${gameState.maxRounds}!`;
-                winnerTrophyIconEl.textContent = maxScore === 10 ? '🌟' : (maxScore >= 7 ? '🏆' : '👍');
-            } else {
-                const winners = gameState.teams.filter(t => t.score === maxScore && t.score >= gameState.winningScore);
-                winMessageFinalTextEl.textContent = winners.length > 1 ? "It's a Tie!" : winners.length === 1 ? `${winners[0].name} Wins!` : "Game Over!";
-                winnerSubtextEl.textContent = winners.length ? `Congratulations on reaching ${maxScore} points!` : `Nobody reached the winning score of ${gameState.winningScore}.`;
-                winnerTrophyIconEl.textContent = '🏆';
-            }
-            if (maxScore > 0 && (gameState.gameMode === 'multi' ? maxScore >= gameState.winningScore : maxScore >= 7)) triggerConfetti();
+            const maxScore = gameState.teams[0].score;
             
-            finalScoresDisplayEl.innerHTML = '';
+            if (gameState.gameMode === 'single') {
+                if (gameState.singlePlayerSubType === '10rounds') {
+                    el.winMessageFinalText.textContent = 'Round Complete!';
+                    el.winnerSubtext.textContent = `You scored ${maxScore} out of ${gameState.maxRounds}!`;
+                    el.winnerTrophyIcon.textContent = maxScore === 10 ? '🌟' : (maxScore >= 7 ? '🏆' : '👍');
+                } else { // Infinite mode
+                    const isNewHighScore = saveHighScore(maxScore);
+                    el.winMessageFinalText.textContent = 'Game Over!';
+                    el.winnerSubtext.innerHTML = `Your Score: ${maxScore}. ${isNewHighScore ? '<strong>New High Score!</strong>' : `High Score: ${infiniteHighScore}`}`;
+                    el.winnerTrophyIcon.textContent = isNewHighScore ? '🌟' : '👍';
+                }
+            } else { // Multiplayer
+                const multiMaxScore = Math.max(...gameState.teams.map(t => t.score));
+                const winners = gameState.teams.filter(t => t.score === multiMaxScore && t.score >= gameState.winningScore);
+                el.winMessageFinalText.textContent = winners.length > 1 ? "It's a Tie!" : winners.length === 1 ? `${winners[0].name} Wins!` : "Game Over!";
+                el.winnerSubtext.textContent = winners.length ? `Congratulations on reaching ${multiMaxScore} points!` : `Nobody reached the winning score of ${gameState.winningScore}.`;
+                el.winnerTrophyIcon.textContent = '🏆';
+                if (winners.length > 0) triggerConfetti();
+            }
+
+            if (gameState.gameMode === 'single' && maxScore > 0 && (gameState.singlePlayerSubType === 'infinite' || maxScore >= 7)) {
+                triggerConfetti();
+            }
+            
+            el.finalScoresDisplay.innerHTML = '';
             gameState.teams.forEach(team => {
                 const scoreCard = document.createElement('div');
                 scoreCard.className = 'score-card';
-                if (gameState.gameMode === 'multi' && team.score === maxScore && maxScore >= gameState.winningScore) scoreCard.classList.add('winner-glow');
+                const isWinner = gameState.gameMode === 'multi' && team.score === Math.max(...gameState.teams.map(t => t.score)) && team.score >= gameState.winningScore;
+                if (isWinner) scoreCard.classList.add('winner-glow');
                 scoreCard.innerHTML = `<div class="team-name-score">${team.name}</div><div class="score-value-display">${team.score}</div>`;
-                finalScoresDisplayEl.appendChild(scoreCard);
+                el.finalScoresDisplay.appendChild(scoreCard);
             });
         };
 
         const goToMainMenu = () => {
-            teamNamesGridEl.innerHTML = `<div class="team-input"><input type="text" class="team-name-input" placeholder="Team 1"></div><div class="team-input"><input type="text" class="team-name-input" placeholder="Team 2"></div>`;
-            modeOptionsNodeListEl.forEach(opt => opt.classList.remove('selected'));
-            modeOptionsNodeListEl[0].classList.add('selected');
-            teamInputsContainerEl.style.display = 'none';
+            el.teamNamesGrid.innerHTML = `<div class="team-input"><input type="text" class="team-name-input" placeholder="Team 1"></div><div class="team-input"><input type="text" class="team-name-input" placeholder="Team 2"></div>`;
+            el.modeOptions.forEach(opt => opt.classList.remove('selected'));
+            el.modeOptions[0].classList.add('selected');
+            el.multiplayerStartArea.style.display = 'none';
+            el.singlePlayerSubOptions.style.display = 'block';
             gameState.gameMode = 'single';
             switchScreen('start');
         };
         
         const playAgain = () => {
-            playSound(startGameSoundAudioEl);
-            goToMainMenu();
+            playSound(el.audio.start);
+            // This will restart the game with the same settings as before
+            startGame();
         };
 
-        settingsBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'flex'; });
-        closeModalBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); settingsModalEl.style.display = 'none'; });
-        bgmVolumeSliderEl.addEventListener('input', (e) => { gameConfig.musicVolume = e.target.value; backgroundMusicAudioEl.volume = gameConfig.musicVolume; localStorage.setItem('musicVolume', gameConfig.musicVolume); });
-        sfxToggleBtnEl.addEventListener('click', () => { gameConfig.sfxEnabled = !gameConfig.sfxEnabled; sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; playSound(interactionSoundAudioEl); localStorage.setItem('sfxEnabled', gameConfig.sfxEnabled); });
-        modeOptionsNodeListEl.forEach(option => option.addEventListener('click', (e) => { playSound(interactionSoundAudioEl); selectGameMode.call(e.currentTarget); }));
-        startGameBtnEl.addEventListener('click', startGame);
-        actionBtnEl.addEventListener('click', processAction);
-        playAgainGameBtnEl.addEventListener('click', playAgain);
-        mainMenuNavBtnEl.addEventListener('click', goToMainMenu);
-        visitStoreBtnEl.addEventListener('click', () => { playSound(interactionSoundAudioEl); window.location.href = '/store'; });
-        backToMenuBtn.addEventListener('click', goToMainMenu);
+        el.settingsBtn.addEventListener('click', () => { playSound(el.audio.interaction); el.settingsModal.style.display = 'flex'; });
+        el.closeModalBtn.addEventListener('click', () => { playSound(el.audio.interaction); el.settingsModal.style.display = 'none'; });
+        el.bgmVolumeSlider.addEventListener('input', (e) => { gameConfig.musicVolume = e.target.value; el.audio.bgm.volume = gameConfig.musicVolume; localStorage.setItem('musicVolume', gameConfig.musicVolume); });
+        el.sfxToggleBtn.addEventListener('click', () => { gameConfig.sfxEnabled = !gameConfig.sfxEnabled; el.sfxToggleBtn.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; playSound(el.audio.interaction); localStorage.setItem('sfxEnabled', String(gameConfig.sfxEnabled)); });
+        el.modeOptions.forEach(option => option.addEventListener('click', (e) => { playSound(el.audio.interaction); selectGameMode(e); }));
+        
+        el.tenRoundsBtn.addEventListener('click', () => startSinglePlayerGame('10rounds'));
+        el.infiniteModeBtn.addEventListener('click', () => startSinglePlayerGame('infinite'));
+        el.startGameBtn.addEventListener('click', startMultiplayerGame);
+
+        el.actionBtn.addEventListener('click', processAction);
+        el.playAgainGameBtn.addEventListener('click', playAgain);
+        el.mainMenuNavBtn.addEventListener('click', goToMainMenu);
+        el.visitStoreBtn.addEventListener('click', () => { playSound(el.audio.interaction); window.location.href = '/store'; });
+        el.backToMenuBtn.addEventListener('click', goToMainMenu);
+        el.highscoreBtn.addEventListener('click', showHighScore);
         
         document.addEventListener('DOMContentLoaded', () => {
+            loadHighScore();
             const savedVol = localStorage.getItem('musicVolume');
             const savedSfx = localStorage.getItem('sfxEnabled');
             if(savedVol) gameConfig.musicVolume = savedVol;
             if(savedSfx) gameConfig.sfxEnabled = savedSfx === 'true';
             
-            sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
-            bgmVolumeSliderEl.value = gameConfig.musicVolume;
-            backgroundMusicAudioEl.volume = gameConfig.musicVolume;
-            initBackgroundMusic();
+            el.sfxToggleBtn.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
+            el.bgmVolumeSlider.value = gameConfig.musicVolume;
+            el.audio.bgm.volume = gameConfig.musicVolume;
+            document.body.addEventListener('click', initBackgroundMusic, { once: true });
             switchScreen('start');
         });
     </script>
