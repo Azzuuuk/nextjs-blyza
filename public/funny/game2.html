@@ -102,8 +102,9 @@
         .instructions p { font-size: 1.1rem; margin-bottom: 15px; font-weight: 600; font-family: var(--font-heading-alt); }
         .instructions ul { list-style-type: none; text-align: left; padding: 0 10px; }
         .instructions li { margin-bottom: 10px; display: flex; align-items: center; }
-        .instructions li a { color: var(--blyza-purple-secondary); font-weight: 600; text-decoration: none; }
         .instructions i { margin-right: 15px; font-size: 1.3em; color: var(--blyza-orange-primary); width: 20px; text-align: center; }
+         .instructions a { color: var(--blyza-purple-secondary); text-decoration: none; font-weight: bold; display: inline-flex; align-items: left; gap: 5px; transition: color 0.3s ease; }
+         .instructions a:hover { color: var(--blyza-orange-primary); text-decoration: underline; }
 
         /* --- Player Inputs --- */
         .player-input-wrapper { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
@@ -306,10 +307,13 @@
             <div class="instructions">
                 <p>HOW TO PLAY</p>
                 <ul>
-                    <li><i class="fas fa-user-secret"></i> One player is randomly chosen as the Imposter.</li>
-                    <li><i class="fas fa-question-circle"></i> Everyone gets the same question, except the Imposter who gets a similar one.</li>
-                    <li><i class="fas fa-comments"></i> Discuss answers and try to spot the person who doesn't fit in.</li>
+                    <li><i class="fas fa-user-secret"></i> One player is randomly chosen as the Imposter</li>
+                    <li><i class="fas fa-question-circle"></i> Everyone gets the same question, except the Imposter, who gets a similar one</li>
+                    <li><i class="fas fa-comments"></i> Discuss answers and try to spot the person who doesn't fit in!</li>
                     <li><i class="fas fa-vote-yea"></i> Vote for who you think is the Imposter to win!</li>
+                    <a href="https://youtu.be/vqHTffHMxbQ" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-youtube"></i> Watch a video on how to play!
+                        </a>
                 </ul>
             </div>
 

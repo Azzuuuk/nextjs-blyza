@@ -113,10 +113,12 @@
             padding: 20px; border-radius: 10px; margin: 25px 0;
             border: 2px dashed var(--text-medium);
         }
-        .instructions p { font-size: 1.1rem; margin-bottom: 10px; font-weight: 500; }
-        .instructions p:first-of-type strong { font-family: var(--font-heading-alt); font-size: 1.2rem; display: block; margin-bottom: 5px; color: var(--text-dark);}
-        .instructions strong { color: var(--blyza-orange-primary); font-weight: 700;}
-        .instructions a { color: var(--blyza-purple-secondary); font-weight: 700; text-decoration: underline; }
+       .instructions p { font-size: 1.1rem; margin-bottom: 15px; font-weight: 600; }
+        .instructions ul { list-style-type: none; text-align: left; padding: 0 10px; }
+        .instructions li { margin-bottom: 10px; display: flex; align-items: center; }
+        .instructions i { margin-right: 15px; font-size: 1.3em; color: var(--blyza-purple-secondary); }
+         .instructions a { color: var(--blyza-purple-secondary); text-decoration: none; font-weight: bold; display: inline-flex; align-items: left; gap: 5px; transition: color 0.3s ease; }
+         .instructions a:hover { color: var(--blyza-orange-primary); text-decoration: underline; }
 
         /* --- Buttons --- */
         button, .btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-info {
@@ -332,12 +334,19 @@
             <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
             <h1>Word Wars</h1>
             <div class="instructions">
-                <p><strong>HOW TO PLAY:</strong></p>
-                <p>A secret word is shown ONLY to the captains of each team. Captains take turns giving one-word clues to their teammates. The goal is for your team to guess the secret word using the FEWEST clues possible.</p>
-                <p>After a team correctly guesses the word, the round ends. The team that used fewer clues (or if the other team couldn't guess) wins the point. Captains rotate each round. First to 5 points wins!</p>
-                <a href="https://www.youtube.com/watch?v=Tc1YY5FapAs" target="_blank" rel="noopener noreferrer">
-                    <i class="fab fa-youtube"></i> Watch a video tutorial on rules
-                </a>
+               <p><strong>HOW TO PLAY:</strong></p>
+                <ul>
+                    <li><i class="fas fa-user-group"></i> Two team captains face the screen alone, where a secret word is displayed to only them</li>
+                    <li><i class="fas fa-hourglass-half"></i> The captains engage in a bidding war, each claiming they can make their team guess the word using fewer descriptive words (e.g., "I can do it in 10 words," "I can do it in 8")</li>
+                    <li><i class="fas fa-circle-exclamation"></i> This continues until one captain believes the other cannot succeed with their low bid, at which point they challenge them to make their team guess the word</li>
+                    <li><i class="fas fa-magnifying-glass"></i> The challenged captain then uses exactly their declared number of descriptive words (that are different words and contain no part of the secret word)</li>
+                    <li><i class="fas fa-trophy"></i> If the team guesses correctly, the challenging captain's team earns a point. If they fail, the opposing captain's team gets the point!</li>
+                     <li>
+                        <a href="https://youtu.be/x5LgEbbLDPQ" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-youtube"></i> Watch a video on how to play!
+                        </a>
+                    </li>
+                </ul>
             </div>
             <button onclick="showTeamSetup()" class="btn-primary">
                 <i class="fas fa-users"></i> Setup Teams

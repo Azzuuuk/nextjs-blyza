@@ -98,7 +98,10 @@
             background: rgba(0,0,0, 0.04); padding: 20px;
             border-radius: 10px; margin: 25px 0; border: 2px dashed var(--text-medium);
         }
-        .instructions p { font-size: 1rem; margin-bottom: 10px; text-align: left; }
+       .instructions p { font-size: 1.1rem; margin-bottom: 15px; font-weight: 600; font-family: var(--font-heading-alt); }
+        .instructions ul { list-style-type: none; text-align: left; padding: 0 10px; }
+        .instructions li { margin-bottom: 10px; display: flex; align-items: center; }
+        .instructions i { margin-right: 15px; font-size: 1.3em; color: var(--blyza-purple-secondary); width: 20px; text-align: center; }
         .instructions strong { font-family: var(--font-heading-alt); color: var(--blyza-purple-secondary); }
         .team-inputs {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -280,8 +283,13 @@
             <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
             <h1>Point Pursuit</h1>
             <div class="instructions">
-                <p><strong>Welcome to Point Pursuit!</strong> Test your knowledge in this trivia challenge.</p>
-                <p>Select a category and point value. Answer correctly to earn points. Wrong answers deduct half the points! Choose your teams and let the battle of wits begin!</p>
+                <p>HOW TO PLAY</p>
+                <ul>
+                    <li><i class="fas fa-list"></i> Choose from 5 categories, each with 5 difficulty levels</li>
+                    <li><i class="fas fa-brain"></i> Correct answers earn points; harder questions give more!</li>
+                    <li><i class="fas fa-circle-xmark"></i> Wrong answers deduct half the question's value from your total!</li>
+                    <li><i class="fas fa-users"></i> Team with the most points wins!</li>
+                </ul>
             </div>
             <button id="setup-teams-btn" class="btn-primary"><i class="fas fa-users"></i> Setup Teams</button>
         </div>

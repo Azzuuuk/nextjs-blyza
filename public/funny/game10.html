@@ -113,10 +113,12 @@
             padding: 20px; border-radius: 10px; margin: 25px 0;
             border: 2px dashed var(--text-medium);
         }
-        .instructions p { font-size: 1.1rem; margin-bottom: 10px; font-weight: 500; }
-        .instructions p:first-of-type strong { font-family: var(--font-heading-alt); font-size: 1.2rem; display: block; margin-bottom: 5px; color: var(--text-dark);}
-        .instructions strong { color: var(--blyza-orange-primary); font-weight: 700;}
-        .instructions a { color: var(--blyza-purple-secondary); font-weight: 700; text-decoration: underline; }
+        .instructions p { font-size: 1.1rem; margin-bottom: 15px; font-weight: 600; }
+        .instructions ul { list-style-type: none; text-align: left; padding: 0 10px; }
+        .instructions li { margin-bottom: 10px; display: flex; align-items: center; }
+        .instructions i { margin-right: 15px; font-size: 1.3em; color: var(--blyza-purple-secondary); }
+         .instructions a { color: var(--blyza-purple-secondary); text-decoration: none; font-weight: bold; display: inline-flex; align-items: left; gap: 5px; transition: color 0.3s ease; }
+         .instructions a:hover { color: var(--blyza-orange-primary); text-decoration: underline; }
 
         /* --- Buttons --- */
         button, .btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-info {
@@ -337,11 +339,17 @@
             <h1>Categories Showdown</h1>
             <div class="instructions">
                 <p><strong>HOW TO PLAY:</strong></p>
-                <p>Teams challenge each other to name items within a given category. A random category appears. Either team can "Call Bullshit!" on the other if they think that team can't list enough items within 30 seconds.</p>
-                <p>The challenged team then has 30 seconds to list as many valid items as they can. After the timer, if they succeeded, they get a point. If they failed, the challenging team gets the point. First to 5 points wins!</p>
-                <a href="https://www.youtube.com/watch?v=VafBRDbSeIs" target="_blank" rel="noopener noreferrer">
-                    <i class="fab fa-youtube"></i> Watch a video tutorial!
-                </a>
+                <ul>
+                    <li><i class="fas fa-shuffle"></i> A random category is displayed for both teams (e.g., "Animals") </li>
+                    <li><i class="fas fa-hourglass-half"></i> Teams take turns declaring how many they can name of that category in 30 seconds, always stating a higher number than the previous team!</li>
+                    <li><i class="fas fa-circle-exclamation"></i> If a team believes the opposing team cannot meet their stated number, they can call "BS"!</li>
+                    <li><i class="fas fa-trophy"></i> If "BS" is called, the challenged team attempts to name their declared number in 30 seconds. Succeed, and they get the point; fail, and the calling team gets the point!</li>
+                     <li>
+                        <a href="https://youtu.be/x5LgEbbLDPQ" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-youtube"></i> Watch a video on how to play!
+                        </a>
+                    </li>
+                </ul>
             </div>
             <button onclick="showTeamSetup()" class="btn-primary">
                 <i class="fas fa-users"></i> Setup Teams

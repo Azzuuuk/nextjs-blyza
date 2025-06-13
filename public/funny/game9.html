@@ -113,9 +113,11 @@
             padding: 20px; border-radius: 10px; margin: 25px 0;
             border: 2px dashed var(--text-medium);
         }
-        .instructions p { font-size: 1.1rem; margin-bottom: 10px; font-weight: 500; }
-        .instructions p:first-of-type strong { font-family: var(--font-heading-alt); font-size: 1.2rem; display: block; margin-bottom: 5px; color: var(--text-dark);}
-        .instructions strong { color: var(--blyza-orange-primary); font-weight: 700;}
+        .instructions p { font-size: 1.1rem; margin-bottom: 15px; font-weight: 600; font-family: var(--font-heading-alt); }
+        .instructions ul { list-style-type: none; text-align: left; padding: 0 10px; }
+        .instructions li { margin-bottom: 10px; display: flex; align-items: center; }
+        .instructions i { margin-right: 15px; font-size: 1.3em; color: var(--blyza-purple-secondary); width: 20px; text-align: center; }
+        .instructions strong { font-family: var(--font-heading-alt); color: var(--blyza-purple-secondary); }
         
         /* --- Buttons --- */
         button, .btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-info {
@@ -327,9 +329,13 @@
             <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
             <h1>5 Seconds Frenzy</h1>
             <div class="instructions">
-                <p><strong>HOW TO PLAY:</strong></p>
-                <p>Teams take turns. One player gets a "Name 3..." question. Press 'Start Timer' to reveal the question and begin the 5-second countdown!</p>
-                <p>If they name 3 correct items before time runs out, click <strong>PASS (+1)</strong> for their team. If they fail, click <strong>FAIL (+1 Other Team)</strong>. First team to 5 points wins!</p>
+                <p>HOW TO PLAY</p>
+                <ul>
+                    <li><i class="fas fa-user-group"></i> Teams take turns playing </li>
+                    <li><i class="fas fa-shuffle"></i> A random category appears (e.g., "Name 3 Animals"), and the team has 5 seconds to shout out three valid answers!</li>
+                    <li><i class="fas fa-circle-check"></i> If they succeed, they earn a point. If they fail, the opposing team automatically gets the point!</li>
+                    <li><i class="fas fa-trophy"></i> First to 5 points wins!</li>
+                </ul>
             </div>
             <button id="setup-teams-btn" class="btn-primary">Start Setup <i class="fas fa-users"></i></button>
         </div>
