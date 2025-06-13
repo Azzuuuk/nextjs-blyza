@@ -7,14 +7,86 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useRouter } from 'next/router';
 import { Analytics } from '@vercel/analytics/react';
 
-// Product data with added logoUrl
+// Product data with added brandInfo for the new modal
 const products = [
-  { id: 1, name: '🍕 50% Off Pizza Hut', description: 'Get half off any large pizza!', discountCode: 'PIZZA50', logoUrl: 'https://upload.wikimedia.org/wikipedia/sco/thumb/d/d2/Pizza_Hut_logo.svg/217px-Pizza_Hut_logo.svg.png'},
-  { id: 2, name: '👟 10% Off Nike Shoes', description: 'Valid on all new collections.', discountCode: 'NIKE10', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/170px-Logo_NIKE.svg.png'},
-  { id: 3, name: '☕ Buy 1 Get 1 Free at Starbucks', description: 'Any drink, any size!', discountCode: 'STARBOGO', logoUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/184px-Starbucks_Corporation_Logo_2011.svg.png'},
-  { id: 4, name: '🎮 15% Off Steam Game', description: 'Discount on any game purchase over $20.', discountCode: 'STEAM15', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/240px-Steam_icon_logo.svg.png'},
-  { id: 5, name: '🎬 Free Month of Netflix', description: 'Valid for new or returning subscribers.', discountCode: 'NETFLIXFREE', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/190px-Netflix_2015_logo.svg.png'},
-  { id: 6, name: '📱 Free 5GB Roaming Data', description: 'Valid for new or returning subscribers.', discountCode: '5FREEE', logoUrl: 'https://1000logos.net/wp-content/uploads/2024/06/Verizon-Logo.png'},
+  { 
+    id: 1, 
+    name: '🍕 50% Off Pizza Hut', 
+    description: 'Get half off any large pizza!', 
+    discountCode: 'PIZZA50', 
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/sco/thumb/d/d2/Pizza_Hut_logo.svg/217px-Pizza_Hut_logo.svg.png',
+    brandInfo: {
+        name: 'Pizza Hut',
+        website: 'https://www.pizzahut.com/',
+        description: 'An American multinational restaurant chain and international franchise founded in 1958 in Wichita, Kansas by Dan and Frank Carney. It provides pizza and other Italian-American dishes, including pasta, side dishes and desserts.',
+        imageUrl: 'https://images.ctfassets.net/s50uvj7xp08c/5w3yL32aLygY21O22t6Duy/137afe39c3a388836511409395f168f6/Pizz_Hut_logo_variant_2.png'
+    }
+  },
+  { 
+    id: 2, 
+    name: '👟 10% Off Nike Shoes', 
+    description: 'Valid on all new collections.', 
+    discountCode: 'NIKE10', 
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/170px-Logo_NIKE.svg.png',
+    brandInfo: {
+        name: 'Nike, Inc.',
+        website: 'https://www.nike.com/',
+        description: 'An American multinational corporation that is engaged in the design, development, manufacturing, and worldwide marketing and sales of footwear, apparel, equipment, accessories, and services.',
+        imageUrl: 'https://cdn.britannica.com/19/213119-050-C81C789D/Nike-logo.jpg'
+    }
+  },
+  { 
+    id: 3, 
+    name: '☕ Buy 1 Get 1 Free at Starbucks', 
+    description: 'Any drink, any size!', 
+    discountCode: 'STARBOGO', 
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/184px-Starbucks_Corporation_Logo_2011.svg.png',
+    brandInfo: {
+        name: 'Starbucks Corporation',
+        website: 'https://www.starbucks.com/',
+        description: 'An American multinational chain of coffeehouses and roastery reserves headquartered in Seattle, Washington. As the world\'s largest coffeehouse chain, Starbucks is seen to be the main representation of the United States\' second wave of coffee culture.',
+        imageUrl: 'https://content-prod-live.cert.starbucks.com/binary/v2/asset/137-79116.jpg'
+    }
+  },
+  { 
+    id: 4, 
+    name: '🎮 15% Off Steam Game', 
+    description: 'Discount on any game purchase over $20.', 
+    discountCode: 'STEAM15', 
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/240px-Steam_icon_logo.svg.png',
+    brandInfo: {
+        name: 'Steam',
+        website: 'https://store.steampowered.com/',
+        description: 'A video game digital distribution service by Valve. It was launched as a standalone software client in September 2003 as a way for Valve to provide automatic updates for their games, and expanded to include games from third-party publishers.',
+        imageUrl: 'https://store.cloudflare.steamstatic.com/public/shared/images/header/logo_steam.svg?t=962016'
+    }
+  },
+  { 
+    id: 5, 
+    name: '🎬 Free Month of Netflix', 
+    description: 'Valid for new or returning subscribers.', 
+    discountCode: 'NETFLIXFREE', 
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/190px-Netflix_2015_logo.svg.png',
+    brandInfo: {
+        name: 'Netflix, Inc.',
+        website: 'https://www.netflix.com/',
+        description: 'An American subscription video on-demand over-the-top streaming service. The service primarily distributes films and television series produced by the media company of the same name from various genres, and it is available internationally.',
+        imageUrl: 'https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIP5TMV75/1855503803108c723415c234857b952a/Netflix-Brand-Logo.png'
+    }
+  },
+  { 
+    id: 6, 
+    name: '📱 Free 5GB Roaming Data', 
+    description: 'Valid for new or returning subscribers.', 
+    discountCode: '5FREEE', 
+    logoUrl: 'https://1000logos.net/wp-content/uploads/2024/06/Verizon-Logo.png',
+    brandInfo: {
+        name: 'Verizon Communications',
+        website: 'https://www.verizon.com/',
+        description: 'An American multinational telecommunications conglomerate and a corporate component of the Dow Jones Industrial Average. The company is based at 1095 Avenue of the Americas in Midtown Manhattan, New York City, but is incorporated in Delaware.',
+        imageUrl: 'https://www.verizon.com/content/dam/verizon/personal/images/logo/verizon-logo.png'
+    }
+  },
 ];
 
 // --- BRAND IDENTITY STYLES (from games.html) ---
@@ -102,7 +174,6 @@ const settingsIconStyle = {
     zIndex: 100,
 };
 
-// --- NEW Dashboard Button Style ---
 const dashboardIconStyle = {
     ...retroButtonBaseStyle,
     position: 'fixed',
@@ -117,17 +188,40 @@ const dashboardIconStyle = {
     zIndex: 100,
 };
 
+// --- NEW Style for the info button on the card ---
+const infoButtonStyle = {
+    position: 'absolute',
+    top: '15px',
+    right: '15px',
+    width: '32px',
+    height: '32px',
+    borderRadius: '50%',
+    backgroundColor: 'rgba(44, 58, 71, 0.7)',
+    color: 'white',
+    border: '2px solid white',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    zIndex: 5,
+    transition: 'all 0.2s ease',
+};
+
 export default function StorePage() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [revealedCodes, setRevealedCodes] = useState({});
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [showDashboardModal, setShowDashboardModal] = useState(false); // New state for dashboard
+  const [showDashboardModal, setShowDashboardModal] = useState(false);
   const [sfxEnabled, setSfxEnabled] = useState(true);
   const [musicVolume, setMusicVolume] = useState(0.2);
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
+
+  // --- NEW State for the Brand Info Modal ---
+  const [showBrandInfoModal, setShowBrandInfoModal] = useState(false);
+  const [selectedBrand, setSelectedBrand] = useState(null);
 
   const bgMusicRef = useRef(null);
   const interactionSoundRef = useRef(null);
@@ -204,6 +298,14 @@ export default function StorePage() {
     triggerConfetti();
     setTimeout(() => setShowFeedback(false), 2500);
   };
+  
+  // --- NEW handler for opening the brand info modal ---
+  const handleShowBrandInfo = (e, brandInfo) => {
+    e.stopPropagation(); // Prevents the card's main click (handleReveal) from firing
+    playSound(interactionSoundRef);
+    setSelectedBrand(brandInfo);
+    setShowBrandInfoModal(true);
+  };
 
   const handleLogout = async () => {
     playSound(interactionSoundRef);
@@ -246,13 +348,14 @@ export default function StorePage() {
                 position: absolute; opacity: 0.08; color: ${blyzaTheme.colors.textLight};
                 animation: floatSimple 20s infinite ease-in-out alternate; user-select: none;
             }
-            .contact-link {
+            .contact-link, .brand-website-link {
                 color: ${blyzaTheme.colors.textLight};
                 text-decoration: none;
                 transition: color 0.2s ease;
             }
-            .contact-link:hover {
+            .contact-link:hover, .brand-website-link:hover {
                 color: ${blyzaTheme.colors.yellow};
+                text-decoration: underline;
             }
             @keyframes floatSimple {
                 0% { transform: translateY(0px) rotate(var(--initial-rotate, 0deg)); }
@@ -311,12 +414,11 @@ export default function StorePage() {
         </div>
       )}
 
-      {showDashboardModal && ( // --- NEW Dashboard Modal ---
+      {showDashboardModal && (
         <div style={{ position: 'fixed', zIndex: 2000, left: 0, top: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: blyzaTheme.fonts.body }}>
           <div style={{ backgroundColor: blyzaTheme.colors.darkerGreyBg, margin: 'auto', padding: '25px', border: blyzaTheme.borders.stroke, borderRadius: blyzaTheme.borders.radius, width: '90%', maxWidth: '450px', boxShadow: `8px 8px 0px rgba(0,0,0,0.4)`, position: 'relative', color: blyzaTheme.colors.textLight }}>
             <span style={{ color: '#aaa', position: 'absolute', top: '10px', right: '15px', fontSize: '28px', fontWeight: 'bold', cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => { playSound(interactionSoundRef); setShowDashboardModal(false); }}>×</span>
             <h2 style={{ fontFamily: blyzaTheme.fonts.logo, color: blyzaTheme.colors.accent, WebkitTextStroke: `1.5px ${blyzaTheme.colors.blackStroke}`, textStroke: `1.5px ${blyzaTheme.colors.blackStroke}`, textAlign: 'center', marginBottom: '25px', fontSize: '2rem' }}>Dashboard</h2>
-            
             <div style={{ textAlign: 'center', padding: '15px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', marginBottom: '25px' }}>
                 <p style={{ margin: 0, fontFamily: blyzaTheme.fonts.heading, fontSize: '1rem', textTransform: 'uppercase' }}>Blyza Bucks</p>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontFamily: blyzaTheme.fonts.heading, fontSize: '3rem', color: blyzaTheme.colors.yellow, margin: '5px 0' }}>
@@ -325,21 +427,34 @@ export default function StorePage() {
                 </div>
                 <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>Feature coming soon!</p>
             </div>
-            
             <div style={{ textAlign: 'center' }}>
                 <h3 style={{fontFamily: blyzaTheme.fonts.heading, marginBottom: '15px' }}>Need Help?</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', fontSize: '1rem' }}>
                     <a href="mailto:support@blyza.com" className='contact-link'>
                         <i className="fas fa-envelope" style={{ marginRight: '8px' }}></i>
-                        support@blyza.com {/* <-- REPLACE THIS */}
+                        support@blyza.com
                     </a>
                     <a href="https://twitter.com/BlyzaGames" target="_blank" rel="noopener noreferrer" className='contact-link'>
                         <i className="fab fa-twitter" style={{ marginRight: '8px' }}></i>
-                        @BlyzaGames {/* <-- REPLACE THIS */}
+                        @BlyzaGames
                     </a>
                 </div>
             </div>
+          </div>
+        </div>
+      )}
 
+      {/* --- NEW Brand Info Modal --- */}
+      {showBrandInfoModal && selectedBrand && (
+        <div style={{ position: 'fixed', zIndex: 2000, left: 0, top: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: blyzaTheme.fonts.body }}>
+          <div style={{ backgroundColor: blyzaTheme.colors.darkerGreyBg, margin: 'auto', padding: '25px', border: blyzaTheme.borders.stroke, borderRadius: blyzaTheme.borders.radius, width: '90%', maxWidth: '450px', boxShadow: `8px 8px 0px rgba(0,0,0,0.4)`, position: 'relative', color: blyzaTheme.colors.textLight }}>
+            <span style={{ color: '#aaa', position: 'absolute', top: '10px', right: '15px', fontSize: '28px', fontWeight: 'bold', cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => { playSound(interactionSoundRef); setShowBrandInfoModal(false); setSelectedBrand(null); }}>×</span>
+            <img src={selectedBrand.imageUrl} alt={`${selectedBrand.name} logo`} style={{ display: 'block', width: 'auto', maxHeight: '100px', margin: '10px auto 25px auto', borderRadius: '8px' }} />
+            <h2 style={{ fontFamily: blyzaTheme.fonts.logo, color: blyzaTheme.colors.primary, WebkitTextStroke: `1.5px ${blyzaTheme.colors.blackStroke}`, textStroke: `1.5px ${blyzaTheme.colors.blackStroke}`, textAlign: 'center', marginBottom: '15px', fontSize: '2rem' }}>{selectedBrand.name}</h2>
+            <p style={{ textAlign: 'center', marginBottom: '25px', lineHeight: '1.6' }}>{selectedBrand.description}</p>
+            <a href={selectedBrand.website} target="_blank" rel="noopener noreferrer" style={{ ...retroButtonBaseStyle, display: 'flex', width: '80%', margin: '0 auto', backgroundColor: blyzaTheme.colors.yellow, color: blyzaTheme.colors.textDark, boxShadow: blyzaTheme.shadows.chunky }}>
+                <i className="fas fa-globe"></i> Visit Website
+            </a>
           </div>
         </div>
       )}
@@ -362,12 +477,19 @@ export default function StorePage() {
 
       <div style={{ padding: '80px 20px 40px', minHeight: '100vh', background: `linear-gradient(135deg, ${blyzaTheme.colors.primary} 0%, ${blyzaTheme.colors.secondary} 100%)`, fontFamily: blyzaTheme.fonts.body, color: blyzaTheme.colors.textLight, display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2, boxSizing: 'border-box' }}>
         <header style={{ width: '100%', maxWidth: '1100px', textAlign: 'center', marginBottom: '40px', marginTop: '40px' }}>
-            <h1 style={{ fontFamily: blyzaTheme.fonts.logo, fontSize: 'clamp(2.8rem, 6vw, 4rem)', color: blyzaTheme.colors.textLight, WebkitTextStroke: `2px ${blyzaTheme.colors.blackStroke}`, textStroke: `2px ${blyzaTheme.colors.blackStroke}`, textShadow: `3px 3px 0px rgba(0,0,0,0.25)`, marginBottom: '0.25em', lineHeight: 1.1 }}>
-              Blyza Bonus Store
+            <h1 style={{ fontFamily: blyzaTheme.fonts.logo, fontSize: 'clamp(2.8rem, 6vw, 4rem)', color: blyzaTheme.colors.textLight, WebkitTextStroke: `3.5px ${blyzaTheme.colors.blackStroke}`, textStroke: `2px ${blyzaTheme.colors.blackStroke}`, textShadow: `3px 3px 0px rgba(0,0,0,0.25)`, marginBottom: '0.25em', lineHeight: 1.1 }}>
+              Blyza Store 🛍 
             </h1>
-            <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: blyzaTheme.colors.yellow, fontWeight: 500, maxWidth: '550px', margin: '0 auto' }}>
-                Awesome rewards, just for playing!
-            </p>
+            <p style={{
+    fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+    color: blyzaTheme.colors.yellow,
+    fontWeight: 800, /* Significantly bolder */
+    maxWidth: '550px',
+    margin: '0 auto',
+    textShadow: '0 0 8px rgba(255, 255, 0, 0.7)', /* A soft, subtle glow */
+}}>
+    Awesome rewards, just for playing!
+</p>
         </header>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2.5em', width: '100%', maxWidth: '1200px' }}>
@@ -376,7 +498,19 @@ export default function StorePage() {
                 style={cardStyle} 
                 onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-8px) scale(1.03)'; e.currentTarget.style.boxShadow = blyzaTheme.shadows.chunkyYellow; e.currentTarget.style.borderColor = blyzaTheme.colors.primary; }} 
                 onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = blyzaTheme.shadows.chunky; e.currentTarget.style.borderColor = blyzaTheme.colors.blackStroke; }}
+                onClick={() => revealedCodes[product.id] ? null : handleReveal(product.id)}
             >
+              {/* --- NEW Info Button --- */}
+              <button 
+                style={infoButtonStyle}
+                onMouseOver={e => e.currentTarget.style.backgroundColor = blyzaTheme.colors.primary}
+                onMouseOut={e => e.currentTarget.style.backgroundColor = 'rgba(44, 58, 71, 0.7)'}
+                onClick={(e) => handleShowBrandInfo(e, product.brandInfo)} 
+                aria-label={`More info about ${product.brandInfo.name}`}
+              >
+                <i className="fas fa-info" style={{fontSize: '1rem'}}></i>
+              </button>
+              
               <div>
                  <img src={product.logoUrl} alt={`${product.name} Logo`} style={logoStyle} />
                  <h2 style={{ color: blyzaTheme.colors.textDark, fontSize: '1.5rem', marginBottom: '0.5em', fontFamily: blyzaTheme.fonts.heading, lineHeight: '1.3' }}>
@@ -388,11 +522,11 @@ export default function StorePage() {
               </div>
               <div style={{ marginTop: 'auto' }}>
                 {!revealedCodes[product.id] ? (
-                  <button onClick={() => handleReveal(product.id)} style={{ ...retroButtonBaseStyle, backgroundColor: blyzaTheme.colors.primary, color: blyzaTheme.colors.textLight, width: '100%' }}>
+                  <button style={{ ...retroButtonBaseStyle, backgroundColor: blyzaTheme.colors.primary, color: blyzaTheme.colors.textLight, width: '100%', pointerEvents: 'none' /* Make button non-clickable, card is the trigger */ }}>
                     <i className="fas fa-gift" style={{ marginRight: '8px' }}></i> Claim Prize
                   </button>
                 ) : (
-                  <div style={{ marginTop: '15px', padding: '12px 15px', borderRadius: '10px', background: `rgba(0, 191, 166, 0.1)`, border: `2px solid ${blyzaTheme.colors.accent}`, textAlign: 'center' }}>
+                  <div style={{ marginTop: '15px', padding: '12px 15px', borderRadius: '10px', background: `rgba(0, 191, 166, 0.1)`, border: `2px solid ${blyzaTheme.colors.accent}`, textAlign: 'center', cursor: 'default' }}>
                     <p style={{ fontWeight: 'bold', fontSize: '0.9rem', color: blyzaTheme.colors.accent, margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                        <i className="fas fa-check-circle"></i> DISCOUNT CODE:
                     </p>
