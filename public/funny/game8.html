@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Luckiest+Guy&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- START: BRAND IDENTITY & ROOT VARIABLES (FROM GUESS THE PRICE) --- */
+        /* --- START: BRAND IDENTITY & ROOT VARIABLES --- */
         :root {
             --blyza-orange-primary: #FF8833;
             --blyza-purple-secondary: #cb7ae1;
@@ -34,20 +34,22 @@
         /* --- Basic Reset & Body --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
+        
         body {
             font-family: var(--font-body);
             color: var(--text-light);
             background: linear-gradient(135deg, var(--blyza-orange-primary) 0%, var(--blyza-purple-secondary) 100%);
             line-height: 1.6;
-            overflow-x: hidden;
+            overflow: hidden; /* Body does not scroll */
             position: relative;
-            min-height: var(--app-height, 100vh); 
+            height: var(--app-height, 100vh); /* Full screen height */
             display: flex;
+            align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 20px 10px;
         }
 
-        /* --- Floating Background Elements (Themed for Siblings or Dating) --- */
+        /* --- Floating Background Elements --- */
         .hero-background-elements { position: fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events: none; }
         .bg-game-element {
             position: absolute; opacity: 0.1; color: var(--text-light);
@@ -83,9 +85,9 @@
             padding: 30px; 
             text-align: center;
             position: relative;
-            overflow: hidden;
-            margin: auto 0;
             z-index: 2;
+            max-height: calc(var(--app-height, 100vh) - 40px); /* Make container scrollable */
+            overflow-y: auto;
         }
 
         .brand-logo { object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
@@ -311,13 +313,14 @@
         .icon-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black-stroke); }
         .icon-btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
         #settings-btn { top: 20px; right: 20px; }
-        #highscore-btn { top: 20px; right: 85px; background-color: var(--blyza-sunny-yellow); } /* NEW */
+        #highscore-btn { top: 20px; right: 85px; background-color: var(--blyza-sunny-yellow); }
         #home-menu-btn, #back-btn { top: 20px; left: 20px; }
         #back-btn { display: none; }
         
         /* --- Modal & Feedback Styles --- */
-        .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; }
-        .modal-content { background-color: var(--darker-grey-bg); margin: auto; padding: 25px; border: 3px solid var(--black-stroke); border-radius: var(--border-radius-game); width: 90%; max-width: 450px; box-shadow: 8px 8px 0px rgba(0,0,0,0.4); position: relative; color: var(--text-light); }
+        .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; animation: fadeInModal 0.3s ease; }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content { background-color: var(--darker-grey-bg); margin: auto; padding: 25px; border: 3px solid var(--black-stroke); border-radius: var(--border-radius-game); width: 90%; max-width: 450px; box-shadow: 8px 8px 0px rgba(0,0,0,0.4); position: relative; color: var(--text-light); text-align: center; }
         .modal-content h2 { font-family: var(--font-logo); color: var(--blyza-orange-primary); -webkit-text-stroke: 1.5px var(--black-stroke); text-stroke: 1.5px var(--black-stroke); text-align: center; margin-bottom: 25px; font-size: 2rem; }
         .setting-item { margin-bottom: 18px; display: flex; flex-direction: column; }
         .setting-item label { margin-bottom: 10px; font-weight: 600; font-size: 1rem; }
@@ -328,6 +331,9 @@
         input[type=range]:focus { outline: none; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 10px; cursor: pointer; background: rgba(0,0,0,0.3); border-radius: 5px; border: 2px solid var(--black-stroke); }
         input[type=range]::-webkit-slider-thumb { border: 2px solid var(--black-stroke); height: 22px; width: 22px; border-radius: 50%; background: var(--blyza-orange-primary); cursor: pointer; -webkit-appearance: none; margin-top: -9px; }
+        #audio-consent-modal .modal-content p { font-family: var(--font-body); font-weight: 600; font-size: 1.1rem; margin-bottom: 25px; color: var(--text-light); }
+        #audio-consent-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        
         .feedback-popup { position: fixed; top: 50%; left: 50%; background-color: var(--text-dark); color: white; padding: 25px 40px; border-radius: var(--border-radius-game); font-size: 2.5rem; font-family: var(--font-logo); text-align: center; z-index: 2000; box-shadow: 8px 8px 0px rgba(0,0,0,0.5); opacity: 0; transform: translate(-50%, -50%) scale(0.7); transition: opacity 0.3s ease, transform 0.3s ease; pointer-events: none; border: 3px solid var(--black-stroke); display: none; }
         .feedback-popup.show { opacity: 1; transform: translate(-50%, -50%) scale(1); display: block; }
         .feedback-popup.correct { color: var(--blyza-keppel-accent); }
@@ -345,15 +351,23 @@
         
         /* --- Responsive Adjustments --- */
         @media (max-width: 768px) {
-            body { padding: 10px; margin-top: 30px; align-items: flex-start;}
-            .game-container { padding: 45px 15px 15px; } 
+            body { 
+                padding: 10px; 
+                align-items: flex-start;
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+            .game-container { 
+                padding: 45px 15px 15px; 
+                max-height: calc(var(--app-height, 100vh) - 40px);
+            } 
             h1 { font-size: 2rem; margin-top: 5px; }
             .instructions { padding: 15px; }
             .choice-buttons-container { flex-direction: column; align-items: center; }
             .choice-btn { width: 90%; max-width: none; }
             .icon-btn { width: 48px; height: 48px; }
             #settings-btn { top: 12px; right: 12px; }
-            #highscore-btn { top: 12px; right: 70px; } /* NEW */
+            #highscore-btn { top: 12px; right: 70px; }
             #home-menu-btn, #back-btn { top: 12px; left: 12px; }
             .feedback-popup { font-size: 2rem; padding: 20px 30px; width: 90%; }
             .modal-content { padding: 20px; }
@@ -382,9 +396,9 @@
     </div>
     
     <script>
+        // THIS SCRIPT MUST RUN FIRST
         function setAppHeight() {
-            const doc = document.documentElement;
-            doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+            document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
         }
         window.addEventListener('resize', setAppHeight);
         setAppHeight();
@@ -511,6 +525,18 @@
         </div>
     </div>
 
+    <!-- Audio Consent Modal -->
+    <div id="audio-consent-modal" class="modal">
+        <div class="modal-content">
+            <h2>Enable Audio?</h2>
+            <p>This game has background music and sound effects. Would you like to enable them for the best experience?</p>
+            <div id="audio-consent-buttons">
+                <button id="audio-consent-yes-btn" class="btn-success"><i class="fas fa-volume-up"></i> Yes, please!</button>
+                <button id="audio-consent-no-btn" class="btn-secondary"><i class="fas fa-volume-mute"></i> No, thanks</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Settings Modal -->
     <div id="settings-modal" class="modal">
         <div class="modal-content">
@@ -543,26 +569,62 @@
     <script>
         const gameConfig = { totalRounds: 5, sfxEnabled: true, musicVolume: 0.2, minTeams: 2, maxTeams: 4 };
         const gameState = { gameMode: 'single', singlePlayerSubType: '5rounds', players: [], scores: {}, currentRound: 0, currentPlayerIndexInRound: 0, roundPlayerChoices: {}, singlePlayerChoice: null, currentMedia: null, mediaItems: [ { url: "https://static.wixstatic.com/media/9ce3e5_2a4bf1da960443c9b30108c5fb6db7db~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_4ff037154c604c6e8302e195b3aa2346~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_338937bc52754c6cba2ab324ad24f66a~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_ee1311e3f2c649c5bb92a8cc33a2cdc6~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_18a5fdf7fd534413bd83bd0311676ce0~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_d5f4aacfa0c747c1a9d6e5b23c3dbaa7~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_6d273f451e46464fb8c199101eb1cd5e~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_5d5191182b064159a8f7d4fc971f828b~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_cdbcb9884c664be8bb5b41447dec31fe~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_493688d1afe749019ca019a7053bdcd2~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_7d66e4a893e24874982d6229a05b41f3~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_39e3debd6a424f7ca2545707a4601ae4~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_570a72fd7392406db23a982f5a30f1cf~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_6b40aceaf91344438e0732c587a6ec5a~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_f875d76e6ba84544ac383938cc20af32~mv2.jpg", isDating: true }, { url: "https://static.wixstatic.com/media/9ce3e5_fd1dab053f0c4fb6a1f8b7ef1997a2b0~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_9b631479f9bd4bbbb1bd43f1dc44eeb2~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_70ce3be7d82340fba5be9415f1fd9252~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_8ccaec12c1724f159b30a543a249668c~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_a66add3ba32a464abe2500589cb0a000~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_e836809728a44c35853d5c0d3e65cef2~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_a760321c0463461bae00abf096d334e9~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_2199e9755c144209a775f6d39a6d54d7~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_5f0d3e0a61f3447d916bde690dd016dc~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_a750f1c249264c208358458dbf75497e~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_f278a6277e68453b85e22ed79ddee9d8~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_76096dcd416344cab64edc8a0896267d~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_c9e389ac5ad640d89f4126804eaf33b0~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_585c7fbd66ff48c5a0427b9388201f80~mv2.jpg", isDating: false }, { url: "https://static.wixstatic.com/media/9ce3e5_d8b26a6fcf3b4676aa583aa5b268ddaf~mv2.jpg", isDating: false }, ], usedItems: [] };
-        let infiniteHighScore = 0; // NEW
+        let infiniteHighScore = 0;
         
         const screens = { start: document.getElementById('start-screen'), game: document.getElementById('game-screen'), results: document.getElementById('results-screen'), gameOver: document.getElementById('game-over-screen')};
         const homeMenuBtnEl = document.getElementById('home-menu-btn'), backBtnEl = document.getElementById('back-btn'), settingsBtnEl = document.getElementById('settings-btn'), modeOptionsEl = document.querySelectorAll('.mode-option'), teamInputsContainerEl = document.getElementById('team-inputs-container'), teamNamesListEl = document.getElementById('team-names-list'), addTeamBtnEl = document.getElementById('add-team-btn'), startMultiplayerGameBtnEl = document.getElementById('start-multiplayer-game-btn'), roundInfoTextEl = document.getElementById('round-info-text'), scoreInfoTextEl = document.getElementById('score-info-text'), turnIndicatorEl = document.getElementById('turn-indicator'), roundNumberTextEl = document.getElementById('round-number-text'), currentScoreTextEl = document.getElementById('current-score-text'), mediaCurtainLeftEl = document.getElementById('media-curtain-left'), mediaCurtainRightEl = document.getElementById('media-curtain-right'), mediaImageContentEl = document.getElementById('media-image-content'), siblingsBtnEl = document.getElementById('siblings-btn'), datingBtnEl = document.getElementById('dating-btn'), resultImageContentEl = document.getElementById('result-image-content'), actualAnswerTextEl = document.getElementById('actual-answer-text'), playerGuessFeedbackTextEl = document.getElementById('player-guess-feedback-text'), scoreDisplayContainerResultsEl = document.getElementById('score-display-container-results'), detailedFeedbackAreaMultiplayerEl = document.getElementById('detailed-feedback-area-multiplayer'), nextRoundBtnEl = document.getElementById('next-round-btn'), finalWinMessageTextEl = document.getElementById('final-win-message-text'), finalMessageDetailsEl = document.getElementById('final-message-details'), finalScoresDisplayAreaEl = document.getElementById('final-scores-display-area'), storeButtonWrapperEl = document.getElementById("store-button-wrapper"), playAgainBtnEl = document.getElementById('play-again-btn'), mainMenuBtnEl = document.getElementById('main-menu-btn'), visitStoreBtnEl = document.getElementById('visit-store-btn'), settingsModalEl = document.getElementById('settings-modal'), closeModalBtnEl = document.getElementById('close-modal-btn'), bgmVolumeSliderEl = document.getElementById('bgm-volume-slider'), sfxToggleBtnEl = document.getElementById('sfx-toggle-btn'), feedbackPopupEl = document.getElementById('feedback-popup'), feedbackMessageTextPopupEl = document.getElementById('feedback-message-text-el');
         
-        // NEW DOM Elements
         const highscoreBtnEl = document.getElementById('highscore-btn');
         const singlePlayerSubOptionsEl = document.getElementById('single-player-sub-options');
         const multiplayerStartAreaEl = document.getElementById('multiplayer-start-area');
         const fiveRoundsBtnEl = document.getElementById('five-rounds-btn');
         const infiniteModeBtnEl = document.getElementById('infinite-mode-btn');
+        const audioConsentModalEl = document.getElementById('audio-consent-modal');
+        const audioConsentYesBtnEl = document.getElementById('audio-consent-yes-btn');
+        const audioConsentNoBtnEl = document.getElementById('audio-consent-no-btn');
+        const backgroundMusicAudioEl = document.getElementById('background-music');
         let treatYourselfElement = null;
 
         const allSfx = [ document.getElementById('start-game-sound'), document.getElementById('interaction-sound'), document.getElementById('correct-answer-sound'), document.getElementById('wrong-answer-sound'), document.getElementById('curtain-sound'), document.getElementById('confetti-sound') ];
-        const backgroundMusicAudioEl = document.getElementById('background-music');
         let feedbackTimeoutId, audioContextStarted = false;
 
-        function initAudio() { if (audioContextStarted) return; audioContextStarted = true; console.log("Audio context unlocked."); backgroundMusicAudioEl.play().catch(e=>{}); allSfx.forEach(sound => { if(sound) { sound.volume = 0; sound.play().then(() => { sound.pause(); sound.currentTime = 0; sound.volume = 1; }).catch(e => {}); } }); }
-        function playSound(audioElement) { if (gameConfig.sfxEnabled && audioElement && audioContextStarted) { audioElement.currentTime = 0; audioElement.play().catch(e => {}); } }
-        function playSoundWithCallback(audioElement, callback, ...args) { if (gameConfig.sfxEnabled && audioElement && audioContextStarted) { audioElement.currentTime = 0; let cbExecuted = false; const execCb = () => { if (!cbExecuted) { cbExecuted = true; audioElement.onended = null; if (timeoutId) clearTimeout(timeoutId); if (callback) callback(...args); } }; audioElement.onended = execCb; const timeoutId = setTimeout(execCb, (audioElement.duration && isFinite(audioElement.duration)) ? audioElement.duration * 1000 + 200 : 500); audioElement.play().catch(e => { execCb(); }); } else { if (callback) callback(...args); } }
+        function initAudio() {
+            if (audioContextStarted) return;
+            backgroundMusicAudioEl.play().then(() => {
+                audioContextStarted = true;
+                if (gameConfig.musicVolume <= 0 || document.hidden) {
+                    backgroundMusicAudioEl.pause();
+                }
+            }).catch(e => { console.warn("Audio autoplay blocked, waiting for user interaction.", e); });
+        }
+        
+        function playSound(audioElement) { 
+            if (gameConfig.sfxEnabled && audioElement && audioContextStarted) { 
+                audioElement.pause();
+                audioElement.currentTime = 0; 
+                audioElement.play().catch(e => {}); 
+            } 
+        }
+
+        function playSoundWithCallback(audioElement, callback, ...args) { 
+            if (gameConfig.sfxEnabled && audioElement && audioContextStarted) {
+                audioElement.pause();
+                audioElement.currentTime = 0;
+                let cbExecuted = false;
+                const execCb = () => {
+                    if (!cbExecuted) {
+                        cbExecuted = true;
+                        audioElement.removeEventListener('ended', execCb);
+                        if (callback) callback(...args);
+                    }
+                };
+                audioElement.addEventListener('ended', execCb);
+                audioElement.play().catch(e => { execCb(); });
+            } else { 
+                if (callback) callback(...args);
+            }
+        }
+        
         function showFeedbackMessage(message, type = 'info', duration = 2500) { feedbackMessageTextPopupEl.textContent = message; feedbackPopupEl.className = 'feedback-popup'; if (type) feedbackPopupEl.classList.add(type); feedbackPopupEl.classList.add('show'); clearTimeout(feedbackTimeoutId); feedbackTimeoutId = setTimeout(() => { feedbackPopupEl.classList.remove('show'); }, duration); }
         function triggerConfetti() { playSound(allSfx[5]); const colors = ['var(--blyza-orange-primary)', 'var(--blyza-purple-secondary)', 'var(--blyza-keppel-accent)', 'var(--blyza-sunny-yellow)']; for (let i = 0; i < 100; i++) { const piece = document.createElement('div'); piece.classList.add('confetti-piece'); piece.style.left = Math.random() * 100 + 'vw'; piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; const animDur = Math.random() * 3 + 2; piece.style.animationName = 'fallAndFade'; piece.style.animationDuration = animDur + 's'; piece.style.animationDelay = Math.random() * 1 + 's'; document.body.appendChild(piece); setTimeout(() => piece.remove(), (animDur + 1.1) * 1000); } }
         
@@ -571,17 +633,45 @@
         function saveHighScore(score) { if (score > infiniteHighScore) { infiniteHighScore = score; localStorage.setItem('sod_infinite_highscore', infiniteHighScore); } }
         function showHighScore() { playSound(allSfx[1]); showFeedbackMessage(`Infinite High Score: ${infiniteHighScore}`, 'info', 3000); }
 
+        function handleVisibilityChange() {
+            if (!audioContextStarted) return;
+            if (document.hidden) {
+                backgroundMusicAudioEl.pause();
+            } else if (gameConfig.musicVolume > 0) {
+                backgroundMusicAudioEl.play().catch(e => {});
+            }
+        }
+        
+        function handlePageShow(event) {
+            if (event.persisted) {
+                console.log("Page restored from bfcache. Re-initializing...");
+                setAppHeight(); 
+                mainMenu();
+            }
+        }
+
         function switchScreen(screenId) { Object.values(screens).forEach(s=>s.classList.remove('active')); screens[screenId].classList.add('active'); const isStartOrGameOver = screenId === 'start' || screenId === 'gameOver'; homeMenuBtnEl.style.display = isStartOrGameOver ? 'flex' : 'none'; backBtnEl.style.display = isStartOrGameOver ? 'none' : 'flex'; if (treatYourselfElement) { treatYourselfElement.style.display = (screenId === 'gameOver') ? 'flex' : 'none'; } }
         function openMediaCurtains() { mediaCurtainLeftEl.classList.add('open'); mediaCurtainRightEl.classList.add('open'); mediaImageContentEl.classList.add('visible'); playSound(allSfx[4]); }
         function closeMediaCurtains() { mediaCurtainLeftEl.classList.remove('open'); mediaCurtainRightEl.classList.remove('open'); mediaImageContentEl.classList.remove('visible'); mediaImageContentEl.src = ""; }
         
-        function startSinglePlayerGame(subType) { gameState.singlePlayerSubType = subType; playSoundWithCallback(allSfx[0], startGame); }
+        function startSinglePlayerGame(subType) { 
+            initAudio(); // Ensure audio context is unlocked
+            gameState.singlePlayerSubType = subType; 
+            playSoundWithCallback(allSfx[0], startGame); 
+        }
+        
         function startGame() {
             gameState.currentRound = 0; gameState.usedItems = []; gameState.scores = {};
             if (gameState.gameMode === 'single') { gameState.players = ['You']; }
-            else { gameState.players = Array.from(teamNamesListEl.querySelectorAll('.team-name-input')).map((inp,idx)=>inp.value.trim()||`Team ${idx+1}`).filter(n=>n!==''); if(gameState.players.some(n=>n.length>15)){showFeedbackMessage("Team names too long!","danger");return;} if (new Set(gameState.players.map(p=>p.toLowerCase())).size !== gameState.players.length) { showFeedbackMessage("Team names must be unique!", "danger"); return; } if (gameState.players.length < gameConfig.minTeams) { showFeedbackMessage(`Multiplayer needs ${gameConfig.minTeams}-${gameConfig.maxTeams} teams!`, 'danger'); return;}}
+            else { 
+                gameState.players = Array.from(teamNamesListEl.querySelectorAll('.team-name-input')).map((inp,idx)=>inp.value.trim()||`Team ${idx+1}`).filter(n=>n!==''); 
+                if(gameState.players.some(n=>n.length>15)){showFeedbackMessage("Team names too long!","danger");return;} 
+                if (new Set(gameState.players.map(p=>p.toLowerCase())).size !== gameState.players.length) { showFeedbackMessage("Team names must be unique!", "danger"); return; } 
+                if (gameState.players.length < gameConfig.minTeams) { showFeedbackMessage(`Multiplayer needs ${gameConfig.minTeams}-${gameConfig.maxTeams} teams!`, 'danger'); return;}
+            }
             gameState.players.forEach(p => gameState.scores[p] = 0);
             nextRoundBtnEl.innerHTML = 'Next Round <i class="fas fa-arrow-right"></i>';
+            nextRoundBtnEl.onclick = () => { playSound(allSfx[1]); setupRound(); };
             setupRound();
         }
 
@@ -628,6 +718,7 @@
         }
 
         function updateTurnIndicator() { if (gameState.gameMode === 'multi' && gameState.players.length > 0) { turnIndicatorEl.textContent = `${gameState.players[gameState.currentPlayerIndexInRound]}'s turn:`; }}
+        
         function makeChoice(choice) {
             playSound(allSfx[1]);
             const currentPlayerName = gameState.gameMode === 'multi' ? gameState.players[gameState.currentPlayerIndexInRound] : 'You';
@@ -678,12 +769,12 @@
             }
             updateScoreDisplayOnResults();
             
-            if (isGameOver || (gameState.gameMode !== 'single' && gameState.currentRound >= gameConfig.totalRounds) || (gameState.singlePlayerSubType === '5rounds' && gameState.currentRound >= gameConfig.totalRounds)) {
+            if (isGameOver || (gameState.gameMode === 'multi' && gameState.currentRound >= gameConfig.totalRounds) || (gameState.singlePlayerSubType === '5rounds' && gameState.currentRound >= gameConfig.totalRounds)) {
                  nextRoundBtnEl.innerHTML = 'See Final Results <i class="fas fa-trophy"></i>';
-                 nextRoundBtnEl.onclick = () => showGameOver();
+                 nextRoundBtnEl.onclick = () => { playSound(allSfx[1]); showGameOver(); };
             } else {
                 nextRoundBtnEl.innerHTML = 'Next Round <i class="fas fa-arrow-right"></i>';
-                nextRoundBtnEl.onclick = () => setupRound();
+                nextRoundBtnEl.onclick = () => { playSound(allSfx[1]); setupRound(); };
             }
         }
 
@@ -758,21 +849,26 @@
         function updateTeamAddRemoveButtons() { const trs = teamNamesListEl.querySelectorAll('.team-input-wrapper'); const tc = trs.length; addTeamBtnEl.disabled = tc>=gameConfig.maxTeams; trs.forEach(tr => { const rb = tr.querySelector('.remove-team-btn'); if(rb)rb.disabled=tc<=gameConfig.minTeams; });}
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadAudioSettings(); loadHighScore();
-            document.body.addEventListener('click', initAudio, { once: true });
+            loadAudioSettings(); 
+            loadHighScore();
+            
+            audioConsentModalEl.style.display = 'flex';
+            
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            window.addEventListener('pageshow', handlePageShow);
             
             backBtnEl.addEventListener('click', () => { playSound(allSfx[1]); mainMenu(); });
             settingsBtnEl.addEventListener('click', () => { playSound(allSfx[1]); settingsModalEl.style.display = 'flex'; });
             closeModalBtnEl.addEventListener('click', () => { playSound(allSfx[1]); settingsModalEl.style.display = 'none'; });
-            bgmVolumeSliderEl.addEventListener('input', (e) => { gameConfig.musicVolume = parseFloat(e.target.value); backgroundMusicAudioEl.volume = gameConfig.musicVolume; localStorage.setItem('musicVolume', gameConfig.musicVolume); });
-            sfxToggleBtnEl.addEventListener('click', () => { gameConfig.sfxEnabled = !gameConfig.sfxEnabled; sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; playSound(allSfx[1]); localStorage.setItem('sfxEnabled', gameConfig.sfxEnabled); });
+            bgmVolumeSliderEl.addEventListener('input', (e) => { gameConfig.musicVolume = parseFloat(e.target.value); backgroundMusicAudioEl.volume = gameConfig.musicVolume; localStorage.setItem('musicVolume', gameConfig.musicVolume); if (gameConfig.musicVolume > 0 && !document.hidden && audioContextStarted) backgroundMusicAudioEl.play().catch(e=>{}); else backgroundMusicAudioEl.pause(); });
+            sfxToggleBtnEl.addEventListener('click', () => { gameConfig.sfxEnabled = !gameConfig.sfxEnabled; sfxToggleBtnEl.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; playSound(allSfx[1]); localStorage.setItem('sfxEnabled', String(gameConfig.sfxEnabled)); });
             
             modeOptionsEl.forEach(opt => { opt.addEventListener('click', function(){ playSound(allSfx[1]); modeOptionsEl.forEach(o=>o.classList.remove('selected')); this.classList.add('selected'); gameState.gameMode=this.dataset.mode; const isMulti = gameState.gameMode === 'multi'; multiplayerStartAreaEl.style.display = isMulti ? 'block' : 'none'; singlePlayerSubOptionsEl.style.display = isMulti ? 'none' : 'block'; if(isMulti)updateTeamAddRemoveButtons(); });});
             addTeamBtnEl.addEventListener('click', () => { playSound(allSfx[1]); const teamCount = teamNamesListEl.querySelectorAll('.team-input-wrapper').length; if (teamCount < gameConfig.maxTeams) { const wr = document.createElement('div'); wr.className='team-input-wrapper'; wr.innerHTML=`<input type="text" class="team-name-input" placeholder="Team ${teamCount+1}"><button class="remove-team-btn btn-danger"><i class="fas fa-times"></i></button>`; wr.querySelector('.remove-team-btn').onclick = function(){ playSound(allSfx[1]); this.parentElement.remove(); updateTeamAddRemoveButtons(); }; teamNamesListEl.appendChild(wr); updateTeamAddRemoveButtons(); } else { showFeedbackMessage(`Max ${gameConfig.maxTeams} teams.`, 'info');}});
             
             fiveRoundsBtnEl.addEventListener('click', () => startSinglePlayerGame('5rounds'));
             infiniteModeBtnEl.addEventListener('click', () => startSinglePlayerGame('infinite'));
-            startMultiplayerGameBtnEl.addEventListener('click', () => { playSoundWithCallback(allSfx[0], startGame); });
+            startMultiplayerGameBtnEl.addEventListener('click', () => { initAudio(); playSoundWithCallback(allSfx[0], startGame); });
             siblingsBtnEl.addEventListener('click', () => makeChoice('siblings'));
             datingBtnEl.addEventListener('click', () => makeChoice('dating'));
             playAgainBtnEl.addEventListener('click', () => { playSoundWithCallback(allSfx[0], startGame);});
@@ -782,6 +878,58 @@
 
             mainMenu();
         });
+        
+        audioConsentYesBtnEl.addEventListener('click', () => {
+            audioConsentModalEl.style.display = 'none';
+            initAudio(); // This user tap unlocks the audio context
+            playSound(allSfx[1]);
+        });
+        
+        audioConsentNoBtnEl.addEventListener('click', () => {
+            audioConsentModalEl.style.display = 'none';
+            gameConfig.sfxEnabled = false;
+            gameConfig.musicVolume = 0;
+            backgroundMusicAudioEl.volume = 0;
+            bgmVolumeSliderEl.value = 0;
+            sfxToggleBtnEl.textContent = 'SFX: OFF';
+            localStorage.setItem('sfxEnabled', 'false'); 
+            localStorage.setItem('musicVolume', '0'); 
+            initAudio(); // Still call this to set the audioContextStarted flag
+        });
+
+        // --- CUSTOM SCROLL REDIRECTION LOGIC ---
+        const gameContainerForScroll = document.querySelector('.game-container');
+        let lastTouchY = 0;
+
+        window.addEventListener('wheel', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                gameContainerForScroll.scrollTop += e.deltaY;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchstart', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                if (e.touches.length > 0) {
+                    lastTouchY = e.touches[0].clientY;
+                }
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                e.preventDefault(); 
+                if (e.touches.length > 0) {
+                    const currentTouchY = e.touches[0].clientY;
+                    const deltaY = lastTouchY - currentTouchY;
+                    gameContainerForScroll.scrollTop += deltaY;
+                    lastTouchY = currentTouchY;
+                }
+            }
+        }, { passive: false });
+        // --- END OF CUSTOM SCROLL LOGIC ---
     </script>
     <script>
       window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };

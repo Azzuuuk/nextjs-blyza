@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Luckiest+Guy&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- START: BRAND IDENTITY & ROOT VARIABLES (FROM GUESS THE PRICE) --- */
+        /* --- START: BRAND IDENTITY & ROOT VARIABLES --- */
         :root {
             --blyza-orange-primary: #FF8833;
             --blyza-purple-secondary: #cb7ae1;
@@ -39,15 +39,16 @@
             color: var(--text-light);
             background: linear-gradient(135deg, var(--blyza-orange-primary) 0%, var(--blyza-purple-secondary) 100%);
             line-height: 1.6;
-            overflow-x: hidden;
+            overflow: hidden; /* Body does not scroll */
             position: relative;
-            min-height: var(--app-height, 100vh); 
+            height: var(--app-height, 100vh); /* Full screen height */
             display: flex;
+            align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 20px 10px;
         }
 
-        /* --- Floating Background Elements (Themed for Categories Showdown) --- */
+        /* --- Floating Background Elements --- */
         .hero-background-elements { position: fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events: none; }
         .bg-game-element {
             position: absolute; opacity: 0.1; color: var(--text-light);
@@ -83,9 +84,9 @@
             padding: 30px; 
             text-align: center;
             position: relative;
-            overflow: hidden;
-            margin: auto 0;
             z-index: 2;
+            max-height: calc(var(--app-height, 100vh) - 40px);
+            overflow-y: auto;
         }
 
         .brand-logo { object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
@@ -253,8 +254,9 @@
         #home-menu-btn, #back-btn { top: 20px; left: 20px; }
         
         /* --- Modal & Feedback Styles --- */
-        .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; }
-        .modal-content { background-color: var(--darker-grey-bg); margin: auto; padding: 25px; border: 3px solid var(--black-stroke); border-radius: var(--border-radius-game); width: 90%; max-width: 450px; box-shadow: 8px 8px 0px rgba(0,0,0,0.4); position: relative; color: var(--text-light); }
+        .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; animation: fadeInModal 0.3s ease; }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content { background-color: var(--darker-grey-bg); margin: auto; padding: 25px; border: 3px solid var(--black-stroke); border-radius: var(--border-radius-game); width: 90%; max-width: 450px; box-shadow: 8px 8px 0px rgba(0,0,0,0.4); position: relative; color: var(--text-light); text-align: center; }
         .modal-content h3 { font-family: var(--font-logo); color: var(--blyza-orange-primary); -webkit-text-stroke: 1.5px var(--black-stroke); text-stroke: 1.5px var(--black-stroke); text-align: center; margin-bottom: 25px; font-size: 2rem; }
         .setting-item { margin-bottom: 18px; display: flex; flex-direction: column; }
         .setting-item label { margin-bottom: 10px; font-weight: 600; font-size: 1rem; }
@@ -265,6 +267,8 @@
         input[type=range]:focus { outline: none; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 10px; cursor: pointer; background: rgba(0,0,0,0.3); border-radius: 5px; border: 2px solid var(--black-stroke); }
         input[type=range]::-webkit-slider-thumb { border: 2px solid var(--black-stroke); height: 22px; width: 22px; border-radius: 50%; background: var(--blyza-orange-primary); cursor: pointer; -webkit-appearance: none; margin-top: -9px; }
+        #audio-consent-modal .modal-content p { font-family: var(--font-body); font-weight: 600; font-size: 1.1rem; margin-bottom: 25px; color: var(--text-light); }
+        #audio-consent-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
 
         /* --- Confetti & Game Over Buttons --- */
         .confetti-piece { position: fixed; width: 10px; height: 20px; background-color: var(--blyza-orange-primary); opacity: 0; animation-timing-function: linear; animation-fill-mode: forwards; pointer-events: none; z-index: 3000; }
@@ -277,8 +281,16 @@
         
         /* --- Responsive Adjustments --- */
         @media (max-width: 768px) {
-            body { padding: 10px; }
-            .game-container { padding: 45px 15px 15px; } 
+            body { 
+                padding: 10px; 
+                align-items: flex-start;
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+            .game-container { 
+                padding: 45px 15px 15px; 
+                max-height: calc(var(--app-height, 100vh) - 40px);
+            } 
             h1 { font-size: 2rem; } h3 { font-size: 1.8rem; }
             .instructions { padding: 15px; }
             .team-display { flex-direction: column; align-items: center; }
@@ -314,9 +326,9 @@
     </div>
 
     <script>
+        // THIS SCRIPT MUST RUN FIRST
         function setAppHeight() {
-            const doc = document.documentElement;
-            doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+            document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
         }
         window.addEventListener('resize', setAppHeight);
         setAppHeight();
@@ -436,6 +448,18 @@
         </div>
     </div>
 
+    <!-- Audio Consent Modal -->
+    <div id="audio-consent-modal" class="modal">
+        <div class="modal-content">
+            <h3>Enable Audio?</h3>
+            <p style="text-align: center;">This game has background music and sound effects. Would you like to enable them for the best experience?</p>
+            <div id="audio-consent-buttons">
+                <button id="audio-consent-yes-btn" class="btn-success"><i class="fas fa-volume-up"></i> Yes, please!</button>
+                <button id="audio-consent-no-btn" class="btn-secondary"><i class="fas fa-volume-mute"></i> No, thanks</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Settings Modal -->
     <div id="settings-modal" class="modal">
         <div class="modal-content">
@@ -475,9 +499,9 @@
 
         let sfxEnabled = true;
         let musicVolume = 0.3;
-
-        const allSfx = [ document.getElementById('interaction-sound'), document.getElementById('timer-tick-sound'), document.getElementById('time-up-sound'), document.getElementById('confetti-sound') ];
         let audioContextStarted = false;
+        
+        const allSfx = [ document.getElementById('interaction-sound'), document.getElementById('timer-tick-sound'), document.getElementById('time-up-sound'), document.getElementById('confetti-sound') ];
         
         const settingsBtn = document.getElementById('settings-btn');
         const settingsModal = document.getElementById('settings-modal');
@@ -485,17 +509,60 @@
         const bgmVolumeSlider = document.getElementById('bgm-volume-slider');
         const sfxToggleBtn = document.getElementById('sfx-toggle-btn');
         const backgroundMusic = document.getElementById('background-game-music');
+        const audioConsentModal = document.getElementById('audio-consent-modal');
+        const audioConsentYesBtn = document.getElementById('audio-consent-yes-btn');
+        const audioConsentNoBtn = document.getElementById('audio-consent-no-btn');
+        
+        function initAudio() {
+            if (audioContextStarted) return;
+            backgroundMusic.play().then(() => {
+                audioContextStarted = true;
+                if (musicVolume <= 0 || document.hidden) {
+                    backgroundMusic.pause();
+                }
+            }).catch(e => { console.warn("Audio autoplay blocked, waiting for user interaction.", e); });
+        }
+        
+        function playSound(audioElement) { 
+            if (sfxEnabled && audioElement && audioContextStarted) { 
+                audioElement.pause();
+                audioElement.currentTime = 0; 
+                audioElement.play().catch(e => {}); 
+            } 
+        }
 
-        function initAudio() { if (audioContextStarted) return; audioContextStarted = true; console.log("Audio context unlocked."); allSfx.forEach(sound => { if(sound) { sound.volume = 0; sound.play().then(() => { sound.pause(); sound.currentTime = 0; sound.volume = 1; }).catch(e => {}); } }); backgroundMusic.play().catch(e => {}); }
-        function playSound(audioElement) { if (sfxEnabled && audioElement && audioContextStarted) { audioElement.currentTime = 0; audioElement.play().catch(e => console.error("SFX play error:", e)); } }
-        function playSoundWithCallback(audioElement, callback, ...args) { if (sfxEnabled && audioElement && audioContextStarted) { audioElement.currentTime = 0; let cbEx=false; const exCb=()=>{if(!cbEx){cbEx=true; audioElement.removeEventListener('ended',exCb); if(typeof soundTimeoutId!=='undefined'&&soundTimeoutId)clearTimeout(soundTimeoutId); if(callback)callback(...args);}}; audioElement.addEventListener('ended',exCb); const sDur=(audioElement.duration&&isFinite(audioElement.duration))?audioElement.duration*1000:500; const soundTimeoutId=setTimeout(exCb,sDur+200); audioElement.play().catch(e=>{console.error("SFX play error:", e); exCb();});} else {if(callback)callback(...args);}}
+        function stopSound(audioElement) {
+             if (audioElement && audioContextStarted) { 
+                audioElement.pause();
+                audioElement.currentTime = 0; 
+            } 
+        }
+
+        function playSoundWithCallback(audioElement, callback, ...args) { 
+            if (sfxEnabled && audioElement && audioContextStarted) {
+                audioElement.pause();
+                audioElement.currentTime = 0;
+                let cbExecuted = false;
+                const execCb = () => {
+                    if (!cbExecuted) {
+                        cbExecuted = true;
+                        audioElement.removeEventListener('ended', execCb);
+                        if (callback) callback(...args);
+                    }
+                };
+                audioElement.addEventListener('ended', execCb);
+                audioElement.play().catch(e => { execCb(); });
+            } else { 
+                if (callback) callback(...args);
+            }
+        }
+
         function loadAudioSettings() { const savedVol = localStorage.getItem('musicVolume'), savedSfx = localStorage.getItem('sfxEnabled'); if (savedVol !== null) musicVolume = parseFloat(savedVol); if (savedSfx !== null) sfxEnabled = savedSfx === 'true'; backgroundMusic.volume = musicVolume; bgmVolumeSlider.value = musicVolume; sfxToggleBtn.textContent = `SFX: ${sfxEnabled ? 'ON' : 'OFF'}`; }
 
-        document.body.addEventListener('click', initAudio, { once: true });
         settingsBtn.addEventListener('click', () => { playSound(allSfx[0]); settingsModal.style.display = 'flex'; });
         closeModalBtn.addEventListener('click', () => { playSound(allSfx[0]); settingsModal.style.display = 'none'; });
         window.addEventListener('click', (event) => { if (event.target === settingsModal) { playSound(allSfx[0]); settingsModal.style.display = 'none'; } });
-        bgmVolumeSlider.addEventListener('input', (e) => { musicVolume = parseFloat(e.target.value); backgroundMusic.volume = musicVolume; localStorage.setItem('musicVolume', musicVolume); });
+        bgmVolumeSlider.addEventListener('input', (e) => { musicVolume = parseFloat(e.target.value); backgroundMusic.volume = musicVolume; localStorage.setItem('musicVolume', musicVolume); if (musicVolume > 0 && !document.hidden && audioContextStarted) backgroundMusic.play().catch(e=>{}); else backgroundMusic.pause(); });
         sfxToggleBtn.addEventListener('click', () => { sfxEnabled = !sfxEnabled; sfxToggleBtn.textContent = `SFX: ${sfxEnabled ? 'ON' : 'OFF'}`; playSound(allSfx[0]); localStorage.setItem('sfxEnabled', sfxEnabled);});
 
         function switchScreen(screenId) {
@@ -511,18 +578,16 @@
         }
 
         function showTeamSetup() { playSound(allSfx[0]); switchScreen("teamSetup"); }
-        function goToMainMenu() { playSound(allSfx[0]); if (treatYourselfElement) treatYourselfElement.style.display = 'none'; switchScreen('start'); }
+        function goToMainMenu() { stopSound(allSfx[1]); playSound(allSfx[0]); if (treatYourselfElement) treatYourselfElement.style.display = 'none'; switchScreen('start'); }
         
-        backBtnEl.addEventListener("click", () => { playSound(allSfx[0]); goToMainMenu(); });
+        backBtnEl.addEventListener("click", goToMainMenu);
 
         function startGame() {
-            playSoundWithCallback(allSfx[0], () => {
-                gameState.team1.name = document.getElementById("team1-name").value.trim() || "Team 1";
-                gameState.team2.name = document.getElementById("team2-name").value.trim() || "Team 2";
-                if (gameState.team1.name.length > 15 || gameState.team2.name.length > 15) { alert("Team names too long!"); return; }
-                if (gameState.team1.name.toLowerCase() === gameState.team2.name.toLowerCase()) { alert("Team names must be different!"); return; }
-                resetGame(false);
-            });
+            gameState.team1.name = document.getElementById("team1-name").value.trim() || "Team 1";
+            gameState.team2.name = document.getElementById("team2-name").value.trim() || "Team 2";
+            if (gameState.team1.name.length > 15 || gameState.team2.name.length > 15) { alert("Team names too long!"); return; }
+            if (gameState.team1.name.toLowerCase() === gameState.team2.name.toLowerCase()) { alert("Team names must be different!"); return; }
+            resetGame(false);
         }
         
         function newRound() {
@@ -535,7 +600,8 @@
             gameState.usedCategories.push(gameState.currentCategory);
             
             document.getElementById("category-display").textContent = gameState.currentCategory;
-            clearInterval(gameState.timerInterval); allSfx[1].pause();
+            clearInterval(gameState.timerInterval); 
+            stopSound(allSfx[1]);
             timerProgressBar.style.transition = 'none';
             timerProgressBar.style.width = "100%"; 
             void timerProgressBar.offsetWidth;
@@ -559,15 +625,17 @@
             void timerProgressBar.offsetWidth;
             timerProgressBar.style.transition = 'width 0.1s linear';
             gameState.timerInterval = setInterval(updateTimer, 100); 
-            if (sfxEnabled) { allSfx[1].currentTime = 0; allSfx[1].play().catch(e => {}); }
+            playSound(allSfx[1]);
         }
 
         function updateTimer() {
             gameState.timeLeft -= 0.1;
             timerProgressBar.style.width = `${Math.max(0, (gameState.timeLeft / 30) * 100)}%`;
             if (gameState.timeLeft <= 0) {
-                clearInterval(gameState.timerInterval); allSfx[1].pause();
-                playSound(allSfx[2]); timerProgressBar.style.width = "0%";
+                clearInterval(gameState.timerInterval); 
+                stopSound(allSfx[1]);
+                playSound(allSfx[2]); 
+                timerProgressBar.style.width = "0%";
                 showTimeUpAnimation(); document.getElementById("result-buttons").style.display = "flex"; 
             }
         }
@@ -581,7 +649,8 @@
 
         function challengeResult(challengedTeamSucceeded) {
             playSound(allSfx[0]);
-            clearInterval(gameState.timerInterval); allSfx[1].pause();
+            clearInterval(gameState.timerInterval); 
+            stopSound(allSfx[1]);
             document.getElementById("result-buttons").style.display = "none"; 
             if (challengedTeamSucceeded) { if (gameState.challengedTeamIndex === 0) gameState.team1.score++; else gameState.team2.score++; }
             else { if (gameState.challengedTeamIndex === 0) gameState.team2.score++; else gameState.team1.score++; }
@@ -596,6 +665,7 @@
         }
 
         function showWinScreen() {
+            stopSound(allSfx[1]);
             const winner = gameState.team1.score >= gameState.winningScore ? gameState.team1.name : gameState.team2.name;
             document.getElementById("win-message").textContent = `${winner} Wins!`;
              if (!treatYourselfElement) {
@@ -645,13 +715,85 @@
                  switchScreen("game");
             }
         }
+        
+        function handleVisibilityChange() {
+            if (!audioContextStarted) return;
+            if (document.hidden) {
+                backgroundMusic.pause();
+                stopSound(allSfx[1]);
+            } else if (musicVolume > 0) {
+                backgroundMusic.play().catch(e => {});
+            }
+        }
+
+        function handlePageShow(event) {
+            if (event.persisted) {
+                setAppHeight(); 
+                goToMainMenu();
+            }
+        }
 
         function visitStore() { playSound(allSfx[0]); window.location.href = '/store';  }
 
         document.addEventListener('DOMContentLoaded', () => {
             loadAudioSettings();
+            audioConsentModal.style.display = 'flex';
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            window.addEventListener('pageshow', handlePageShow);
             goToMainMenu();
         });
+
+        audioConsentYesBtn.addEventListener('click', () => {
+            audioConsentModal.style.display = 'none';
+            initAudio();
+            playSound(allSfx[0]);
+        });
+        
+        audioConsentNoBtn.addEventListener('click', () => {
+            audioConsentModal.style.display = 'none';
+            sfxEnabled = false;
+            musicVolume = 0;
+            backgroundMusic.volume = 0;
+            bgmVolumeSlider.value = 0;
+            sfxToggleBtn.textContent = 'SFX: OFF';
+            localStorage.setItem('sfxEnabled', 'false'); 
+            localStorage.setItem('musicVolume', '0'); 
+            initAudio();
+        });
+
+        // --- CUSTOM SCROLL REDIRECTION LOGIC ---
+        const gameContainerForScroll = document.querySelector('.game-container');
+        let lastTouchY = 0;
+
+        window.addEventListener('wheel', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                gameContainerForScroll.scrollTop += e.deltaY;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchstart', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                if (e.touches.length > 0) {
+                    lastTouchY = e.touches[0].clientY;
+                }
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                e.preventDefault(); 
+                if (e.touches.length > 0) {
+                    const currentTouchY = e.touches[0].clientY;
+                    const deltaY = lastTouchY - currentTouchY;
+                    gameContainerForScroll.scrollTop += deltaY;
+                    lastTouchY = currentTouchY;
+                }
+            }
+        }, { passive: false });
+        // --- END OF CUSTOM SCROLL LOGIC ---
     </script>
     <script>
       window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };
