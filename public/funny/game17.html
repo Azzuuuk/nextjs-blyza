@@ -173,10 +173,18 @@
 
         /* --- Game Screen & Stage --- */
         .game-info {
-            display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 20px;
-            margin-bottom: 15px; padding: 10px 15px; background: rgba(0,0,0,0.1);
-            border-radius: 8px; font-family: var(--font-heading-alt);
-            color: var(--text-dark); border: 2px solid var(--black-stroke);
+            display: flex;
+            justify-content: center; /* MODIFIED: Was space-around, now center to prevent overlap with corner buttons */
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 8px;
+            font-family: var(--font-heading-alt);
+            color: var(--text-dark);
+            border: 2px solid var(--black-stroke);
         }
         .score-display-multiplayer { display: flex; gap: 15px; }
         .score-box {
@@ -570,18 +578,26 @@
 
         const setupRound = () => {
             Object.assign(gameState, { roundPhase: 'guessing', currentGuess: null });
+
+            // Instantly close the curtains and hide the image for the new round
             el.leftCurtain.classList.remove('open');
             el.rightCurtain.classList.remove('open');
             el.flagImageDisplay.classList.remove('visible');
             el.flagImageDisplay.src = "";
+            
+            // Check if we need to reshuffle flags
             if (gameState.remainingFlags.length === 0) {
                 gameState.remainingFlags = [...gameState.usedFlags];
                 gameState.usedFlags = [];
                 shuffleArray(gameState.remainingFlags);
             }
+
+            // Get the next flag and set its image
             gameState.currentFlag = gameState.remainingFlags.pop();
             gameState.usedFlags.push(gameState.currentFlag);
             el.flagImageDisplay.src = `https://flagcdn.com/w320/${gameState.currentFlag.code.toLowerCase()}.png`;
+
+            // Reset and create new option buttons
             el.optionsContainer.innerHTML = '';
             el.actionBtn.style.display = 'none';
             const options = [...gameState.currentFlag.options];
@@ -591,11 +607,16 @@
                 optionBtn.className = 'option-btn';
                 optionBtn.innerHTML = `<span>${optionText}</span>`;
                 optionBtn.dataset.option = optionText;
-                optionBtn.style.animationDelay = `${i * 100 + 500}ms`;
+                optionBtn.style.animationDelay = `${i * 100 + 500}ms`; // Delay pop-in animation
                 optionBtn.addEventListener('click', handleOptionSelect);
                 el.optionsContainer.appendChild(optionBtn);
             });
+
+            // Update the game info bar (scores, turn, etc.)
             updateGameInfoUI();
+            
+            // Schedule the curtain opening animation after a short delay.
+            // This delay gives the browser time to process the class removal, allowing the transition to re-trigger.
             setTimeout(() => {
                 playSound(el.audio.curtain);
                 el.leftCurtain.classList.add('open');
