@@ -558,7 +558,7 @@
     <audio id="reveal-wrong-sound" src="https://static.wixstatic.com/mp3/9ce3e5_277f814439064d1bbe5c0342241b23e4.mp3"></audio>
     <audio id="curtain-sound" src="https://static.wixstatic.com/mp3/9ce3e5_ccd36cdf98bf4e1594cf2e52d5296c51.wav"></audio>
 
-    <script>
+        <script>
         const gameState = {
             players: [], currentRound: 1, scores: {}, gameMode: 'single', currentItem: null,
             singlePlayerSubType: '5rounds', // '5rounds' or 'infinite'
@@ -606,18 +606,19 @@
         const audioConsentYesBtn = document.getElementById('audio-consent-yes-btn');
         const audioConsentNoBtn = document.getElementById('audio-consent-no-btn');
 
+        // --- FIX: This function now just *attempts* to unlock audio. It can be called safely multiple times.
         function initAudio() {
             if (audioContextStarted) return;
-            console.log("Attempting to unlock audio context...");
+            console.log("Attempting to unlock audio...");
             backgroundMusic.play().then(() => {
-                backgroundMusic.pause();
                 console.log("Audio context unlocked successfully.");
                 audioContextStarted = true;
-                if (musicVolume > 0 && !document.hidden) {
-                    backgroundMusic.play();
+                // If music is already supposed to be playing, keep it on. Otherwise, pause it.
+                if (musicVolume <= 0 || document.hidden) {
+                    backgroundMusic.pause();
                 }
             }).catch(e => {
-                console.warn("Audio autoplay was blocked by the browser.", e);
+                console.warn("Audio autoplay was blocked by the browser. Waiting for user interaction.", e);
             });
         }
         
@@ -665,6 +666,7 @@
         function saveHighScore(score) { if (score > infiniteHighScore) { infiniteHighScore = score; localStorage.setItem('gtp_infinite_highscore', infiniteHighScore); } }
         function showHighScore() { playSound(allSfx[1]); showFeedbackMessage(`Infinite High Score: ${infiniteHighScore}`, 'winner', 3000); }
 
+        // --- FIX: This function now correctly handles pausing/resuming music when the app is backgrounded.
         function handleVisibilityChange() {
             if (!audioContextStarted) return;
             if (document.hidden) {
@@ -674,14 +676,11 @@
             }
         }
         
-        // --- THIS IS THE CRITICAL FIX ---
+        // --- This function for handling bfcache is good practice, keep it.
         function handlePageShow(event) {
-            // event.persisted is true if the page is being restored from the bfcache.
             if (event.persisted) {
                 console.log("Page restored from bfcache. Re-initializing...");
-                // Re-run the height calculation, which is crucial for the layout.
                 setAppHeight(); 
-                // Reset the game state to the main menu. This will re-activate the correct screen.
                 newGame();
             }
         }
@@ -737,54 +736,51 @@
             updateTeamRemoveButtonsState(); 
             if (modeOptions.length > 0) modeOptions[0].click(); 
 
-            if (!localStorage.getItem('audioConsentGiven')) {
-                audioConsentModal.style.display = 'flex';
-            } else {
-                initAudio();
-            }
+            // --- FIX: ALWAYS SHOW THE MODAL ---
+            // By removing the check for localStorage, this modal will now appear every time.
+            audioConsentModal.style.display = 'flex';
+            
+            // --- IMPORTANT: You still need this fix for the background music issue ---
+            document.addEventListener('visibilitychange', handleVisibilityChange);
 
-            // --- THIS IS THE CRITICAL CHANGE ---
-            // This listener acts as a safety net for the vercel.json fix.
-            // If the browser *somehow* still uses the bfcache, this will
-            // reset the game view to a usable state.
-            window.addEventListener('pageshow', function(event) {
-                if (event.persisted) {
-                    console.log("Page restored from bfcache; ensuring correct view.");
-                    // Forcing a reset to the main menu screen is the most reliable way
-                    // to ensure the UI is in a correct, visible state.
-                    newGame();
-                }
-            });
-            // --- END OF CHANGE ---
-
-            // ... your other click listeners for buttons ...
+            // This listener handles the back/forward cache case.
+            window.addEventListener('pageshow', handlePageShow);
         });
+
         audioConsentYesBtn.addEventListener('click', () => {
-            localStorage.setItem('audioConsentGiven', 'true');
+            // We don't need to save to localStorage anymore if we ask every time.
+            // localStorage.setItem('audioConsentGiven', 'true'); 
             audioConsentModal.style.display = 'none';
-            initAudio(); 
+            initAudio(); // This user tap will unlock the audio context
             playSound(allSfx[1]);
         });
 
         audioConsentNoBtn.addEventListener('click', () => {
-            localStorage.setItem('audioConsentGiven', 'true');
+            // We don't need to save to localStorage anymore.
+            // localStorage.setItem('audioConsentGiven', 'true');
             audioConsentModal.style.display = 'none';
             sfxEnabled = false;
             musicVolume = 0;
             backgroundMusic.volume = 0;
             bgmVolumeSlider.value = 0;
             sfxToggleBtn.textContent = 'SFX: OFF';
-            localStorage.setItem('sfxEnabled', 'false');
-            localStorage.setItem('musicVolume', '0');
-            initAudio();
+            localStorage.setItem('sfxEnabled', 'false'); // Still good to save these specific settings
+            localStorage.setItem('musicVolume', '0'); // Still good to save these specific settings
+            initAudio(); // Still call this to set the audioContextStarted flag
         });
 
-        function startSinglePlayerGame(subType) { gameState.singlePlayerSubType = subType; playSoundWithCallback(allSfx[0], actualStartGame); }
+        function startSinglePlayerGame(subType) {
+            initAudio(); // --- ADDED: Ensure audio is unlocked on game start
+            gameState.singlePlayerSubType = subType;
+            playSoundWithCallback(allSfx[0], actualStartGame);
+        }
+
         function selectGameMode() { modeOptions.forEach(o => o.classList.remove('selected')); this.classList.add('selected'); gameState.gameMode = this.dataset.mode; const isMulti = gameState.gameMode === 'multi'; multiplayerStartArea.style.display = isMulti ? 'block' : 'none'; singlePlayerSubOptions.style.display = isMulti ? 'none' : 'block'; if (isMulti) updateTeamRemoveButtonsState(); }
         function addTeamInputField() { if (teamNamesList.querySelectorAll('.team-input-wrapper').length >= 4) return; const w = document.createElement('div'); w.className = 'team-input-wrapper'; const i = document.createElement('input'); i.type = 'text'; i.className = 'team-name-input'; i.placeholder = `Team ${teamNamesList.children.length + 1}`; const r = document.createElement('button'); r.className = 'remove-team-btn'; r.innerHTML = '<i class="fas fa-times"></i>'; r.onclick = () => { playSound(allSfx[1]); w.remove(); updateTeamRemoveButtonsState(); }; w.append(i, r); teamNamesList.appendChild(w); updateTeamRemoveButtonsState(); }
         function updateTeamRemoveButtonsState() { const wrappers = teamNamesList.querySelectorAll('.team-input-wrapper'); addTeamBtn.disabled = wrappers.length >= 4; wrappers.forEach((w, i) => { let r = w.querySelector('.remove-team-btn'); if(i < 2 && r) r.remove(); else if(i >= 2 && !r){ const nr = document.createElement('button'); nr.className='remove-team-btn'; nr.innerHTML='<i class="fas fa-times"></i>'; nr.onclick=()=>{playSound(allSfx[1]); w.remove(); updateTeamRemoveButtonsState();}; w.appendChild(nr); r = nr; } if(r) r.disabled = wrappers.length <= 2; }); }
         
         function actualStartGame() {
+            initAudio(); // --- ADDED: Ensure audio is unlocked on game start for multiplayer too
             if (gameState.gameMode === 'single') {
                 gameState.players = ['You'];
                 gameState.scores = { 'You': 0 };
@@ -999,7 +995,6 @@
             }
         }, { passive: false });
         // --- END OF CUSTOM SCROLL LOGIC ---
-        
     </script>
     <script>
       window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };
