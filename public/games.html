@@ -81,15 +81,11 @@
     max-height: 135px;
     object-fit: contain;
     filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
-
-    /* Add a smooth transition for the transform and filter properties */
     transition: transform 0.3s ease-out, filter 0.3s ease-out;
 }
-
-/* Define the hover effect */
 .brand-logo-prominent:hover {
-    transform: scale(1.08); /* Slightly enlarge the logo by 8% */
-    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4)); /* Make the shadow more prominent */
+    transform: scale(1.08); 
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4));
 }
     .page-header h1 {
         font-family: var(--font-logo); font-size: clamp(2.8rem, 6vw, 4rem);
@@ -100,12 +96,11 @@
     .page-header .subtitle {
     font-size: clamp(1rem, 2vw, 1.2rem);
     color: var(--blyza-sunny-yellow);
-    font-weight: 700; /* Make it bolder */
+    font-weight: 700; 
     max-width: 550px;
     margin: 0 auto;
-    letter-spacing: 0.02em; /* Slight spacing */
-    text-shadow: 0 0 12px rgba(255, 255, 0, 0.7); /* Soft yellow glow */
-    
+    letter-spacing: 0.02em; 
+    text-shadow: 0 0 12px rgba(255, 255, 0, 0.7); 
 }
 
     /* --- Search & Filters (Funky Style) --- */
@@ -278,8 +273,7 @@
 </style>
 </head>
 <body>
-
-    <!-- Floating background elements -->
+    <!-- Floating background elements, header, etc. remain the same -->
     <div class="hero-background-elements">
         <div class="bg-game-element game-controller game-controller-1"><i class="fas fa-gamepad"></i></div>
         <div class="bg-game-element game-joystick game-joystick-1">
@@ -328,7 +322,7 @@
             </div>
         
             <div class="games-grid">
-                <!-- All 18 game cards with updated structure -->
+                <!-- Game cards go here... -->
                 <div class="game-card-item" data-category="Social & Deception">
                     <div class="game-card-content">
                         <span class="category-tag">Social</span>
@@ -549,7 +543,7 @@
         </div>
     </main>
 
-    <!-- Settings Modal -->
+    <!-- Modals and Audio Players here... -->
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <span id="settings-close-btn" class="close-modal-btn">×</span>
@@ -564,20 +558,13 @@
             </div>
         </div>
     </div>
-
-    <!-- NEW: Favorites Modal -->
     <div id="favorites-modal" class="modal">
         <div class="modal-content">
             <span id="favorites-close-btn" class="close-modal-btn">×</span>
             <h2>My Favourite Games</h2>
-            <ul id="favorites-list" class="favorites-list">
-                <!-- Favorite games will be populated here by JavaScript -->
-            </ul>
+            <ul id="favorites-list" class="favorites-list"></ul>
         </div>
     </div>
-
-
-    <!-- Audio Players -->
     <audio id="background-music" loop><source src="https://static.wixstatic.com/mp3/9ce3e5_973dcdec546a44b594013ec040a9eb20.mp3" type="audio/mpeg"></audio>
     <audio id="category-select-sound"><source src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" type="audio/wav"></audio>
     <audio id="item-select-sound"><source src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3" type="audio/mpeg"></audio>
@@ -586,7 +573,7 @@
     document.addEventListener('DOMContentLoaded', () => {
 
         const gameConfig = { sfxEnabled: true, musicVolume: 0.3 };
-        let playCounts = {}; // NEW: Object to hold play counts
+        let playCounts = {};
 
         const searchInput = document.querySelector('.search-input');
         const gameCards = document.querySelectorAll('.game-card-item');
@@ -599,22 +586,17 @@
         const sfxToggleBtn = document.getElementById('sfx-toggle-btn');
         const categorySelectSound = document.getElementById('category-select-sound');
         const itemSelectSound = document.getElementById('item-select-sound');
-        // NEW element selectors
         const surpriseMeBtn = document.getElementById('surprise-me-btn');
         const favoritesOpenBtn = document.getElementById('favorites-open-btn');
         const favoritesModal = document.getElementById('favorites-modal');
         const favoritesCloseBtn = document.getElementById('favorites-close-btn');
         const favoritesList = document.getElementById('favorites-list');
 
-        // NEW: Function to load play counts from localStorage
         const loadPlayCounts = () => {
             const storedCounts = localStorage.getItem('blyzaGamePlays');
-            if (storedCounts) {
-                playCounts = JSON.parse(storedCounts);
-            }
+            if (storedCounts) playCounts = JSON.parse(storedCounts);
         };
 
-        // NEW: Function to save play counts to localStorage
         const savePlayCounts = () => {
             localStorage.setItem('blyzaGamePlays', JSON.stringify(playCounts));
         };
@@ -622,24 +604,25 @@
         const playSound = (audioElement) => {
             if (gameConfig.sfxEnabled && audioElement) {
                 audioElement.currentTime = 0;
-                audioElement.play().catch(e => console.error("SFX Error:", e));
+                audioElement.play().catch(e => {});
             }
         };
-
+        
+        // --- THIS IS THE RECOMMENDED CHANGE ---
         const handleLinkWithSound = (linkElement, soundElement) => {
             if (!linkElement || !soundElement) return;
             linkElement.addEventListener('click', function(event) {
                 event.preventDefault();
                 
-                // --- THIS IS THE FIX ---
-                // Use getAttribute('href') to get the relative path (e.g., "/games/game1")
-                // instead of .href which gives the full URL.
+                // Use getAttribute('href') for robust tracking.
                 const targetUrl = this.getAttribute('href'); 
-                const navigationUrl = this.href; // Still use the full URL for navigation
+                const navigationUrl = this.href;
 
                 // Track the play count using the relative path
-                playCounts[targetUrl] = (playCounts[targetUrl] || 0) + 1;
-                savePlayCounts();
+                if (targetUrl !== '/store') { // Don't track clicks to the store
+                    playCounts[targetUrl] = (playCounts[targetUrl] || 0) + 1;
+                    savePlayCounts();
+                }
 
                 let navigated = false;
                 const navigate = () => { if (!navigated) { navigated = true; window.location.href = navigationUrl; } };
@@ -662,51 +645,33 @@
             });
         }
         
-        if (categoryButtons.length) {
-            categoryButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    playSound(categorySelectSound);
-                    categoryButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    const selectedCategory = button.dataset.category;
-                    gameCards.forEach(card => {
-                        card.style.display = (selectedCategory === 'All Games' || card.dataset.category === selectedCategory) ? 'flex' : 'none';
-                    });
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                playSound(categorySelectSound);
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const selectedCategory = button.dataset.category;
+                gameCards.forEach(card => {
+                    card.style.display = (selectedCategory === 'All Games' || card.dataset.category === selectedCategory) ? 'flex' : 'none';
                 });
             });
-        }
-
-        if (gameCards.length) {
-            gameCards.forEach(card => {
-                card.addEventListener('click', (event) => {
-                    if (event.target.tagName !== 'A') {
-                        const link = card.querySelector('.game-title a');
-                        if (link) link.click();
-                    }
-                });
-                handleLinkWithSound(card.querySelector('.game-title a'), itemSelectSound);
+        });
+        
+        gameCards.forEach(card => {
+            card.addEventListener('click', (event) => {
+                if (event.target.tagName !== 'A') {
+                    card.querySelector('.game-title a')?.click();
+                }
             });
-        }
-
-        // --- EDITED SECTION START ---
-        // This is the specific fix. The store button now has its own listener
-        // that does NOT track play counts.
+            handleLinkWithSound(card.querySelector('.game-title a'), itemSelectSound);
+        });
+        
+        // Handle store button separately to prevent tracking
         const storeButton = document.querySelector('.store-btn');
         if (storeButton) {
-            storeButton.addEventListener('click', function(event) {
-                event.preventDefault();
-                const navigationUrl = this.href;
-                let navigated = false;
-                const navigate = () => { if (!navigated) { navigated = true; window.location.href = navigationUrl; } };
-                
-                playSound(itemSelectSound); // Play the sound
-                itemSelectSound.onended = navigate; // Navigate when sound ends
-                setTimeout(navigate, 400); // Failsafe navigation
-            });
+            handleLinkWithSound(storeButton, itemSelectSound);
         }
-        // --- EDITED SECTION END ---
         
-        // --- MODAL HANDLING ---
         const setupModal = (openBtn, modal, closeBtn) => {
             if (!openBtn || !modal || !closeBtn) return;
             const toggleModal = (populateCallback) => {
@@ -725,36 +690,30 @@
         setupModal(settingsOpenBtn, settingsModal, settingsCloseBtn);
         setupModal(favoritesOpenBtn, favoritesModal, favoritesCloseBtn);
 
-        // --- NEW: "Surprise Me" and "Favorites" Logic ---
         if (surpriseMeBtn) {
             surpriseMeBtn.addEventListener('click', () => {
-                const availableGameLinks = Array.from(document.querySelectorAll('.games-grid .game-card-item .game-title a'));
-                if (availableGameLinks.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * availableGameLinks.length);
-                    availableGameLinks[randomIndex].click(); // This will trigger the sound and tracking via handleLinkWithSound
+                const visibleCards = Array.from(gameCards).filter(card => card.style.display !== 'none');
+                if (visibleCards.length > 0) {
+                    const randomCard = visibleCards[Math.floor(Math.random() * visibleCards.length)];
+                    randomCard.querySelector('.game-title a')?.click();
                 }
             });
         }
 
         const populateFavoritesModal = () => {
-            favoritesList.innerHTML = ''; // Clear previous list
+            favoritesList.innerHTML = '';
             const sortedGames = Object.entries(playCounts).sort(([, a], [, b]) => b - a);
             
             if (sortedGames.length === 0) {
-                favoritesList.innerHTML = `<li class="no-favorites-message">You haven't played any games yet! Go on, try one!</li>`;
+                favoritesList.innerHTML = `<li class="no-favorites-message">You haven't played any games yet!</li>`;
                 return;
             }
 
             sortedGames.forEach(([gameHref, count]) => {
-                // The selector now correctly finds the element because gameHref is "/games/game1" etc.
                 const gameTitleEl = document.querySelector(`.game-title a[href="${gameHref}"]`);
                 const gameTitle = gameTitleEl ? gameTitleEl.textContent : 'Unknown Game';
-
                 const listItem = document.createElement('li');
-                listItem.innerHTML = `
-                    <span class="game-name">${gameTitle}</span>
-                    <span class="play-count"><i class="fas fa-play"></i> ${count}</span>
-                `;
+                listItem.innerHTML = `<span class="game-name">${gameTitle}</span><span class="play-count"><i class="fas fa-play"></i> ${count}</span>`;
                 favoritesList.appendChild(listItem);
             });
         };
@@ -765,51 +724,39 @@
             sfxToggleBtn.classList.toggle('off', !gameConfig.sfxEnabled);
         };
         
-        if (bgmVolumeSlider) {
-            bgmVolumeSlider.addEventListener('input', (e) => {
-                const newVolume = parseFloat(e.target.value);
-                gameConfig.musicVolume = newVolume;
-                if(backgroundMusic) backgroundMusic.volume = newVolume;
-                localStorage.setItem('musicVolume', newVolume);
-            });
-        }
+        bgmVolumeSlider.addEventListener('input', (e) => {
+            const newVolume = parseFloat(e.target.value);
+            gameConfig.musicVolume = newVolume;
+            if(backgroundMusic) backgroundMusic.volume = newVolume;
+            localStorage.setItem('musicVolume', newVolume);
+        });
         
-        if (sfxToggleBtn) {
-            sfxToggleBtn.addEventListener('click', () => {
-                gameConfig.sfxEnabled = !gameConfig.sfxEnabled;
-                localStorage.setItem('sfxEnabled', gameConfig.sfxEnabled);
-                updateSfxButton();
-                playSound(categorySelectSound);
-            });
-        }
+        sfxToggleBtn.addEventListener('click', () => {
+            gameConfig.sfxEnabled = !gameConfig.sfxEnabled;
+            localStorage.setItem('sfxEnabled', gameConfig.sfxEnabled);
+            updateSfxButton();
+            playSound(categorySelectSound);
+        });
         
-        // --- INITIALIZATION ---
-        loadPlayCounts(); // Load play counts on page load
-
+        // Initialization
+        loadPlayCounts();
         const savedVolume = localStorage.getItem('musicVolume');
         const savedSfxEnabled = localStorage.getItem('sfxEnabled');
         if (savedVolume !== null) gameConfig.musicVolume = parseFloat(savedVolume);
         if (savedSfxEnabled !== null) gameConfig.sfxEnabled = savedSfxEnabled === 'true';
-
-        if (backgroundMusic) {
-             backgroundMusic.volume = gameConfig.musicVolume;
-             // Delay play to allow user interaction, more robust against browser policies
-             document.body.addEventListener('click', () => {
-                if(backgroundMusic.paused) {
-                    backgroundMusic.play().catch(e => console.log("BGM autoplay prevented."));
-                }
-             }, { once: true });
-        }
+        if(backgroundMusic) backgroundMusic.volume = gameConfig.musicVolume;
+        document.body.addEventListener('click', () => {
+            if(backgroundMusic && backgroundMusic.paused) backgroundMusic.play().catch(e => {});
+        }, { once: true });
         if(bgmVolumeSlider) bgmVolumeSlider.value = gameConfig.musicVolume;
         updateSfxButton();
     });
     </script>
     
-    <!-- VERCEL ANALYTICS SCRIPT -->
     <script>
       window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };
     </script>
     <script src="/_vercel/insights/script.js" defer></script>
     
 </body>
-</html>
+</html> 
