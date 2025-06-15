@@ -34,18 +34,20 @@
         /* --- Basic Reset & Body --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
+        
+        /* --- CUSTOM SCROLLING BODY --- */
         body {
             font-family: var(--font-body);
             color: var(--text-light);
             background: linear-gradient(135deg, var(--blyza-orange-primary) 0%, var(--blyza-purple-secondary) 100%);
             line-height: 1.6;
-            overflow-x: hidden;
+            overflow: hidden; /* Body does not scroll */
             position: relative;
-            min-height: var(--app-height, 100vh); 
+            height: var(--app-height, 100vh); /* Full screen height */
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
+            padding: 20px 10px;
         }
 
         /* --- Floating Background Elements --- */
@@ -68,15 +70,21 @@
             100% { transform: translateY(0px) rotate(calc(var(--initial-rotate, 0deg) - 8deg)); }
         }
         
-        /* --- Main Game Container --- */
+        /* --- CUSTOM SCROLLING CONTAINER --- */
         .game-container {
-            max-width: 900px; width: 100%;
+            max-width: 900px;
+            width: 100%;
             background: linear-gradient(145deg, #fdfefe, #e9ecef);
             color: var(--text-dark);
-            border-radius: var(--border-radius-game); border: 3px solid var(--black-stroke);
+            border-radius: var(--border-radius-game);
+            border: 3px solid var(--black-stroke);
             box-shadow: 8px 8px 0px var(--black-stroke);
-            padding: 30px; text-align: center; position: relative;
-            overflow: hidden; z-index: 2;
+            padding: 30px; 
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            max-height: calc(var(--app-height, 100vh) - 40px); /* Make container scrollable */
+            overflow-y: auto;
         }
 
         .brand-logo-prominent { display: block; margin: 0 auto 15px; max-height: 80px; }
@@ -125,7 +133,7 @@
         .remove-player-btn i { margin: 0; }
 
         /* --- Buttons --- */
-        button {
+        button, .btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-info {
             font-family: var(--font-heading-alt); font-size: 1.1rem; padding: 0.7em 1.5em;
             border: 3px solid var(--black-stroke); border-radius: 8px;
             text-transform: uppercase; text-decoration: none; display: inline-flex;
@@ -138,10 +146,10 @@
         button:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
         button:disabled { background: var(--text-medium); color: var(--text-light); cursor: not-allowed; opacity: 0.7; box-shadow: var(--shadow-chunky); }
 
-        .btn-primary, #start-game-btn, #next-player-btn { background-color: var(--blyza-sunny-yellow); box-shadow: var(--shadow-chunky); }
+        .btn-primary, #start-game-btn, #next-player-btn, #start-voting-btn { background-color: var(--blyza-sunny-yellow); box-shadow: var(--shadow-chunky); }
         .btn-secondary, #add-player-btn, #new-game-btn { background-color: var(--blyza-purple-secondary); color: var(--text-light); box-shadow: var(--shadow-chunky); }
         .btn-success, #play-again-btn { background-color: var(--blyza-keppel-accent); color: var(--text-light); box-shadow: var(--shadow-chunky); }
-        .btn-danger { background-color: var(--blyza-quickfire-red); color: var(--text-light); box-shadow: var(--shadow-chunky); }
+        .btn-danger, #reveal-imposter-btn { background-color: var(--blyza-quickfire-red); color: var(--text-light); box-shadow: var(--shadow-chunky); }
         .btn-info, #visit-store-btn { background-color: #4ECDC4; color: var(--text-dark); box-shadow: var(--shadow-chunky); }
         
         /* --- Role Card --- */
@@ -159,18 +167,13 @@
         .role-card-front:hover { transform: translateY(-5px) scale(1.02); box-shadow: 6px 6px 0 var(--blyza-orange-primary); }
         .role-card-front p { font-family: var(--font-heading-alt); font-size: 1.2rem; }
         .role-card-back p { font-size: 1rem; color: var(--text-medium); margin-top: 12px; }
-        /* --- Add this new block to style the question text --- */
-#player-question {
-    font-size: 1.1rem;         /* Make the font a little bigger */
-    font-weight: 600;          /* Make it semi-bold */
-    color: var(--text-dark);   /* Change the color to be darker and more prominent */
-    font-style: italic;        /* Add an italic style */
-    line-height: 1.4;          /* Adjust the line spacing if the question is long */
-    padding: 10px;             /* Add some space around the text */
-    background: rgba(0,0,0,0.05); /* Give it a subtle background to stand out */
-    border-radius: 8px;        /* Round the corners of the background */
-    border: 2px dashed var(--blyza-purple-secondary); /* Give it a cool dashed border */
-}
+
+        #player-question {
+            font-size: 1.1rem; font-weight: 600; color: var(--text-dark);
+            font-style: italic; line-height: 1.4; padding: 10px;
+            background: rgba(0,0,0,0.05); border-radius: 8px;
+            border: 2px dashed var(--blyza-purple-secondary);
+        }
         #player-role { font-family: var(--font-logo); font-size: 2.2rem; -webkit-text-stroke: 2px var(--black-stroke); text-stroke: 2px var(--black-stroke); margin-bottom: 15px; }
         .role-imposter { color: var(--blyza-quickfire-red); }
         .role-crewmate { color: var(--blyza-keppel-accent); }
@@ -219,20 +222,26 @@
             z-index: 100; text-decoration: none; border: 3px solid var(--black-stroke);
             box-shadow: var(--shadow-chunky);
         }
-        .icon-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black-stroke); }
+        .icon-btn:hover:not(:disabled) { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black-stroke); }
+        .icon-btn:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--black-stroke); }
         #settings-btn { top: 20px; right: 20px; }
         #home-menu-btn, #back-btn { top: 20px; left: 20px; }
         
         .modal {
             position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+            background-color: rgba(0,0,0,0.6); 
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
             display: none; justify-content: center; align-items: center;
+            animation: fadeInModal 0.3s ease;
         }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+
         .modal-content {
             background-color: var(--darker-grey-bg); margin: auto; padding: 25px;
             border: 3px solid var(--black-stroke); border-radius: var(--border-radius-game);
             width: 90%; max-width: 450px; box-shadow: 8px 8px 0px rgba(0,0,0,0.4);
-            position: relative; color: var(--text-light);
+            position: relative; color: var(--text-light); text-align: center;
         }
         .modal-content h2 {
             font-family: var(--font-logo); color: var(--blyza-orange-primary);
@@ -241,11 +250,18 @@
         }
         .setting-item { margin-bottom: 18px; display: flex; flex-direction: column; }
         .setting-item label { margin-bottom: 10px; font-weight: 600; font-size: 1rem; }
-        .close-modal-btn { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-modal-btn { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.2s; }
+        .close-modal-btn:hover { color: var(--text-light); }
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]:focus { outline: none; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 10px; cursor: pointer; background: rgba(0,0,0,0.3); border-radius: 5px; border: 2px solid var(--black-stroke); }
         input[type=range]::-webkit-slider-thumb { border: 2px solid var(--black-stroke); height: 22px; width: 22px; border-radius: 50%; background: var(--blyza-orange-primary); cursor: pointer; -webkit-appearance: none; margin-top: -9px; }
+        
+        #audio-consent-modal .modal-content p {
+            font-family: var(--font-body); font-weight: 600; font-size: 1.1rem;
+            margin-bottom: 25px; color: var(--text-light);
+        }
+        #audio-consent-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
         
         .feedback-popup {
             position: fixed; top: 50%; left: 50%; background-color: var(--text-dark); color: white;
@@ -265,9 +281,17 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            body { align-items: flex-start; padding-top: 30px; }
-            .game-container { padding: 20px 15px; }
-            h1 { font-size: 2.2rem; }
+            body { 
+                padding: 10px; 
+                align-items: flex-start;
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+            .game-container { 
+                padding: 45px 15px 15px; 
+                max-height: calc(var(--app-height, 100vh) - 40px);
+            } 
+            h1 { font-size: 2.2rem; margin-top: 5px; }
             .player-avatars { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
             .role-card { width: 230px; height: 280px; }
             .game-over-buttons button { display: block; width: 90%; margin: 10px auto; }
@@ -289,6 +313,15 @@
         <div class="bg-game-element bg-mask-2"><i class="fas fa-mask"></i></div>
     </div>
     
+    <script>
+        // THIS SCRIPT MUST RUN FIRST
+        function setAppHeight() {
+            document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+        }
+        window.addEventListener('resize', setAppHeight);
+        setAppHeight();
+    </script>
+
     <div class="game-container">
         <a href="/" id="home-menu-btn" class="icon-btn" aria-label="Back to Games List">
             <i class="fas fa-home"></i>
@@ -311,9 +344,9 @@
                     <li><i class="fas fa-question-circle"></i> Everyone gets the same question, except the Imposter, who gets a similar one</li>
                     <li><i class="fas fa-comments"></i> Discuss answers and try to spot the person who doesn't fit in!</li>
                     <li><i class="fas fa-vote-yea"></i> Vote for who you think is the Imposter to win!</li>
-                    <a href="https://youtu.be/vqHTffHMxbQ" target="_blank" rel="noopener noreferrer">
+                    <li><a href="https://youtu.be/vqHTffHMxbQ" target="_blank" rel="noopener noreferrer">
                             <i class="fab fa-youtube"></i> Watch a video on how to play!
-                        </a>
+                        </a></li>
                 </ul>
             </div>
 
@@ -400,6 +433,18 @@
             </div>
         </div>
     </div>
+    
+    <!-- Audio Consent Modal -->
+    <div id="audio-consent-modal" class="modal">
+        <div class="modal-content">
+            <h2>Enable Audio?</h2>
+            <p>This game has background music and sound effects. Would you like to enable them for the best experience?</p>
+            <div id="audio-consent-buttons">
+                <button id="audio-consent-yes-btn" class="btn-success"><i class="fas fa-volume-up"></i> Yes, please!</button>
+                <button id="audio-consent-no-btn" class="btn-secondary"><i class="fas fa-volume-mute"></i> No, thanks</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Settings Modal -->
     <div id="settings-modal" class="modal">
@@ -440,35 +485,59 @@
             ]
         };
         let sfxEnabled = true, musicVolume = 0.2, audioContextStarted = false;
+        let feedbackTimeout;
         
         // --- DOM ELEMENT SELECTION ---
         const screens = { start: document.getElementById('start-screen'), role: document.getElementById('role-screen'), discussion: document.getElementById('discussion-screen'), voting: document.getElementById('voting-screen'), results: document.getElementById('results-screen') };
-        const homeMenuBtn = document.getElementById('home-menu-btn'), backBtn = document.getElementById('back-btn'), playerNamesList = document.getElementById('player-names-list'), addPlayerBtn = document.getElementById('add-player-btn'), startGameBtn = document.getElementById('start-game-btn'), currentPlayerNameDisplay = document.getElementById('current-player-name'), roleCard = document.getElementById('role-card'), playerRoleDisplay = document.getElementById('player-role'), playerQuestionDisplay = document.getElementById('player-question'), nextPlayerBtn = document.getElementById('next-player-btn'), crewQuestionDisplay = document.getElementById('crew-question-display'), playerListDisplay = document.getElementById('player-list-display'), startVotingBtn = document.getElementById('start-voting-btn'), votingOptionsDisplay = document.getElementById('voting-options-display'), revealImposterBtn = document.getElementById('reveal-imposter-btn'), votingInstructionText = document.getElementById('voting-instruction-text'), resultTitleText = document.getElementById('result-title-text'), imposterAvatarDisplay = document.getElementById('imposter-avatar-display'), imposterNameRevealText = document.getElementById('imposter-name-reveal-text'), imposterQuestionRevealText = document.getElementById('imposter-question-reveal-text'), resultMessageText = document.getElementById('result-message-text'), mostVotedPlayerText = document.getElementById('most-voted-player-text'), actualImposterText = document.getElementById('actual-imposter-text'), playAgainBtn = document.getElementById('play-again-btn'), newGameBtn = document.getElementById('new-game-btn'), visitStoreBtn = document.getElementById('visit-store-btn'), settingsBtn = document.getElementById('settings-btn'), settingsModal = document.getElementById('settings-modal'), closeModalBtn = document.getElementById('close-modal-btn'), bgmVolumeSlider = document.getElementById('bgm-volume-slider'), sfxToggleBtn = document.getElementById('sfx-toggle-btn'), backgroundMusic = document.getElementById('background-game-music'), feedbackPopup = document.getElementById('feedback-popup'), feedbackMessageText = document.getElementById('feedback-message-text-el');
+        const homeMenuBtn = document.getElementById('home-menu-btn'), backBtn = document.getElementById('back-btn'), playerNamesList = document.getElementById('player-names-list'), addPlayerBtn = document.getElementById('add-player-btn'), startGameBtn = document.getElementById('start-game-btn'), currentPlayerInfo = document.getElementById('current-player-info'), roleCard = document.getElementById('role-card'), playerRoleDisplay = document.getElementById('player-role'), playerQuestionDisplay = document.getElementById('player-question'), nextPlayerBtn = document.getElementById('next-player-btn'), crewQuestionDisplay = document.getElementById('crew-question-display'), playerListDisplay = document.getElementById('player-list-display'), startVotingBtn = document.getElementById('start-voting-btn'), votingOptionsDisplay = document.getElementById('voting-options-display'), revealImposterBtn = document.getElementById('reveal-imposter-btn'), votingInstructionText = document.getElementById('voting-instruction-text'), resultTitleText = document.getElementById('result-title-text'), imposterAvatarDisplay = document.getElementById('imposter-avatar-display'), imposterNameRevealText = document.getElementById('imposter-name-reveal-text'), imposterQuestionRevealText = document.getElementById('imposter-question-reveal-text'), resultMessageText = document.getElementById('result-message-text'), mostVotedPlayerText = document.getElementById('most-voted-player-text'), actualImposterText = document.getElementById('actual-imposter-text'), playAgainBtn = document.getElementById('play-again-btn'), newGameBtn = document.getElementById('new-game-btn'), visitStoreBtn = document.getElementById('visit-store-btn'), settingsBtn = document.getElementById('settings-btn'), settingsModal = document.getElementById('settings-modal'), closeModalBtn = document.getElementById('close-modal-btn'), bgmVolumeSlider = document.getElementById('bgm-volume-slider'), sfxToggleBtn = document.getElementById('sfx-toggle-btn'), backgroundMusic = document.getElementById('background-game-music'), feedbackPopup = document.getElementById('feedback-popup'), feedbackMessageText = document.getElementById('feedback-message-text-el');
         const allSfx = [document.getElementById('start-game-sound'), document.getElementById('interaction-sound'), document.getElementById('card-flip-sound'), document.getElementById('vote-cast-sound'), document.getElementById('imposter-reveal-correct-sound'), document.getElementById('imposter-reveal-incorrect-sound'), document.getElementById('confetti-sound')];
-        let feedbackTimeout;
+        const audioConsentModal = document.getElementById('audio-consent-modal'), audioConsentYesBtn = document.getElementById('audio-consent-yes-btn'), audioConsentNoBtn = document.getElementById('audio-consent-no-btn');
 
         // --- AUDIO & UI FEEDBACK FUNCTIONS ---
-        function initAudio() { if (audioContextStarted) return; audioContextStarted = true; backgroundMusic.play().catch(e => {}); allSfx.forEach(s => { if(s) { s.volume=0; s.play().then(() => {s.pause(); s.currentTime=0; s.volume=1;}).catch(e=>{}); } }); }
-        function playSound(audio) { if (sfxEnabled && audio && audioContextStarted) { audio.currentTime = 0; audio.play().catch(e => {}); } }
-        function playSoundWithCallback(audio, callback, ...args) { if (sfxEnabled && audio && audioContextStarted) { audio.currentTime = 0; let ran = false; const runCb = () => { if (!ran) { ran = true; if(t) clearTimeout(t); if(callback) callback(...args); } }; audio.onended = runCb; const t = setTimeout(runCb, (audio.duration && isFinite(audio.duration)) ? audio.duration*1000+200 : 500); audio.play().catch(e=>{runCb()}); } else { if(callback) callback(...args); } }
+        function initAudio() {
+            if (audioContextStarted) return;
+            backgroundMusic.play().then(() => {
+                audioContextStarted = true;
+                if (musicVolume <= 0 || document.hidden) {
+                    backgroundMusic.pause();
+                }
+            }).catch(e => { /* Autoplay blocked, wait for user interaction */ });
+        }
+        function playSound(audio) { if (sfxEnabled && audio && audioContextStarted) { audio.pause(); audio.currentTime = 0; audio.play().catch(e => {}); } }
+        function playSoundWithCallback(audio, callback, ...args) { if (sfxEnabled && audio && audioContextStarted) { audio.pause(); audio.currentTime = 0; let cbExecuted = false; const execCb = () => { if (!cbExecuted) { cbExecuted = true; audio.removeEventListener('ended', execCb); if (callback) callback(...args); } }; audio.addEventListener('ended', execCb); audio.play().catch(e => { execCb(); }); } else { if(callback) callback(...args); } }
         function showFeedback(msg, type='info', dur=2500) { feedbackMessageText.textContent=msg; feedbackPopup.className='feedback-popup'; if(type) feedbackPopup.classList.add(type); feedbackPopup.classList.add('show'); clearTimeout(feedbackTimeout); feedbackTimeout=setTimeout(()=>feedbackPopup.classList.remove('show'), dur); }
         function triggerConfetti() { playSound(allSfx[6]); const colors = ['var(--blyza-orange-primary)', 'var(--blyza-purple-secondary)', 'var(--blyza-keppel-accent)']; for (let i=0; i<80; i++) { const c=document.createElement('div'); c.className='confetti-piece'; c.style.left=Math.random()*100+'vw'; c.style.backgroundColor=colors[Math.floor(Math.random()*colors.length)]; const a=Math.random()*2.5+1.5; c.style.animation=`fallAndFade ${a}s linear forwards ${Math.random()*0.8}s`; document.body.appendChild(c); setTimeout(()=>c.remove(), a*1000+1000); } }
 
+        function handleVisibilityChange() {
+            if (!audioContextStarted) return;
+            if (document.hidden) {
+                backgroundMusic.pause();
+            } else if (musicVolume > 0) {
+                backgroundMusic.play().catch(e => {});
+            }
+        }
+        function handlePageShow(event) {
+            if (event.persisted) { // Page restored from bfcache
+                setAppHeight(); 
+                newGame();
+            }
+        }
+        
         // --- GAME LOGIC FUNCTIONS ---
         function switchScreen(id) { Object.values(screens).forEach(s => s.classList.remove('active')); screens[id].classList.add('active'); const isStart = id === 'start'; homeMenuBtn.style.display = isStart ? 'flex' : 'none'; backBtn.style.display = isStart ? 'none' : 'flex'; }
-        function createPlayerInput(num) { const w = document.createElement('div'); w.className = 'player-input-wrapper'; const i = document.createElement('input'); i.type = 'text'; i.className = 'player-name'; i.placeholder = `Player ${num}`; w.appendChild(i); const r = document.createElement('button'); r.className='remove-player-btn'; r.innerHTML='<i class="fas fa-times"></i>'; r.onclick = ()=>{playSound(allSfx[1]); w.remove(); updateButtons();}; w.appendChild(r); return w; }
-        function addPlayerInput() { if (playerNamesList.children.length >= gameState.maxPlayers) return showFeedback(`Maximum of ${gameState.maxPlayers} players!`, 'info'); playerNamesList.appendChild(createPlayerInput(playerNamesList.children.length + 1)); updateButtons(); }
-        function updateButtons() { const count = playerNamesList.children.length; addPlayerBtn.disabled = count >= gameState.maxPlayers; playerNamesList.querySelectorAll('.remove-player-btn').forEach(b => b.disabled = count <= gameState.minPlayers); }
+        function createPlayerInput(num) { const w = document.createElement('div'); w.className = 'player-input-wrapper'; const i = document.createElement('input'); i.type = 'text'; i.className = 'player-name'; i.placeholder = `Player ${num}`; w.appendChild(i); if (num > gameState.minPlayers) { const r = document.createElement('button'); r.className='remove-player-btn'; r.innerHTML='<i class="fas fa-times"></i>'; r.onclick = ()=>{playSound(allSfx[1]); w.remove(); updateButtons();}; w.appendChild(r); } return w; }
+        function addPlayerInput() { if (playerNamesList.children.length >= gameState.maxPlayers) return showFeedback(`Maximum of ${gameState.maxPlayers} players!`, 'info'); playSound(allSfx[1]); playerNamesList.appendChild(createPlayerInput(playerNamesList.children.length + 1)); updateButtons(); }
+        function updateButtons() { const count = playerNamesList.children.length; addPlayerBtn.disabled = count >= gameState.maxPlayers; startGameBtn.disabled = count < gameState.minPlayers; playerNamesList.querySelectorAll('.remove-player-btn').forEach(b => b.disabled = count <= gameState.minPlayers); }
         function selectNewQuestion() { let available = Array.from(gameState.questions.keys()).filter(i => !gameState.usedQuestionIndices.includes(i)); if (available.length === 0) { gameState.usedQuestionIndices = []; available = Array.from(gameState.questions.keys()); } const idx = available[Math.floor(Math.random() * available.length)]; gameState.usedQuestionIndices.push(idx); const q = gameState.questions[idx]; gameState.crewQuestion = q.crew; gameState.imposterQuestion = q.imposter; }
         
-        function startGame() { const names = Array.from(playerNamesList.querySelectorAll('.player-name')).map(i => i.value.trim()).filter(n => n); if (names.length < gameState.minPlayers) return showFeedback(`Need at least ${gameState.minPlayers} players!`, 'incorrect'); gameState.players = names; gameState.usedQuestionIndices = []; selectNewQuestion(); gameState.imposterIndex = Math.floor(Math.random() * gameState.players.length); gameState.currentPlayerIndex = 0; gameState.playerVotes = {}; gameState.selectedVote = null; roleCard.classList.remove('flipped'); document.getElementById('current-player-info').innerHTML = `Pass to <strong>${gameState.players[0]}</strong>`; nextPlayerBtn.disabled = true; switchScreen('role'); }
+        function startGame() { const names = Array.from(playerNamesList.querySelectorAll('.player-name')).map(i => i.value.trim()).filter(Boolean); if (names.length < gameState.minPlayers) return showFeedback(`Need at least ${gameState.minPlayers} players!`, 'incorrect'); gameState.players = names; gameState.usedQuestionIndices = []; selectNewQuestion(); gameState.imposterIndex = Math.floor(Math.random() * gameState.players.length); gameState.currentPlayerIndex = 0; gameState.playerVotes = {}; gameState.selectedVote = null; roleCard.classList.remove('flipped'); currentPlayerInfo.innerHTML = `Pass to <strong>${gameState.players[0]}</strong>`; nextPlayerBtn.disabled = true; switchScreen('role'); }
         function flipRoleCard() { if (roleCard.classList.contains('flipped')) return; playSound(allSfx[2]); roleCard.classList.add('flipped'); nextPlayerBtn.disabled = false; const isImposter = gameState.currentPlayerIndex === gameState.imposterIndex; playerRoleDisplay.textContent = isImposter ? 'IMPOSTER' : 'CREWMATE'; playerRoleDisplay.className = isImposter ? 'role-imposter' : 'role-crewmate'; playerQuestionDisplay.textContent = isImposter ? gameState.imposterQuestion : gameState.crewQuestion; }
-        function nextPlayer() { if (!roleCard.classList.contains('flipped')) return showFeedback('Please reveal your role!', 'info'); playSound(allSfx[1]); gameState.currentPlayerIndex++; if (gameState.currentPlayerIndex < gameState.players.length) { document.getElementById('current-player-info').innerHTML = `Pass to <strong>${gameState.players[gameState.currentPlayerIndex]}</strong>`; roleCard.classList.remove('flipped'); nextPlayerBtn.disabled = true; } else { setupDiscussion(); switchScreen('discussion'); } }
+        function nextPlayer() { if (!roleCard.classList.contains('flipped')) return showFeedback('Please reveal your role!', 'info'); playSound(allSfx[1]); gameState.currentPlayerIndex++; if (gameState.currentPlayerIndex < gameState.players.length) { currentPlayerInfo.innerHTML = `Pass to <strong>${gameState.players[gameState.currentPlayerIndex]}</strong>`; roleCard.classList.remove('flipped'); nextPlayerBtn.disabled = true; } else { setupDiscussion(); switchScreen('discussion'); } }
         function setupDiscussion() { crewQuestionDisplay.textContent = gameState.crewQuestion; playerListDisplay.innerHTML = ''; gameState.players.forEach(p => { const el = document.createElement('div'); el.className = 'player-avatar'; el.innerHTML = `<div class="avatar-icon">${p[0].toUpperCase()}</div><h4>${p}</h4>`; playerListDisplay.appendChild(el); }); }
         function startVoting() { playSound(allSfx[1]); votingOptionsDisplay.innerHTML = ''; gameState.selectedVote = null; revealImposterBtn.disabled = true; votingInstructionText.textContent = "Select the player you suspect is the Imposter."; gameState.players.forEach(p => { const opt = document.createElement('div'); opt.className = 'player-avatar'; opt.dataset.playerName = p; opt.innerHTML = `<div class="avatar-icon">${p[0].toUpperCase()}</div><h4>${p}</h4>`; opt.onclick = handleVote; votingOptionsDisplay.appendChild(opt); }); switchScreen('voting'); }
         function handleVote(e) { playSound(allSfx[3]); document.querySelectorAll('#voting-options-display .selected').forEach(s => s.classList.remove('selected')); e.currentTarget.classList.add('selected'); gameState.selectedVote = e.currentTarget.dataset.playerName; revealImposterBtn.disabled = false; votingInstructionText.textContent = `You are voting for ${gameState.selectedVote}.`; }
-        function revealImposter() { if (!gameState.selectedVote) return showFeedback('Please select a player!', 'incorrect'); let votes = {}; gameState.players.forEach(p => votes[p]=0); votes[gameState.selectedVote]++; let mostVoted = gameState.selectedVote; const imposter = gameState.players[gameState.imposterIndex], correct = mostVoted === imposter; playSound(correct ? allSfx[4] : allSfx[5]); showFeedback(correct ? 'Imposter Found!' : 'Wrong Guess!', correct ? 'correct' : 'incorrect', 3000); if (correct) triggerConfetti(); resultTitleText.textContent = correct ? 'Imposter Found!' : 'Wrong Guess!'; resultTitleText.style.color = `var(--blyza-${correct?'keppel-accent':'quickfire-red'})`; imposterAvatarDisplay.textContent = imposter[0].toUpperCase(); imposterNameRevealText.innerHTML = `Imposter: <strong style="color:var(--blyza-quickfire-red)">${imposter}</strong>`; imposterQuestionRevealText.textContent = `Imposter's Question: ${gameState.imposterQuestion}`; resultMessageText.textContent = correct ? `The group correctly identified ${imposter}!` : `The group voted for ${mostVoted}, but the imposter was ${imposter}!`; resultMessageText.className = correct ? 'result-correct' : 'result-incorrect'; mostVotedPlayerText.innerHTML = `${mostVoted} <strong style="color:var(--blyza-${correct?'keppel-accent':'quickfire-red'})">(${correct?'Correct':'Incorrect'})</strong>`; actualImposterText.innerHTML = `<strong style="color:var(--blyza-quickfire-red)">${imposter}</strong>`; switchScreen('results'); }
-        function playAgain() { playSoundWithCallback(allSfx[0], () => {selectNewQuestion(); gameState.imposterIndex = Math.floor(Math.random() * gameState.players.length); gameState.currentPlayerIndex = 0; gameState.selectedVote = null; document.getElementById('current-player-info').innerHTML = `Pass to <strong>${gameState.players[0]}</strong>`; roleCard.classList.remove('flipped'); nextPlayerBtn.disabled = true; switchScreen('role');}); }
+        function revealImposter() { if (!gameState.selectedVote) return showFeedback('Please select a player!', 'incorrect'); const mostVoted = gameState.selectedVote; const imposter = gameState.players[gameState.imposterIndex]; const correct = mostVoted === imposter; playSound(correct ? allSfx[4] : allSfx[5]); showFeedback(correct ? 'Imposter Found!' : 'Wrong Guess!', correct ? 'correct' : 'incorrect', 3000); if (correct) triggerConfetti(); resultTitleText.textContent = correct ? 'Imposter Found!' : 'Wrong Guess!'; resultTitleText.style.color = `var(--blyza-${correct?'keppel-accent':'quickfire-red'})`; imposterAvatarDisplay.textContent = imposter[0].toUpperCase(); imposterNameRevealText.innerHTML = `Imposter: <strong style="color:var(--blyza-quickfire-red)">${imposter}</strong>`; imposterQuestionRevealText.textContent = `Imposter's Question: ${gameState.imposterQuestion}`; resultMessageText.textContent = correct ? `The group correctly identified ${imposter}!` : `The group voted for ${mostVoted}, but the imposter was ${imposter}!`; resultMessageText.className = correct ? 'result-correct' : 'result-incorrect'; mostVotedPlayerText.innerHTML = `${mostVoted} <strong style="color:var(--blyza-${correct?'keppel-accent':'quickfire-red'})">(${correct?'Correct':'Incorrect'})</strong>`; actualImposterText.innerHTML = `<strong style="color:var(--blyza-quickfire-red)">${imposter}</strong>`; switchScreen('results'); }
+        function playAgain() { playSoundWithCallback(allSfx[0], () => {selectNewQuestion(); gameState.imposterIndex = Math.floor(Math.random() * gameState.players.length); gameState.currentPlayerIndex = 0; gameState.selectedVote = null; currentPlayerInfo.innerHTML = `Pass to <strong>${gameState.players[0]}</strong>`; roleCard.classList.remove('flipped'); nextPlayerBtn.disabled = true; switchScreen('role');}); }
         function newGame() { playSound(allSfx[1]); playerNamesList.innerHTML = ''; for(let i=0; i<gameState.minPlayers; i++) playerNamesList.appendChild(createPlayerInput(i + 1)); updateButtons(); switchScreen('start'); }
         
         // --- INITIAL SETUP AND EVENT BINDING ---
@@ -478,28 +547,67 @@
             if (savedSfx !== null) sfxEnabled = savedSfx === 'true';
             backgroundMusic.volume = musicVolume; bgmVolumeSlider.value = musicVolume; sfxToggleBtn.textContent = `SFX: ${sfxEnabled ? 'ON' : 'OFF'}`;
             
-            document.body.addEventListener('click', initAudio, { once: true });
+            audioConsentModal.style.display = 'flex';
+            
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            window.addEventListener('pageshow', handlePageShow);
             
             settingsBtn.addEventListener('click', () => { playSound(allSfx[1]); settingsModal.style.display = 'flex'; });
             closeModalBtn.addEventListener('click', () => { playSound(allSfx[1]); settingsModal.style.display = 'none'; });
-            bgmVolumeSlider.addEventListener('input', (e) => { musicVolume = parseFloat(e.target.value); backgroundMusic.volume = musicVolume; localStorage.setItem('musicVolume', musicVolume); });
+            bgmVolumeSlider.addEventListener('input', (e) => { musicVolume = parseFloat(e.target.value); backgroundMusic.volume = musicVolume; localStorage.setItem('musicVolume', musicVolume); if (musicVolume > 0 && !document.hidden && audioContextStarted) backgroundMusic.play().catch(e=>{}); else backgroundMusic.pause(); });
             sfxToggleBtn.addEventListener('click', () => { sfxEnabled = !sfxEnabled; sfxToggleBtn.textContent = `SFX: ${sfxEnabled ? 'ON' : 'OFF'}`; playSound(allSfx[1]); localStorage.setItem('sfxEnabled', sfxEnabled); });
 
-            // CORRECTED BINDINGS
-            addPlayerBtn.addEventListener('click', () => addPlayerInput());
+            audioConsentYesBtn.addEventListener('click', () => { audioConsentModal.style.display = 'none'; initAudio(); playSound(allSfx[1]); });
+            audioConsentNoBtn.addEventListener('click', () => { audioConsentModal.style.display = 'none'; sfxEnabled = false; musicVolume = 0; backgroundMusic.volume = 0; bgmVolumeSlider.value = 0; sfxToggleBtn.textContent = 'SFX: OFF'; localStorage.setItem('sfxEnabled', 'false'); localStorage.setItem('musicVolume', '0'); initAudio(); });
+
+            addPlayerBtn.addEventListener('click', addPlayerInput);
             startGameBtn.addEventListener('click', () => playSoundWithCallback(allSfx[0], startGame));
-            roleCard.addEventListener('click', () => flipRoleCard());
-            nextPlayerBtn.addEventListener('click', () => nextPlayer());
-            startVotingBtn.addEventListener('click', () => startVoting());
-            revealImposterBtn.addEventListener('click', () => revealImposter());
-            playAgainBtn.addEventListener('click', () => playAgain());
-            newGameBtn.addEventListener('click', () => newGame());
+            roleCard.addEventListener('click', flipRoleCard);
+            nextPlayerBtn.addEventListener('click', nextPlayer);
+            startVotingBtn.addEventListener('click', startVoting);
+            revealImposterBtn.addEventListener('click', revealImposter);
+            playAgainBtn.addEventListener('click', playAgain);
+            newGameBtn.addEventListener('click', newGame);
 
             visitStoreBtn.addEventListener('click', () => { playSound(allSfx[1]); window.location.href = '/store'; });
-            backBtn.addEventListener('click', () => newGame());
+            backBtn.addEventListener('click', newGame);
             
             newGame();
         });
+
+        // --- CUSTOM SCROLL REDIRECTION LOGIC ---
+        const gameContainerForScroll = document.querySelector('.game-container');
+        let lastTouchY = 0;
+
+        window.addEventListener('wheel', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                gameContainerForScroll.scrollTop += e.deltaY;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchstart', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                if (e.touches.length > 0) {
+                    lastTouchY = e.touches[0].clientY;
+                }
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                e.preventDefault(); 
+                if (e.touches.length > 0) {
+                    const currentTouchY = e.touches[0].clientY;
+                    const deltaY = lastTouchY - currentTouchY;
+                    gameContainerForScroll.scrollTop += deltaY;
+                    lastTouchY = currentTouchY;
+                }
+            }
+        }, { passive: false });
+        // --- END OF CUSTOM SCROLL LOGIC ---
     </script>
     <script>
       window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };
