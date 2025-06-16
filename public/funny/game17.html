@@ -32,17 +32,20 @@
         /* --- Basic Reset & Body --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
+        
+        /* --- MODIFIED: Custom Scrolling Body --- */
         body {
             font-family: var(--font-body);
             color: var(--text-light);
             background: linear-gradient(135deg, var(--blyza-orange-primary) 0%, var(--blyza-purple-secondary) 100%);
             line-height: 1.6;
-            overflow-x: hidden;
+            overflow: hidden; /* Body does not scroll */
             position: relative;
-            min-height: var(--app-height, 100vh); 
+            height: var(--app-height, 100vh); /* Full screen height */
             display: flex;
+            align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 20px 10px;
         }
 
         /* --- Floating Background Elements --- */
@@ -70,7 +73,7 @@
             100% { transform: translateY(0px) rotate(calc(var(--initial-rotate, 0deg) - 8deg)); }
         }
         
-        /* --- Main Game Container --- */
+        /* --- MODIFIED: Main Game Container (for scrolling) --- */
         .game-container {
             max-width: 900px;
             width: 100%;
@@ -82,9 +85,9 @@
             padding: 30px; 
             text-align: center;
             position: relative;
-            overflow: hidden;
-            margin: auto 0;
             z-index: 2;
+            max-height: calc(var(--app-height, 100vh) - 40px); /* Make container scrollable */
+            overflow-y: auto;
         }
 
         .brand-logo { object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
@@ -111,7 +114,6 @@
         @keyframes fadeInScreen { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .active { display: block; }
         
-        /* --- Instructions & Info Panels --- */
         .instructions, .team-inputs-container {
             background: rgba(0,0,0, 0.04);
             padding: 20px; border-radius: 10px; margin: 25px 0;
@@ -124,7 +126,7 @@
         .instructions strong { font-weight: 700; color: var(--text-dark); }
 
         /* --- Buttons --- */
-        button {
+        button, .btn-primary, .btn-secondary, .btn-success, .btn-info {
             font-family: var(--font-heading-alt); font-size: 1.1rem; padding: 0.7em 1.5em;
             border: 3px solid var(--black-stroke); border-radius: 8px;
             text-transform: uppercase; text-decoration: none; display: inline-flex;
@@ -139,11 +141,10 @@
         button:disabled { background: var(--text-medium); color: var(--text-light); cursor: not-allowed; opacity: 0.7; }
 
         .btn-primary, #start-game-btn, #action-btn, #ten-rounds-btn, #infinite-mode-btn { background-color: var(--blyza-sunny-yellow); }
-        .btn-secondary, #main-menu-nav-btn { background-color: var(--blyza-purple-secondary); color: var(--text-light); }
-        .btn-success, #play-again-game-btn { background-color: var(--blyza-keppel-accent); color: var(--text-light); }
+        .btn-secondary, #main-menu-nav-btn, #audio-consent-no-btn { background-color: var(--blyza-purple-secondary); color: var(--text-light); }
+        .btn-success, #play-again-game-btn, #audio-consent-yes-btn { background-color: var(--blyza-keppel-accent); color: var(--text-light); }
         .btn-info, #visit-store-btn { background-color: #4ECDC4; }
 
-        /* --- Mode & Team Selection --- */
         .game-mode-selection { display: flex; justify-content: center; gap: 20px; margin: 30px 0; flex-wrap: wrap; }
         .mode-option {
             background: var(--text-light); padding: 20px; border-radius: var(--border-radius-game);
@@ -171,20 +172,11 @@
         }
         .team-input input.team-name-input:focus { outline: none; border-color: var(--blyza-orange-primary); box-shadow: 0 0 0 3px var(--blyza-sunny-yellow); }
 
-        /* --- Game Screen & Stage --- */
         .game-info {
-            display: flex;
-            justify-content: center; /* MODIFIED: Was space-around, now center to prevent overlap with corner buttons */
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 8px;
-            font-family: var(--font-heading-alt);
-            color: var(--text-dark);
-            border: 2px solid var(--black-stroke);
+            display: flex; justify-content: center; align-items: center; flex-wrap: wrap;
+            gap: 20px; margin-bottom: 15px; padding: 10px 15px; background: rgba(0,0,0,0.1);
+            border-radius: 8px; font-family: var(--font-heading-alt);
+            color: var(--text-dark); border: 2px solid var(--black-stroke);
         }
         .score-display-multiplayer { display: flex; gap: 15px; }
         .score-box {
@@ -226,7 +218,6 @@
         }
         .flag-image.visible { opacity: 1; }
 
-        /* Options Layout */
         .options-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 25px auto; }
         .option-btn {
             font-family: var(--font-body); text-transform: none; font-weight: 600; font-size: 1rem;
@@ -239,7 +230,6 @@
         .option-btn.incorrect { background-color: var(--blyza-quickfire-red) !important; color: var(--text-light) !important; border-color: var(--black-stroke); }
         .option-btn:disabled:not(.correct) { background: var(--text-medium); opacity: 0.7; }
         
-        /* --- Game Over --- */
         .final-score-display { display: grid; gap: 20px; margin: 30px 0; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
         .score-card { background: rgba(0,0,0,0.05); padding: 20px; border-radius: 10px; border: 3px solid var(--black-stroke); box-shadow: var(--shadow-chunky); }
         .score-card .team-name-score { font-family: var(--font-heading-alt); color: var(--blyza-orange-primary); font-size: 1.3rem; }
@@ -260,13 +250,38 @@
         #highscore-btn { top: 20px; right: 85px; background-color: var(--blyza-sunny-yellow); }
         #back-to-games-btn, #back-to-menu-btn { top: 20px; left: 20px; }
         
-        .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; }
-        .modal-content { background-color: var(--darker-grey-bg); margin: auto; padding: 25px; border: 3px solid var(--black-stroke); border-radius: var(--border-radius-game); width: 90%; max-width: 450px; box-shadow: 8px 8px 0px rgba(0,0,0,0.4); position: relative; color: var(--text-light); }
-        .modal-content h2 { font-family: var(--font-logo); color: var(--blyza-orange-primary); -webkit-text-stroke: 1.5px var(--black-stroke); text-stroke: 1.5px var(--black-stroke); text-align: center; margin-bottom: 25px; font-size: 2rem; }
-        .setting-item { margin-bottom: 18px; display: flex; flex-direction: column; }
+        /* --- ADDED: Modal Styling --- */
+        .modal {
+            position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6); 
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center;
+            animation: fadeInModal 0.3s ease;
+        }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-content {
+            background-color: var(--darker-grey-bg); margin: auto; padding: 25px;
+            border: 3px solid var(--black-stroke); border-radius: var(--border-radius-game);
+            width: 90%; max-width: 450px; box-shadow: 8px 8px 0px rgba(0,0,0,0.4);
+            position: relative; color: var(--text-light); text-align: center;
+        }
+        .modal-content h2 {
+            font-family: var(--font-logo); color: var(--blyza-orange-primary);
+            -webkit-text-stroke: 1.5px var(--black-stroke); text-stroke: 1.5px var(--black-stroke);
+            text-align: center; margin-bottom: 25px; font-size: 2rem;
+        }
+        .setting-item { margin-bottom: 18px; display: flex; flex-direction: column; text-align: left; }
         .setting-item label { margin-bottom: 10px; font-weight: 600; font-size: 1rem; }
         .close-modal-btn { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.2s; }
         .close-modal-btn:hover { color: var(--text-light); }
+        #settings-modal .setting-item button { font-size: 1rem; padding: 10px 20px; width: 100%; }
+        #audio-consent-modal .modal-content p {
+            font-family: var(--font-body); font-weight: 600; font-size: 1.1rem;
+            margin-bottom: 25px; color: var(--text-light);
+        }
+        #audio-consent-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]:focus { outline: none; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 10px; cursor: pointer; background: rgba(0,0,0,0.3); border-radius: 5px; border: 2px solid var(--black-stroke); }
@@ -283,8 +298,16 @@
 
         /* --- Responsive Adjustments --- */
         @media (max-width: 768px) {
-            body { padding: 10px; }
-            .game-container { padding: 50px 15px 15px; } 
+            body { 
+                padding: 10px; 
+                align-items: flex-start;
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+            .game-container { 
+                padding: 45px 15px 15px; 
+                max-height: calc(var(--app-height, 100vh) - 40px);
+            } 
             h1 { font-size: 2.2rem; margin-top: 5px; }
             .mode-option { max-width: 100%; min-width: unset; }
             .final-score-display, #team-names-grid { grid-template-columns: 1fr; }
@@ -306,7 +329,6 @@
     </style>
 </head>
 <body>
-    <!-- Floating background elements -->
     <div class="hero-background-elements">
         <div class="bg-game-element bg-flag-1"><i class="fas fa-flag"></i></div>
         <div class="bg-game-element bg-star-1"><i class="fas fa-star"></i></div>
@@ -320,17 +342,17 @@
         <div class="bg-game-element bg-flag-3"><i class="fas fa-flag-checkered"></i></div>
     </div>
     
+    <!-- ADDED: This script MUST run first for fullscreen layout -->
     <script>
         function setAppHeight() {
-            const doc = document.documentElement;
-            doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+            document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
         }
         window.addEventListener('resize', setAppHeight);
         setAppHeight();
     </script>
     
     <div class="game-container">
-        <a href="/" id="back-to-games-btn" class="icon-btn" aria-label="Back to Games List" title="Back to Games List" style="display: none;">
+       <a href="#" onclick="history.back(); return false;" id="home-menu-btn" class="icon-btn" aria-label="Back to the previous page">
             <i class="fas fa-home"></i>
         </a>
         <button id="back-to-menu-btn" class="icon-btn" aria-label="Back to Main Menu" title="Back to Main Menu" style="display: none;">
@@ -343,7 +365,6 @@
             <i class="fas fa-cog"></i>
         </button>
 
-        <!-- Start Screen -->
         <div id="start-screen" class="screen active">
             <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
             <h1>Guess the Flag</h1>
@@ -377,7 +398,6 @@
             </div>
         </div>
 
-        <!-- Game Screen -->
         <div id="game-screen" class="screen">
             <div class="game-info" id="game-info-bar"></div>
             <div class="place-display-stage">
@@ -391,7 +411,6 @@
             <button id="action-btn" class="btn-primary" style="margin-top:20px; display: none;">Next <i class="fas fa-arrow-right"></i></button>
         </div>
 
-        <!-- Game Over Screen -->
         <div id="game-over-screen" class="screen">
             <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
             <h1 id="game-over-title">Game Over!</h1>
@@ -407,7 +426,18 @@
         </div>
     </div>
 
-    <!-- Settings Modal -->
+    <!-- ADDED: Audio Consent Modal -->
+    <div id="audio-consent-modal" class="modal">
+        <div class="modal-content">
+            <h2>Enable Audio?</h2>
+            <p>This game has background music and sound effects. Would you like to enable them for the best experience?</p>
+            <div id="audio-consent-buttons">
+                <button id="audio-consent-yes-btn" class="btn-success"><i class="fas fa-volume-up"></i> Yes, please!</button>
+                <button id="audio-consent-no-btn" class="btn-secondary"><i class="fas fa-volume-mute"></i> No, thanks</button>
+            </div>
+        </div>
+    </div>
+
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <span id="close-modal-btn" class="close-modal-btn">×</span>
@@ -432,11 +462,12 @@
         const gameState = {
             teams: [], currentTeamIndex: 0, currentFlag: null,
             remainingFlags: [], usedFlags: [], gameMode: 'single',
-            singlePlayerSubType: '10rounds', // NEW: '10rounds' or 'infinite'
+            singlePlayerSubType: '10rounds',
             puzzlesPlayed: 0, winningScore: 5, maxRounds: 10,
             roundPhase: 'guessing', currentGuess: null
         };
-        let infiniteHighScore = 0; // NEW
+        let infiniteHighScore = 0;
+        let audioContextStarted = false;
 
         const flagData = [ { country: "United States", code: "us", options: ["Canada", "United States", "Mexico", "Brazil"] }, { country: "France", code: "fr", options: ["France", "Belgium", "Netherlands", "Luxembourg"] }, { country: "Japan", code: "jp", options: ["Japan", "China", "South Korea", "Vietnam"] }, { country: "Brazil", code: "br", options: ["Brazil", "Argentina", "Colombia", "Peru"] }, { country: "Australia", code: "au", options: ["Australia", "New Zealand", "Fiji", "Samoa"] }, { country: "Germany", code: "de", options: ["Germany", "Austria", "Switzerland", "Poland"] }, { country: "Italy", code: "it", options: ["Italy", "Spain", "Portugal", "Greece"] }, { country: "South Africa", code: "za", options: ["South Africa", "Nigeria", "Kenya", "Egypt"] }, { country: "India", code: "in", options: ["India", "Pakistan", "Bangladesh", "Sri Lanka"] }, { country: "Canada", code: "ca", options: ["Canada", "United States", "Mexico", "Greenland"] }, { country: "United Kingdom", code: "gb", options: ["United Kingdom", "Ireland", "France", "Iceland"] }, { country: "China", code: "cn", options: ["China", "Japan", "South Korea", "Mongolia"] },
              { country : "Afghanistan", code : "af", options : ["Uzbekistan", "Turkmenistan", "Afghanistan", "Azerbaijan"] }, { country : "Åland Islands", code : "ax", options : ["Finland", "Åland Islands", "Denmark", "Iceland"] }, { country : "Albania", code : "al", options : ["Albania", "Montenegro", "Kosovo", "Serbia"] }, { country : "Algeria", code : "dz", options : ["Pakistan", "Algeria", "Algiers", "Azerbaijan"] }, { country : "American Samoa", code : "as", options : ["Guam", "Nepal", "Ethiopia", "American Samoa"] }, { country : "Andorra", code : "ad", options : ["Moldova", "Andorra", "Chad", "Romania"] }, { country : "Angola", code : "ao", options : ["Andorra", "Mozambique", "Angola", "Afghanistan"] }, { country : "Anguilla", code : "ai", options : ["British Virgin Islands", "Queensland", "Anguilla", "Victoria"] }, { country : "Antarctica", code : "aq", options : ["Cyprus", "Antarctica", "Australia", "United Islands"] }, { country : "Antigua and Barbuda", code : "ag", options : ["Antigua and Barbuda", "Bahamas", "Barbados", "Rocky Islands"] },
@@ -459,7 +490,6 @@
              { country : "Vietnam", code : "vn", options : ["Vietnam", "China", "Hong Kong", "Cambodia"] }, { country : "Yemen", code : "ye", options : ["Yemen", "Iraq", "Egypt", "Jordan"] }, { country : "Zambia", code : "zm", options : ["Zambia", "Zimbabwe", "Mozambique", "Gibraltar"] }, { country : "Zimbabwe", code : "zw", options : ["Zimbabwe", "Zambia", "Mozambique", "Gibraltar"] },
         ];
 
-        // DOM Elements
         const el = {
             screens: { start: document.getElementById('start-screen'), game: document.getElementById('game-screen'), gameOver: document.getElementById('game-over-screen') },
             modeOptions: document.querySelectorAll('.mode-option'),
@@ -492,21 +522,34 @@
             sfxToggleBtn: document.getElementById('sfx-toggle-btn'),
             feedbackPopup: document.getElementById('feedback-popup'),
             feedbackMessageText: document.getElementById('feedback-message-text-el'),
-            audio: {
-                bgm: document.getElementById('background-game-music'),
-                start: document.getElementById('start-game-sound'),
-                interaction: document.getElementById('interaction-sound'),
-                correct: document.getElementById('correct-answer-sound'),
-                wrong: document.getElementById('wrong-answer-sound'),
-                win: document.getElementById('win-game-sound'),
-                curtain: document.getElementById('curtain-sound'),
-            },
+            audio: { bgm: document.getElementById('background-game-music'), start: document.getElementById('start-game-sound'), interaction: document.getElementById('interaction-sound'), correct: document.getElementById('correct-answer-sound'), wrong: document.getElementById('wrong-answer-sound'), win: document.getElementById('win-game-sound'), curtain: document.getElementById('curtain-sound'), },
             backToGamesBtn: document.getElementById('back-to-games-btn'),
             backToMenuBtn: document.getElementById('back-to-menu-btn'),
+            audioConsentModal: document.getElementById('audio-consent-modal'),
+            audioConsentYesBtn: document.getElementById('audio-consent-yes-btn'),
+            audioConsentNoBtn: document.getElementById('audio-consent-no-btn')
         };
 
-        const playSound = (audio) => gameConfig.sfxEnabled && audio && (audio.currentTime = 0, audio.play().catch(e => {}));
-        const initBackgroundMusic = () => { if(el.audio.bgm.paused) {el.audio.bgm.volume = gameConfig.musicVolume; el.audio.bgm.play().catch(e => {});} };
+        // --- MODIFIED: Robust Audio Functions ---
+        const playSound = (audio) => { if (gameConfig.sfxEnabled && audio && audioContextStarted) { audio.pause(); audio.currentTime = 0; audio.play().catch(e => {}); } };
+        const playSoundWithCallback = (audio, cb) => {
+            if (gameConfig.sfxEnabled && audio && audioContextStarted) {
+                let executed = false;
+                const onEnd = () => { if (!executed) { executed = true; audio.removeEventListener('ended', onEnd); cb(); } };
+                audio.addEventListener('ended', onEnd);
+                audio.pause(); audio.currentTime=0; 
+                audio.play().catch(e => onEnd());
+            } else { cb(); } 
+        };
+        function initAudio() {
+            if (audioContextStarted) return;
+            el.audio.bgm.play().then(() => {
+                audioContextStarted = true;
+                if (gameConfig.musicVolume <= 0 || document.hidden) {
+                    el.audio.bgm.pause();
+                }
+            }).catch(e => {});
+        }
         
         let feedbackTimeoutHandle;
         const showFeedback = (message, type = '', duration = 1500) => {
@@ -536,11 +579,30 @@
         const saveHighScore = (score) => { if (score > infiniteHighScore) { infiniteHighScore = score; localStorage.setItem('gtf_infinite_highscore', score); return true; } return false; };
         const showHighScore = () => { playSound(el.audio.interaction); showFeedback(`Infinite High Score: ${infiniteHighScore}`, 'win-feedback', 3000); };
         
+        // --- ADDED: Functions to handle visibility and bfcache ---
+        function handleVisibilityChange() {
+            if (!audioContextStarted) return;
+            if (document.hidden) {
+                el.audio.bgm.pause();
+            } else if (gameConfig.musicVolume > 0) {
+                el.audio.bgm.play().catch(e => {});
+            }
+        }
+        
+        function handlePageShow(event) {
+            if (event.persisted) {
+                setAppHeight(); 
+                goToMainMenu();
+            }
+        }
+
         const switchScreen = (screenId) => {
             Object.values(el.screens).forEach(s => s.classList.remove('active'));
             el.screens[screenId].classList.add('active');
-            el.backToGamesBtn.style.display = (screenId === 'start') ? 'flex' : 'none';
+            const onStartScreen = screenId === 'start';
+            el.backToGamesBtn.style.display = onStartScreen ? 'flex' : 'none';
             el.backToMenuBtn.style.display = (screenId === 'game') ? 'flex' : 'none';
+            el.highscoreBtn.style.display = onStartScreen ? 'flex' : 'none';
         };
 
         const selectGameMode = (e) => {
@@ -557,21 +619,20 @@
             const team2Name = el.teamNamesGrid.querySelectorAll('.team-name-input')[1].value.trim() || "Team 2";
             if (team1Name === team2Name) { alert("Team names must be different!"); return; }
             gameState.teams = [{ name: team1Name, score: 0 }, { name: team2Name, score: 0 }];
-            startGame();
+            playSoundWithCallback(el.audio.start, startGame);
         };
 
         const startSinglePlayerGame = (subType) => {
             gameState.singlePlayerSubType = subType;
             gameState.teams = [{ name: "You", score: 0 }];
-            startGame();
+            playSoundWithCallback(el.audio.start, startGame);
         };
         
         const startGame = () => {
+            initAudio(); // Ensure audio context is unlocked
             Object.assign(gameState, { currentTeamIndex: 0, puzzlesPlayed: 0, remainingFlags: [...flagData], usedFlags: [] });
             gameState.teams.forEach(t => t.score = 0);
             shuffleArray(gameState.remainingFlags);
-            initBackgroundMusic();
-            playSound(el.audio.start);
             switchScreen('game');
             setupRound();
         };
@@ -579,25 +640,21 @@
         const setupRound = () => {
             Object.assign(gameState, { roundPhase: 'guessing', currentGuess: null });
 
-            // Instantly close the curtains and hide the image for the new round
             el.leftCurtain.classList.remove('open');
             el.rightCurtain.classList.remove('open');
             el.flagImageDisplay.classList.remove('visible');
             el.flagImageDisplay.src = "";
             
-            // Check if we need to reshuffle flags
             if (gameState.remainingFlags.length === 0) {
                 gameState.remainingFlags = [...gameState.usedFlags];
                 gameState.usedFlags = [];
                 shuffleArray(gameState.remainingFlags);
             }
 
-            // Get the next flag and set its image
             gameState.currentFlag = gameState.remainingFlags.pop();
             gameState.usedFlags.push(gameState.currentFlag);
             el.flagImageDisplay.src = `https://flagcdn.com/w320/${gameState.currentFlag.code.toLowerCase()}.png`;
 
-            // Reset and create new option buttons
             el.optionsContainer.innerHTML = '';
             el.actionBtn.style.display = 'none';
             const options = [...gameState.currentFlag.options];
@@ -607,16 +664,13 @@
                 optionBtn.className = 'option-btn';
                 optionBtn.innerHTML = `<span>${optionText}</span>`;
                 optionBtn.dataset.option = optionText;
-                optionBtn.style.animationDelay = `${i * 100 + 500}ms`; // Delay pop-in animation
+                optionBtn.style.animationDelay = `${i * 100 + 500}ms`;
                 optionBtn.addEventListener('click', handleOptionSelect);
                 el.optionsContainer.appendChild(optionBtn);
             });
 
-            // Update the game info bar (scores, turn, etc.)
             updateGameInfoUI();
             
-            // Schedule the curtain opening animation after a short delay.
-            // This delay gives the browser time to process the class removal, allowing the transition to re-trigger.
             setTimeout(() => {
                 playSound(el.audio.curtain);
                 el.leftCurtain.classList.add('open');
@@ -667,19 +721,13 @@
                 let isGameOver = false;
                 const maxScore = Math.max(...gameState.teams.map(t => t.score));
 
-                if (gameState.singlePlayerSubType === '10rounds' && gameState.puzzlesPlayed >= gameState.maxRounds) {
-                    isGameOver = true;
-                } else if (gameState.singlePlayerSubType === 'infinite' && !isCorrect) {
-                    isGameOver = true;
-                } else if (gameState.gameMode === 'multi' && maxScore >= gameState.winningScore) {
-                    isGameOver = true;
-                }
-
-                if (isGameOver) {
-                    el.actionBtn.innerHTML = 'See Final Results <i class="fas fa-trophy"></i>';
-                } else {
-                    el.actionBtn.innerHTML = 'Next Flag <i class="fas fa-arrow-right"></i>';
-                }
+                if (gameState.singlePlayerSubType === '10rounds' && gameState.puzzlesPlayed >= gameState.maxRounds) isGameOver = true;
+                else if (gameState.singlePlayerSubType === 'infinite' && !isCorrect) isGameOver = true;
+                else if (gameState.gameMode === 'multi' && maxScore >= gameState.winningScore) isGameOver = true;
+                
+                if (isGameOver) el.actionBtn.innerHTML = 'See Final Results <i class="fas fa-trophy"></i>';
+                else el.actionBtn.innerHTML = 'Next Flag <i class="fas fa-arrow-right"></i>';
+                
                 el.actionBtn.disabled = false;
             }, 1800);
         };
@@ -689,20 +737,13 @@
             const maxScore = Math.max(...gameState.teams.map(t => t.score));
             let isGameOver = false;
 
-            if (gameState.singlePlayerSubType === '10rounds' && gameState.puzzlesPlayed >= gameState.maxRounds) {
-                isGameOver = true;
-            } else if (gameState.singlePlayerSubType === 'infinite' && !isCorrect) {
-                isGameOver = true;
-            } else if (gameState.gameMode === 'multi' && maxScore >= gameState.winningScore) {
-                isGameOver = true;
-            }
+            if (gameState.singlePlayerSubType === '10rounds' && gameState.puzzlesPlayed >= gameState.maxRounds) isGameOver = true;
+            else if (gameState.singlePlayerSubType === 'infinite' && !isCorrect) isGameOver = true;
+            else if (gameState.gameMode === 'multi' && maxScore >= gameState.winningScore) isGameOver = true;
 
-            if (isGameOver) {
-                showGameOver();
-            } else {
-                if (gameState.gameMode === 'multi') {
-                    gameState.currentTeamIndex = (gameState.currentTeamIndex + 1) % gameState.teams.length;
-                }
+            if (isGameOver) showGameOver();
+            else {
+                if (gameState.gameMode === 'multi') gameState.currentTeamIndex = (gameState.currentTeamIndex + 1) % gameState.teams.length;
                 setupRound();
             }
         };
@@ -712,12 +753,9 @@
         const updateGameInfoUI = () => {
             el.gameInfoBar.innerHTML = '';
             if (gameState.gameMode === 'single') {
-                if (gameState.singlePlayerSubType === '10rounds') {
-                    el.gameInfoBar.innerHTML = `<div>Round: ${gameState.puzzlesPlayed + 1}/${gameState.maxRounds}</div><div>Score: ${gameState.teams[0].score}</div>`;
-                } else { // Infinite mode
-                    el.gameInfoBar.innerHTML = `<div>Score: ${gameState.teams[0].score}</div><div>High Score: ${infiniteHighScore}</div>`;
-                }
-            } else { // Multiplayer
+                if (gameState.singlePlayerSubType === '10rounds') el.gameInfoBar.innerHTML = `<div>Round: ${gameState.puzzlesPlayed + 1}/${gameState.maxRounds}</div><div>Score: ${gameState.teams[0].score}</div>`;
+                else el.gameInfoBar.innerHTML = `<div>Score: ${gameState.teams[0].score}</div><div>High Score: ${infiniteHighScore}</div>`;
+            } else {
                 const turnBox = document.createElement('div');
                 turnBox.className = 'score-box';
                 turnBox.textContent = `${gameState.teams[gameState.currentTeamIndex].name}'s Turn`;
@@ -744,13 +782,13 @@
                     el.winMessageFinalText.textContent = 'Round Complete!';
                     el.winnerSubtext.textContent = `You scored ${maxScore} out of ${gameState.maxRounds}!`;
                     el.winnerTrophyIcon.textContent = maxScore === 10 ? '🌟' : (maxScore >= 7 ? '🏆' : '👍');
-                } else { // Infinite mode
+                } else {
                     const isNewHighScore = saveHighScore(maxScore);
                     el.winMessageFinalText.textContent = 'Game Over!';
                     el.winnerSubtext.innerHTML = `Your Score: ${maxScore}. ${isNewHighScore ? '<strong>New High Score!</strong>' : `High Score: ${infiniteHighScore}`}`;
                     el.winnerTrophyIcon.textContent = isNewHighScore ? '🌟' : '👍';
                 }
-            } else { // Multiplayer
+            } else {
                 const multiMaxScore = Math.max(...gameState.teams.map(t => t.score));
                 const winners = gameState.teams.filter(t => t.score === multiMaxScore && t.score >= gameState.winningScore);
                 el.winMessageFinalText.textContent = winners.length > 1 ? "It's a Tie!" : winners.length === 1 ? `${winners[0].name} Wins!` : "Game Over!";
@@ -784,22 +822,63 @@
             switchScreen('start');
         };
         
-        const playAgain = () => {
-            playSound(el.audio.start);
-            // This will restart the game with the same settings as before
-            startGame();
-        };
+        const playAgain = () => { playSoundWithCallback(el.audio.start, startGame); };
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHighScore();
+            const savedVol = localStorage.getItem('musicVolume');
+            const savedSfx = localStorage.getItem('sfxEnabled');
+            if(savedVol) gameConfig.musicVolume = parseFloat(savedVol);
+            if(savedSfx) gameConfig.sfxEnabled = savedSfx === 'true';
+            
+            el.sfxToggleBtn.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
+            el.bgmVolumeSlider.value = gameConfig.musicVolume;
+            el.audio.bgm.volume = gameConfig.musicVolume;
+            
+            el.audioConsentModal.style.display = 'flex';
+            
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            window.addEventListener('pageshow', handlePageShow);
+        });
+
+        el.audioConsentYesBtn.addEventListener('click', () => {
+            el.audioConsentModal.style.display = 'none';
+            initAudio();
+            playSound(el.audio.interaction);
+        });
+        el.audioConsentNoBtn.addEventListener('click', () => {
+            el.audioConsentModal.style.display = 'none';
+            gameConfig.sfxEnabled = false;
+            gameConfig.musicVolume = 0;
+            el.audio.bgm.volume = 0;
+            el.bgmVolumeSlider.value = 0;
+            el.sfxToggleBtn.textContent = 'SFX: OFF';
+            localStorage.setItem('sfxEnabled', 'false');
+            localStorage.setItem('musicVolume', '0');
+            initAudio();
+        });
 
         el.settingsBtn.addEventListener('click', () => { playSound(el.audio.interaction); el.settingsModal.style.display = 'flex'; });
         el.closeModalBtn.addEventListener('click', () => { playSound(el.audio.interaction); el.settingsModal.style.display = 'none'; });
-        el.bgmVolumeSlider.addEventListener('input', (e) => { gameConfig.musicVolume = e.target.value; el.audio.bgm.volume = gameConfig.musicVolume; localStorage.setItem('musicVolume', gameConfig.musicVolume); });
-        el.sfxToggleBtn.addEventListener('click', () => { gameConfig.sfxEnabled = !gameConfig.sfxEnabled; el.sfxToggleBtn.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; playSound(el.audio.interaction); localStorage.setItem('sfxEnabled', String(gameConfig.sfxEnabled)); });
-        el.modeOptions.forEach(option => option.addEventListener('click', (e) => { playSound(el.audio.interaction); selectGameMode(e); }));
+        el.bgmVolumeSlider.addEventListener('input', (e) => { 
+            gameConfig.musicVolume = e.target.value; 
+            el.audio.bgm.volume = gameConfig.musicVolume; 
+            localStorage.setItem('musicVolume', gameConfig.musicVolume); 
+            if (gameConfig.musicVolume > 0 && !document.hidden && audioContextStarted) el.audio.bgm.play();
+            else el.audio.bgm.pause();
+        });
+        el.sfxToggleBtn.addEventListener('click', () => { 
+            gameConfig.sfxEnabled = !gameConfig.sfxEnabled; 
+            el.sfxToggleBtn.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`; 
+            playSound(el.audio.interaction); 
+            localStorage.setItem('sfxEnabled', String(gameConfig.sfxEnabled)); 
+        });
         
+        el.modeOptions.forEach(option => option.addEventListener('click', (e) => { playSound(el.audio.interaction); selectGameMode(e); }));
         el.tenRoundsBtn.addEventListener('click', () => startSinglePlayerGame('10rounds'));
         el.infiniteModeBtn.addEventListener('click', () => startSinglePlayerGame('infinite'));
         el.startGameBtn.addEventListener('click', startMultiplayerGame);
-
         el.actionBtn.addEventListener('click', processAction);
         el.playAgainGameBtn.addEventListener('click', playAgain);
         el.mainMenuNavBtn.addEventListener('click', goToMainMenu);
@@ -807,19 +886,39 @@
         el.backToMenuBtn.addEventListener('click', goToMainMenu);
         el.highscoreBtn.addEventListener('click', showHighScore);
         
-        document.addEventListener('DOMContentLoaded', () => {
-            loadHighScore();
-            const savedVol = localStorage.getItem('musicVolume');
-            const savedSfx = localStorage.getItem('sfxEnabled');
-            if(savedVol) gameConfig.musicVolume = savedVol;
-            if(savedSfx) gameConfig.sfxEnabled = savedSfx === 'true';
-            
-            el.sfxToggleBtn.textContent = `SFX: ${gameConfig.sfxEnabled ? 'ON' : 'OFF'}`;
-            el.bgmVolumeSlider.value = gameConfig.musicVolume;
-            el.audio.bgm.volume = gameConfig.musicVolume;
-            document.body.addEventListener('click', initBackgroundMusic, { once: true });
-            switchScreen('start');
-        });
+        // --- ADDED: CUSTOM SCROLL REDIRECTION LOGIC ---
+        const gameContainerForScroll = document.querySelector('.game-container');
+        let lastTouchY = 0;
+
+        window.addEventListener('wheel', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                gameContainerForScroll.scrollTop += e.deltaY;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchstart', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                if (e.touches.length > 0) {
+                    lastTouchY = e.touches[0].clientY;
+                }
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                e.preventDefault(); 
+                if (e.touches.length > 0) {
+                    const currentTouchY = e.touches[0].clientY;
+                    const deltaY = lastTouchY - currentTouchY;
+                    gameContainerForScroll.scrollTop += deltaY;
+                    lastTouchY = currentTouchY;
+                }
+            }
+        }, { passive: false });
+        // --- END OF CUSTOM SCROLL LOGIC ---
     </script>
     <script>
       window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };

@@ -260,6 +260,38 @@
     .favorites-list .play-count { font-family: var(--font-logo); font-size: 1.3rem; color: var(--blyza-sunny-yellow); }
     .no-favorites-message { text-align: center; color: var(--text-medium); font-weight: 500; }
 
+    /* --- NEW --- Welcome/Cookie Modal --- */
+    #welcome-modal-overlay {
+        z-index: 3000; /* Highest z-index to be on top of everything */
+        backdrop-filter: blur(8px);
+    }
+    .welcome-modal-content {
+        max-width: 500px;
+        text-align: center;
+        background: var(--bg-dark-start);
+        border-color: var(--blyza-sunny-yellow);
+    }
+    .welcome-text {
+        font-size: 1rem;
+        color: var(--text-light);
+        margin-bottom: 30px;
+        line-height: 1.7;
+        font-weight: 500;
+    }
+    #accept-cookies-btn {
+        background-color: var(--blyza-keppel-accent);
+        color: var(--text-light);
+        box-shadow: 4px 4px 0px var(--black-stroke);
+        border-radius: 8px;
+        width: 80%;
+        margin: 0 auto;
+        justify-content: center;
+        font-size: 1.3rem;
+    }
+    #accept-cookies-btn:hover {
+        box-shadow: 2px 2px 0px var(--black-stroke);
+    }
+
     @media (max-width: 767.98px) {
         .page-header { padding: 80px 15px 30px; }
         .games-grid { grid-template-columns: 1fr; gap: 2em; }
@@ -565,6 +597,17 @@
             <ul id="favorites-list" class="favorites-list"></ul>
         </div>
     </div>
+
+    <!-- NEW: Welcome Modal (for first-time users) -->
+    <div id="welcome-modal-overlay" class="modal">
+        <div class="modal-content welcome-modal-content">
+            <img class="brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="max-height: 100px; margin-bottom: 20px;">
+            <h2>Welcome to Blyza!</h2>
+            <p class="welcome-text">Enjoy free party games, get exclusive rewards! To give you the best experience and remember your settings & favorite games, we use your browser's local storage. By continuing, you agree to this.</p>
+            <button id="accept-cookies-btn" class="btn-retro-floating">Accept cookies and dive in! <i class="fas fa-rocket"></i></button>
+        </div>
+    </div>
+
     <audio id="background-music" loop><source src="https://static.wixstatic.com/mp3/9ce3e5_973dcdec546a44b594013ec040a9eb20.mp3" type="audio/mpeg"></audio>
     <audio id="category-select-sound"><source src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" type="audio/wav"></audio>
     <audio id="item-select-sound"><source src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3" type="audio/mpeg"></audio>
@@ -572,6 +615,7 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
 
+        // --- Configuration & Element Selection ---
         const gameConfig = { sfxEnabled: true, musicVolume: 0.3 };
         let playCounts = {};
 
@@ -592,6 +636,12 @@
         const favoritesCloseBtn = document.getElementById('favorites-close-btn');
         const favoritesList = document.getElementById('favorites-list');
 
+        // NEW: Welcome Modal Elements
+        const welcomeModalOverlay = document.getElementById('welcome-modal-overlay');
+        const acceptCookiesBtn = document.getElementById('accept-cookies-btn');
+
+
+        // --- Core Functions ---
         const loadPlayCounts = () => {
             const storedCounts = localStorage.getItem('blyzaGamePlays');
             if (storedCounts) playCounts = JSON.parse(storedCounts);
@@ -608,18 +658,15 @@
             }
         };
         
-        // --- THIS IS THE RECOMMENDED CHANGE ---
         const handleLinkWithSound = (linkElement, soundElement) => {
             if (!linkElement || !soundElement) return;
             linkElement.addEventListener('click', function(event) {
                 event.preventDefault();
                 
-                // Use getAttribute('href') for robust tracking.
                 const targetUrl = this.getAttribute('href'); 
                 const navigationUrl = this.href;
 
-                // Track the play count using the relative path
-                if (targetUrl !== '/store') { // Don't track clicks to the store
+                if (targetUrl !== '/store') {
                     playCounts[targetUrl] = (playCounts[targetUrl] || 0) + 1;
                     savePlayCounts();
                 }
@@ -632,6 +679,7 @@
             });
         };
         
+        // --- Event Listeners & Setup ---
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase();
@@ -666,7 +714,6 @@
             handleLinkWithSound(card.querySelector('.game-title a'), itemSelectSound);
         });
         
-        // Handle store button separately to prevent tracking
         const storeButton = document.querySelector('.store-btn');
         if (storeButton) {
             handleLinkWithSound(storeButton, itemSelectSound);
@@ -738,25 +785,59 @@
             playSound(categorySelectSound);
         });
         
-        // Initialization
-        loadPlayCounts();
-        const savedVolume = localStorage.getItem('musicVolume');
-        const savedSfxEnabled = localStorage.getItem('sfxEnabled');
-        if (savedVolume !== null) gameConfig.musicVolume = parseFloat(savedVolume);
-        if (savedSfxEnabled !== null) gameConfig.sfxEnabled = savedSfxEnabled === 'true';
-        if(backgroundMusic) backgroundMusic.volume = gameConfig.musicVolume;
-        document.body.addEventListener('click', () => {
-            if(backgroundMusic && backgroundMusic.paused) backgroundMusic.play().catch(e => {});
-        }, { once: true });
-        if(bgmVolumeSlider) bgmVolumeSlider.value = gameConfig.musicVolume;
-        updateSfxButton();
+        // --- Initialization ---
+        const initializePage = () => {
+            loadPlayCounts();
+            const savedVolume = localStorage.getItem('musicVolume');
+            const savedSfxEnabled = localStorage.getItem('sfxEnabled');
+            if (savedVolume !== null) gameConfig.musicVolume = parseFloat(savedVolume);
+            if (savedSfxEnabled !== null) gameConfig.sfxEnabled = savedSfxEnabled === 'true';
+            
+            if(backgroundMusic) backgroundMusic.volume = gameConfig.musicVolume;
+            if(bgmVolumeSlider) bgmVolumeSlider.value = gameConfig.musicVolume;
+            updateSfxButton();
+        };
+
+        const consentAccepted = localStorage.getItem('blyzaConsentAccepted');
+
+        if (!consentAccepted) {
+            // First time user: show the welcome modal
+            if (welcomeModalOverlay) {
+                welcomeModalOverlay.style.display = 'flex';
+            }
+
+            if (acceptCookiesBtn) {
+                acceptCookiesBtn.addEventListener('click', () => {
+                    playSound(itemSelectSound); 
+                    localStorage.setItem('blyzaConsentAccepted', 'true');
+                    welcomeModalOverlay.style.display = 'none';
+                    
+                    // Now that user has consented, we can try to play music on their first real interaction
+                    document.body.addEventListener('click', () => {
+                        if (backgroundMusic && backgroundMusic.paused) {
+                            backgroundMusic.play().catch(e => console.error("Autoplay blocked:", e));
+                        }
+                    }, { once: true });
+                });
+            }
+        } else {
+            // Returning user: set up music to play on first click immediately.
+            document.body.addEventListener('click', () => {
+                if (backgroundMusic && backgroundMusic.paused) {
+                    backgroundMusic.play().catch(e => console.error("Autoplay blocked:", e));
+                }
+            }, { once: true });
+        }
+
+        // Run the main page initialization regardless of consent modal
+        initializePage();
     });
     </script>
     
     <script>
-      window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };
+    window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };
     </script>
     <script src="/_vercel/insights/script.js" defer></script>
     
 </body>
-</html> 
+</html>

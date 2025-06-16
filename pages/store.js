@@ -218,10 +218,13 @@ export default function StorePage() {
   const [musicVolume, setMusicVolume] = useState(0.2);
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
-
+  
   // --- NEW State for the Brand Info Modal ---
   const [showBrandInfoModal, setShowBrandInfoModal] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
+
+  // --- NEW State for copy feedback ---
+  const [copiedId, setCopiedId] = useState(null);
 
   const bgMusicRef = useRef(null);
   const interactionSoundRef = useRef(null);
@@ -299,12 +302,27 @@ export default function StorePage() {
     setTimeout(() => setShowFeedback(false), 2500);
   };
   
-  // --- NEW handler for opening the brand info modal ---
   const handleShowBrandInfo = (e, brandInfo) => {
-    e.stopPropagation(); // Prevents the card's main click (handleReveal) from firing
+    e.stopPropagation(); 
     playSound(interactionSoundRef);
     setSelectedBrand(brandInfo);
     setShowBrandInfoModal(true);
+  };
+
+  // --- NEW handler for copying the discount code ---
+  const handleCopyCode = async (code, id) => {
+    playSound(interactionSoundRef);
+    if (!navigator.clipboard) {
+        console.error("Clipboard API not available.");
+        return;
+    }
+    try {
+        await navigator.clipboard.writeText(code);
+        setCopiedId(id); // Trigger feedback
+        setTimeout(() => setCopiedId(null), 2000); // Reset feedback after 2 seconds
+    } catch (err) {
+        console.error('Failed to copy code: ', err);
+    }
   };
 
   const handleLogout = async () => {
@@ -444,7 +462,6 @@ export default function StorePage() {
         </div>
       )}
 
-      {/* --- NEW Brand Info Modal --- */}
       {showBrandInfoModal && selectedBrand && (
         <div style={{ position: 'fixed', zIndex: 2000, left: 0, top: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: blyzaTheme.fonts.body }}>
           <div style={{ backgroundColor: blyzaTheme.colors.darkerGreyBg, margin: 'auto', padding: '25px', border: blyzaTheme.borders.stroke, borderRadius: blyzaTheme.borders.radius, width: '90%', maxWidth: '450px', boxShadow: `8px 8px 0px rgba(0,0,0,0.4)`, position: 'relative', color: blyzaTheme.colors.textLight }}>
@@ -480,16 +497,9 @@ export default function StorePage() {
             <h1 style={{ fontFamily: blyzaTheme.fonts.logo, fontSize: 'clamp(2.8rem, 6vw, 4rem)', color: blyzaTheme.colors.textLight, WebkitTextStroke: `3.5px ${blyzaTheme.colors.blackStroke}`, textStroke: `2px ${blyzaTheme.colors.blackStroke}`, textShadow: `3px 3px 0px rgba(0,0,0,0.25)`, marginBottom: '0.25em', lineHeight: 1.1 }}>
               Blyza Store 🛍 
             </h1>
-            <p style={{
-    fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-    color: blyzaTheme.colors.yellow,
-    fontWeight: 800, /* Significantly bolder */
-    maxWidth: '550px',
-    margin: '0 auto',
-    textShadow: '0 0 8px rgba(255, 255, 0, 0.7)', /* A soft, subtle glow */
-}}>
-    Awesome rewards, just for playing!
-</p>
+            <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: blyzaTheme.colors.yellow, fontWeight: 800, maxWidth: '550px', margin: '0 auto', textShadow: '0 0 8px rgba(255, 255, 0, 0.7)', }}>
+                Awesome rewards, just for playing!
+            </p>
         </header>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2.5em', width: '100%', maxWidth: '1200px' }}>
@@ -500,7 +510,6 @@ export default function StorePage() {
                 onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = blyzaTheme.shadows.chunky; e.currentTarget.style.borderColor = blyzaTheme.colors.blackStroke; }}
                 onClick={() => revealedCodes[product.id] ? null : handleReveal(product.id)}
             >
-              {/* --- NEW Info Button --- */}
               <button 
                 style={infoButtonStyle}
                 onMouseOver={e => e.currentTarget.style.backgroundColor = blyzaTheme.colors.primary}
@@ -522,17 +531,45 @@ export default function StorePage() {
               </div>
               <div style={{ marginTop: 'auto' }}>
                 {!revealedCodes[product.id] ? (
-                  <button style={{ ...retroButtonBaseStyle, backgroundColor: blyzaTheme.colors.primary, color: blyzaTheme.colors.textLight, width: '100%', pointerEvents: 'none' /* Make button non-clickable, card is the trigger */ }}>
+                  <button style={{ ...retroButtonBaseStyle, backgroundColor: blyzaTheme.colors.primary, color: blyzaTheme.colors.textLight, width: '100%', pointerEvents: 'none' }}>
                     <i className="fas fa-gift" style={{ marginRight: '8px' }}></i> Claim Prize
                   </button>
                 ) : (
-                  <div style={{ marginTop: '15px', padding: '12px 15px', borderRadius: '10px', background: `rgba(0, 191, 166, 0.1)`, border: `2px solid ${blyzaTheme.colors.accent}`, textAlign: 'center', cursor: 'default' }}>
-                    <p style={{ fontWeight: 'bold', fontSize: '0.9rem', color: blyzaTheme.colors.accent, margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                       <i className="fas fa-check-circle"></i> DISCOUNT CODE:
-                    </p>
-                     <span style={{ fontFamily: 'monospace', fontSize: '1.2rem', color: blyzaTheme.colors.textDark, display: 'block', marginTop: '5px', wordBreak: 'break-all' }}>
-                          {product.discountCode}
-                      </span>
+                  // --- MODIFIED CODE BLOCK FOR COPY FUNCTIONALITY ---
+                  <div
+                    style={{ 
+                        marginTop: '15px', padding: '10px 15px', borderRadius: '10px', 
+                        background: `rgba(0, 191, 166, 0.1)`, 
+                        border: `2px solid ${blyzaTheme.colors.accent}`,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        transition: 'background-color 0.2s ease'
+                    }}
+                    onClick={() => handleCopyCode(product.discountCode, product.id)}
+                    onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgba(0, 191, 166, 0.2)'}
+                    onMouseOut={e => e.currentTarget.style.backgroundColor = 'rgba(0, 191, 166, 0.1)'}
+                    title="Click to copy code"
+                  >
+                    <div>
+                        <p style={{ fontWeight: 'bold', fontSize: '0.8rem', color: blyzaTheme.colors.accent, margin: 0, textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <i className="fas fa-check-circle"></i> CODE:
+                        </p>
+                        <span style={{ fontFamily: 'monospace', fontSize: '1.2rem', color: blyzaTheme.colors.textDark, display: 'block', wordBreak: 'break-all', textAlign: 'left' }}>
+                            {product.discountCode}
+                        </span>
+                    </div>
+                    <div style={{textAlign: 'right', minWidth: '70px'}}>
+                        {copiedId === product.id ? (
+                            <span style={{ color: blyzaTheme.colors.accent, fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                <i className="fas fa-check" style={{ marginRight: '5px' }}></i>
+                                Copied!
+                            </span>
+                        ) : (
+                            <i className="far fa-copy" style={{ fontSize: '1.2rem', color: blyzaTheme.colors.textMedium }}></i>
+                        )}
+                    </div>
                   </div>
                 )}
                </div>

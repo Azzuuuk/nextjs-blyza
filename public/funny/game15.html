@@ -39,12 +39,13 @@
             color: var(--text-light);
             background: linear-gradient(135deg, var(--blyza-orange-primary) 0%, var(--blyza-purple-secondary) 100%);
             line-height: 1.6;
-            overflow-x: hidden;
+            overflow: hidden; /* Body does not scroll */
             position: relative;
-            min-height: var(--app-height, 100vh); 
+            height: var(--app-height, 100vh); /* Full screen height */
             display: flex;
+            align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 20px 10px;
         }
 
         /* --- Floating Background Elements --- */
@@ -84,9 +85,9 @@
             padding: 30px; 
             text-align: center;
             position: relative;
-            overflow: hidden;
-            margin: auto 0;
             z-index: 2;
+            max-height: calc(var(--app-height, 100vh) - 40px);
+            overflow-y: auto;
         }
 
         .brand-logo { object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
@@ -177,7 +178,7 @@
         }
         .keyboard-key.wide { flex-grow: 1.5; font-size: 0.8rem;}
 
-        /* --- Game Board & Curtains --- */
+        /* --- Game Board --- */
         .game-stage-container {
             background: var(--darker-grey-bg); padding: 20px; border-radius: var(--border-radius-game);
             margin-bottom: 25px; border: 3px solid var(--black-stroke);
@@ -257,14 +258,15 @@
         /* --- Modal & Popup Styles --- */
         .modal {
             position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
-            display: none; justify-content: center; align-items: center;
+            background-color: rgba(0,0,0,0.6); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center; animation: fadeInModal 0.3s ease;
         }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
         .modal-content {
             background-color: var(--darker-grey-bg); margin: auto; padding: 25px;
             border: 3px solid var(--black-stroke); border-radius: var(--border-radius-game);
             width: 90%; max-width: 450px; box-shadow: 8px 8px 0px rgba(0,0,0,0.4);
-            position: relative; color: var(--text-light);
+            position: relative; color: var(--text-light); text-align: center;
         }
         .modal-content h2 {
             font-family: var(--font-logo); color: var(--blyza-orange-primary);
@@ -279,6 +281,8 @@
         input[type=range]:focus { outline: none; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 10px; cursor: pointer; background: rgba(0,0,0,0.3); border-radius: 5px; border: 2px solid var(--black-stroke); }
         input[type=range]::-webkit-slider-thumb { border: 2px solid var(--black-stroke); height: 22px; width: 22px; border-radius: 50%; background: var(--blyza-orange-primary); cursor: pointer; -webkit-appearance: none; margin-top: -9px; }
+        #audio-consent-modal .modal-content p { font-family: var(--font-body); font-weight: 600; font-size: 1.1rem; margin-bottom: 25px; color: var(--text-light); }
+        #audio-consent-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
 
         .feedback-popup {
             position: fixed; top: 50%; left: 50%;
@@ -300,8 +304,16 @@
 
         /* --- Responsive Adjustments --- */
         @media (max-width: 640px) {
-            body { padding: 10px; }
-            .game-container { padding: 45px 15px 15px; } 
+            body { 
+                padding: 10px; 
+                align-items: flex-start;
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+            .game-container { 
+                padding: 45px 15px 15px; 
+                max-height: calc(var(--app-height, 100vh) - 40px);
+            } 
             h1 { font-size: 2.2rem; margin-top: 5px; }
             .game-subtitle { font-size: 0.9rem; margin-bottom: 15px; }
             .game-options-area { flex-direction: column; gap: 10px; padding: 10px; }
@@ -332,16 +344,16 @@
     </div>
     
     <script>
+        // THIS SCRIPT MUST RUN FIRST
         function setAppHeight() {
-            const doc = document.documentElement;
-            doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+            document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
         }
         window.addEventListener('resize', setAppHeight);
         setAppHeight();
     </script>
     
     <div class="game-container">
-        <a href="/" id="back-to-games-btn" class="icon-btn" aria-label="Back to Games List" title="Back to Games List">
+       <a href="#" onclick="history.back(); return false;" id="home-menu-btn" class="icon-btn" aria-label="Back to the previous page">
             <i class="fas fa-home"></i>
         </a>
         <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
@@ -381,6 +393,18 @@
         <div id="keyboard"></div>
         
         <div id="message"></div>
+    </div>
+
+    <!-- Audio Consent Modal -->
+    <div id="audio-consent-modal" class="modal">
+        <div class="modal-content">
+            <h2>Enable Audio?</h2>
+            <p>This game has background music and sound effects. Would you like to enable them for the best experience?</p>
+            <div id="audio-consent-buttons">
+                <button id="audio-consent-yes-btn" class="btn-success"><i class="fas fa-volume-up"></i> Yes, please!</button>
+                <button id="audio-consent-no-btn" class="btn-secondary"><i class="fas fa-volume-mute"></i> No, thanks</button>
+            </div>
+        </div>
     </div>
 
     <!-- Settings Modal -->
@@ -432,6 +456,7 @@
 
             let sfxEnabled = true;
             let musicVolume = 0.3;
+            let audioContextStarted = false;
 
             const wordLengthSelect = document.getElementById('wordLength');
             const newGameBtn = document.getElementById('newGameBtn');
@@ -446,6 +471,9 @@
             const sfxToggleBtn = document.getElementById('sfx-toggle-btn');
             const feedbackPopup = document.getElementById('feedback-popup');
             const feedbackMessageTextEl = document.getElementById('feedback-message-text-el');
+            const audioConsentModal = document.getElementById('audio-consent-modal');
+            const audioConsentYesBtn = document.getElementById('audio-consent-yes-btn');
+            const audioConsentNoBtn = document.getElementById('audio-consent-no-btn');
             
             const allSfx = {
                 background: document.getElementById('background-game-music'),
@@ -455,25 +483,24 @@
                 win: document.getElementById('win-game-sound'),
             };
 
-            function playSound(sound) { if (sfxEnabled && sound) { sound.currentTime = 0; sound.play().catch(e => {}); } }
-            
             function initAudio() {
-                allSfx.background.volume = musicVolume;
-                document.body.addEventListener('click', () => {
-                    if (allSfx.background.paused) { allSfx.background.play().catch(e => {}); }
-                }, { once: true });
+                if (audioContextStarted) return;
+                allSfx.background.play().then(() => {
+                    audioContextStarted = true;
+                    if (musicVolume <= 0 || document.hidden) {
+                        allSfx.background.pause();
+                    }
+                }).catch(e => { console.warn("Audio autoplay blocked, waiting for user interaction.", e); });
             }
-
-            settingsBtn.addEventListener('click', () => { playSound(allSfx.interaction); settingsModal.style.display = 'flex'; });
-            closeModalBtn.addEventListener('click', () => { playSound(allSfx.interaction); settingsModal.style.display = 'none'; });
-            bgmVolumeSlider.addEventListener('input', (e) => { musicVolume = parseFloat(e.target.value); allSfx.background.volume = musicVolume; localStorage.setItem('musicVolume', musicVolume); });
-            sfxToggleBtn.addEventListener('click', () => {
-                sfxEnabled = !sfxEnabled;
-                sfxToggleBtn.textContent = `SFX: ${sfxEnabled ? 'ON' : 'OFF'}`;
-                playSound(allSfx.interaction);
-                localStorage.setItem('sfxEnabled', sfxEnabled);
-            });
-
+        
+            function playSound(sound) { 
+                if (sfxEnabled && sound && audioContextStarted) { 
+                    sound.pause();
+                    sound.currentTime = 0; 
+                    sound.play().catch(e => {}); 
+                } 
+            }
+            
             let feedbackTimeout;
             function showFeedbackMessage(message, type = '', duration = 2500) {
                 feedbackMessageTextEl.textContent = message;
@@ -498,11 +525,6 @@
                 }
             }
             
-            wordLengthSelect.addEventListener('change', (e) => { playSound(allSfx.interaction); wordLength = parseInt(e.target.value); initGame(); });
-            newGameBtn.addEventListener('click', () => { playSound(allSfx.start); initGame(); });
-            visitStoreBtn.addEventListener('click', () => { playSound(allSfx.interaction); window.location.href = '/store'; });
-            document.addEventListener('keydown', handleKeyPress);
-            
             function initGame() {
                 const words = slangWords[wordLength] || slangWords[5];
                 targetWord = words[Math.floor(Math.random() * words.length)].toUpperCase();
@@ -519,28 +541,25 @@
                 renderKeyboard();
             }
 
-            // *** NEW: Correct Wordle evaluation logic ***
             function evaluateGuess(guess) {
                 const result = new Array(wordLength).fill('absent');
                 const targetLetters = targetWord.split('');
                 const guessLetters = guess.split('');
 
-                // First pass for correct letters (green)
                 for (let i = 0; i < wordLength; i++) {
                     if (guessLetters[i] === targetLetters[i]) {
                         result[i] = 'correct';
-                        targetLetters[i] = null; // Mark as used
-                        guessLetters[i] = null; // Mark as used
+                        targetLetters[i] = null;
+                        guessLetters[i] = null;
                     }
                 }
 
-                // Second pass for present letters (yellow)
                 for (let i = 0; i < wordLength; i++) {
                     if (guessLetters[i] !== null) {
                         const targetIndex = targetLetters.indexOf(guessLetters[i]);
                         if (targetIndex !== -1) {
                             result[i] = 'present';
-                            targetLetters[targetIndex] = null; // Mark as used
+                            targetLetters[targetIndex] = null;
                         }
                     }
                 }
@@ -694,10 +713,93 @@
                 sfxToggleBtn.textContent = `SFX: ${sfxEnabled ? 'ON' : 'OFF'}`;
             }
 
+            function handleVisibilityChange() {
+                if (!audioContextStarted) return;
+                if (document.hidden) {
+                    allSfx.background.pause();
+                } else if (musicVolume > 0) {
+                    allSfx.background.play().catch(e => {});
+                }
+            }
+
+            function handlePageShow(event) {
+                if (event.persisted) {
+                    setAppHeight(); 
+                    initGame();
+                }
+            }
+
+            // --- Event Listeners ---
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            window.addEventListener('pageshow', handlePageShow);
+            
+            wordLengthSelect.addEventListener('change', (e) => { playSound(allSfx.interaction); wordLength = parseInt(e.target.value); initGame(); });
+            newGameBtn.addEventListener('click', () => { playSound(allSfx.start); initGame(); });
+            visitStoreBtn.addEventListener('click', () => { playSound(allSfx.interaction); window.location.href = '/store'; });
+            document.addEventListener('keydown', handleKeyPress);
+
+            settingsBtn.addEventListener('click', () => { playSound(allSfx.interaction); settingsModal.style.display = 'flex'; });
+            closeModalBtn.addEventListener('click', () => { playSound(allSfx.interaction); settingsModal.style.display = 'none'; });
+            bgmVolumeSlider.addEventListener('input', (e) => { musicVolume = parseFloat(e.target.value); allSfx.background.volume = musicVolume; localStorage.setItem('musicVolume', musicVolume); if (musicVolume > 0 && !document.hidden && audioContextStarted) allSfx.background.play().catch(e=>{}); else allSfx.background.pause(); });
+            sfxToggleBtn.addEventListener('click', () => { sfxEnabled = !sfxEnabled; sfxToggleBtn.textContent = `SFX: ${sfxEnabled ? 'ON' : 'OFF'}`; playSound(allSfx.interaction); localStorage.setItem('sfxEnabled', String(sfxEnabled)); });
+            
+            audioConsentYesBtn.addEventListener('click', () => {
+                audioConsentModal.style.display = 'none';
+                initAudio();
+                playSound(allSfx.interaction);
+            });
+            
+            audioConsentNoBtn.addEventListener('click', () => {
+                audioConsentModal.style.display = 'none';
+                sfxEnabled = false;
+                musicVolume = 0;
+                allSfx.background.volume = 0;
+                bgmVolumeSlider.value = 0;
+                sfxToggleBtn.textContent = 'SFX: OFF';
+                localStorage.setItem('sfxEnabled', 'false'); 
+                localStorage.setItem('musicVolume', '0'); 
+                initAudio();
+            });
+
+            // Initial load
             loadAudioSettings();
-            initAudio();
+            audioConsentModal.style.display = 'flex';
             initGame();
         });
+
+        // --- CUSTOM SCROLL REDIRECTION LOGIC ---
+        const gameContainerForScroll = document.querySelector('.game-container');
+        let lastTouchY = 0;
+
+        window.addEventListener('wheel', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                gameContainerForScroll.scrollTop += e.deltaY;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchstart', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                if (e.touches.length > 0) {
+                    lastTouchY = e.touches[0].clientY;
+                }
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', e => {
+            if (document.querySelector('.modal[style*="display: flex"]')) return;
+            if (!gameContainerForScroll.contains(e.target)) {
+                e.preventDefault(); 
+                if (e.touches.length > 0) {
+                    const currentTouchY = e.touches[0].clientY;
+                    const deltaY = lastTouchY - currentTouchY;
+                    gameContainerForScroll.scrollTop += deltaY;
+                    lastTouchY = currentTouchY;
+                }
+            }
+        }, { passive: false });
+        // --- END OF CUSTOM SCROLL LOGIC ---
     </script>
     <script>
       window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };
