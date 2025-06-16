@@ -35,7 +35,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         
-        /* --- MODIFIED: Custom Scrolling Body --- */
         body {
             font-family: var(--font-body);
             color: var(--text-light);
@@ -75,7 +74,6 @@
             100% { transform: translateY(0px) rotate(calc(var(--initial-rotate, 0deg) - 8deg)); }
         }
         
-        /* --- MODIFIED: Main Game Container (for scrolling) --- */
         .game-container {
             max-width: 900px;
             width: 100%;
@@ -277,7 +275,6 @@
         #highscore-btn { top: 20px; right: 85px; background-color: var(--blyza-sunny-yellow); }
         #back-to-games-btn, #back-to-menu-btn { top: 20px; left: 20px; }
         
-        /* --- ADDED: Modal Styling --- */
         .modal {
             position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.6); 
@@ -287,7 +284,6 @@
             animation: fadeInModal 0.3s ease;
         }
         @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
-
         .modal-content {
             background-color: var(--darker-grey-bg); margin: auto; padding: 25px;
             border: 3px solid var(--black-stroke); border-radius: var(--border-radius-game);
@@ -341,9 +337,15 @@
             .options-container { grid-template-columns: 1fr; }
             .option-btn:nth-child(3) { grid-column: auto; width: 100%; }
             .icon-btn { width: 48px; height: 48px; }
-            #settings-btn { top: 12px; right: 12px; }
-            #highscore-btn { top: 12px; right: 70px; }
-            #back-to-games-btn, #back-to-menu-btn { top: 12px; left: 12px; }
+            
+            /* --- FIXED: Mobile Button Alignment --- */
+            #settings-btn, #highscore-btn, #back-to-games-btn, #back-to-menu-btn {
+                top: 15px; 
+            }
+            #settings-btn { right: 15px; }
+            #highscore-btn { right: 75px; }
+            #back-to-games-btn, #back-to-menu-btn { left: 15px; }
+
             .feedback-popup { font-size: 2rem; padding: 20px 30px; width: 90%; }
             .modal-content { padding: 20px; }
             .game-over-buttons-container { flex-direction: column; align-items: center; }
@@ -370,7 +372,6 @@
         <div class="bg-game-element bg-passport-1"><i class="fas fa-passport"></i></div>
     </div>
     
-    <!-- ADDED: This script MUST run first for fullscreen layout -->
     <script>
         function setAppHeight() {
             document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
@@ -380,16 +381,17 @@
     </script>
 
     <div class="game-container">
-       <a href="#" onclick="history.back(); return false;" id="home-menu-btn" class="icon-btn" aria-label="Back to the previous page">
+       <!-- FIXED: ID changed from home-menu-btn to back-to-games-btn to match JS -->
+       <a href="#" onclick="history.back(); return false;" id="back-to-games-btn" class="icon-btn" aria-label="Back to Games List" title="Back to Games List">
             <i class="fas fa-home"></i>
         </a>
         <button id="back-to-menu-btn" class="icon-btn" aria-label="Back to Main Menu" title="Back to Main Menu" style="display: none;">
             <i class="fas fa-arrow-left"></i>
         </button>
-        <button id="highscore-btn" class="icon-btn" aria-label="Show High Score">
+        <button id="highscore-btn" class="icon-btn" aria-label="Show High Score" title="Show High Score">
             <i class="fas fa-star"></i>
         </button>
-        <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
+        <button id="settings-btn" class="icon-btn" aria-label="Open Settings" title="Settings">
             <i class="fas fa-cog"></i>
         </button>
 
@@ -478,7 +480,6 @@
         </div>
     </div>
     
-    <!-- ADDED: Audio Consent Modal -->
     <div id="audio-consent-modal" class="modal">
         <div class="modal-content">
             <h2>Enable Audio?</h2>
@@ -490,7 +491,6 @@
         </div>
     </div>
 
-    <!-- Settings Modal -->
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <span id="close-modal-btn" class="close-modal-btn">×</span>
@@ -501,7 +501,6 @@
     </div>
     <div id="feedback-popup" class="feedback-popup"> <span id="feedback-message-text-el"></span> </div>
 
-    <!-- Audio Elements -->
     <audio id="background-game-music" loop src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3"></audio>
     <audio id="start-game-sound" src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3"></audio>
     <audio id="interaction-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
@@ -567,7 +566,6 @@
             multiplayerStartArea: document.getElementById('multiplayer-start-area'),
             tenRoundsBtn: document.getElementById('ten-rounds-btn'),
             infiniteModeBtn: document.getElementById('infinite-mode-btn'),
-            // ADDED: Audio consent modal elements
             audioConsentModal: document.getElementById('audio-consent-modal'),
             audioConsentYesBtn: document.getElementById('audio-consent-yes-btn'),
             audioConsentNoBtn: document.getElementById('audio-consent-no-btn')
@@ -575,7 +573,6 @@
         let treatYourselfElement = null;
         let audioContextStarted = false;
         
-        // MODIFIED: Sound functions now check for audio context
         const playSound = (audio) => { if (gameConfig.sfxEnabled && audio && audioContextStarted) { audio.pause(); audio.currentTime = 0; audio.play().catch(e => {}); } };
         const playSoundWithCallback = (audio, cb) => { 
             if (gameConfig.sfxEnabled && audio && audioContextStarted) { 
@@ -589,7 +586,6 @@
             } 
         };
 
-        // ADDED: Function to unlock audio context after user interaction
         function initAudio() {
             if (audioContextStarted) return;
             el.audio.bgm.play().then(() => {
@@ -608,7 +604,6 @@
         function saveHighScore(s) { if(s > infiniteHighScore){ infiniteHighScore = s; localStorage.setItem('witw_infinite_highscore', s); return true; } return false; }
         function showHighScore() { playSound(el.audio.interaction); showFeedback(`Infinite High Score: ${infiniteHighScore}`,'win-feedback',3000) }
 
-        // ADDED: Functions to handle visibility and bfcache
         function handleVisibilityChange() {
             if (!audioContextStarted) return;
             if (document.hidden) {
@@ -627,11 +622,12 @@
 
         function switchScreen(id) { 
             Object.values(el.screens).forEach(s=>s.classList.remove('active')); 
-            el.screens[id].classList.add('active'); 
+            if (el.screens[id]) el.screens[id].classList.add('active'); 
+            
             const onStartScreen = id === 'start';
-            el.backToGamesBtn.style.display = onStartScreen ? 'flex' : 'none'; 
-            el.backToMenuBtn.style.display = !onStartScreen && id !== 'gameOver' ? 'flex' : 'none'; 
-            el.highscoreBtn.style.display = onStartScreen ? 'flex' : 'none';
+            if (el.backToGamesBtn) el.backToGamesBtn.style.display = onStartScreen ? 'flex' : 'none'; 
+            if (el.backToMenuBtn) el.backToMenuBtn.style.display = !onStartScreen && id !== 'gameOver' ? 'flex' : 'none'; 
+            if (el.highscoreBtn) el.highscoreBtn.style.display = onStartScreen ? 'flex' : 'none';
             if (treatYourselfElement) treatYourselfElement.style.display = id === 'gameOver' ? 'flex' : 'none';
         }
 
@@ -640,7 +636,7 @@
         
         function startSinglePlayerGame(subType) { initAudio(); gameState.singlePlayerSubType = subType; playSoundWithCallback(el.audio.start, startGame); }
         function startGame() {
-            initAudio(); // Fallback to ensure audio is ready
+            initAudio();
             if('single'===gameState.gameMode){gameState.players=['You'];gameState.scores={'You':0};}
             else{gameState.players=Array.from(el.teamNamesGrid.querySelectorAll('.team-name-input')).map((t,e)=>t.value.trim()||`Team ${e+1}`);if(gameState.players.length<2){alert('Multiplayer requires at least 2 teams!'); return;}if(new Set(gameState.players).size!==gameState.players.length){alert('Team names must be unique!'); return;}gameState.scores=Object.fromEntries(gameState.players.map(p=>[p,0]));}
             Object.assign(gameState,{currentRound:0,usedPlaces:[],currentPlayerIndex:0});
@@ -706,11 +702,12 @@
             el.revealAnswerBtn.style.display = 'none';
             switchScreen('game');
 
+            // FIXED: Increased delay slightly to ensure fade-in animation completes first
             setTimeout(() => {
                 playSound(el.audio.curtain);
                 [el.leftCurtain, el.rightCurtain].forEach(c => c.classList.add('open'));
                 el.placeImageDisplay.classList.add('visible');
-            }, 500);
+            }, 600);
         }
 
         function handleOptionSelect(e) { 
@@ -850,14 +847,11 @@
             loadSettings(); 
             loadHighScore();
             
-            // ADDED: Show audio consent modal on load
             el.audioConsentModal.style.display = 'flex';
             
-            // ADDED: Listeners for visibility and bfcache
             document.addEventListener('visibilitychange', handleVisibilityChange);
             window.addEventListener('pageshow', handlePageShow);
             
-            // ADDED: Audio Consent button listeners
             el.audioConsentYesBtn.addEventListener('click', () => {
                 el.audioConsentModal.style.display = 'none';
                 initAudio();
@@ -875,14 +869,13 @@
                 initAudio();
             });
 
-            // Settings modal listeners
             el.settingsBtn.addEventListener('click', () => { playSound(el.audio.interaction); el.settingsModal.style.display = 'flex'; });
             el.closeModalBtn.addEventListener('click', () => { playSound(el.audio.interaction); el.settingsModal.style.display = 'none'; });
             el.bgmVolumeSlider.addEventListener('input', (e) => { 
                 gameConfig.musicVolume=e.target.value; 
                 el.audio.bgm.volume=gameConfig.musicVolume; 
                 localStorage.setItem('musicVolume',gameConfig.musicVolume); 
-                if (gameConfig.musicVolume > 0 && !document.hidden && audioContextStarted) el.audio.bgm.play();
+                if (gameConfig.musicVolume > 0 && !document.hidden && audioContextStarted) el.audio.bgm.play().catch(()=>{});
                 else el.audio.bgm.pause();
             });
             el.sfxToggleBtn.addEventListener('click', () => { 
@@ -892,7 +885,6 @@
                 localStorage.setItem('sfxEnabled',gameConfig.sfxEnabled); 
             });
 
-            // Game flow listeners
             el.modeOptions.forEach(opt => opt.addEventListener('click', function(){playSound(el.audio.interaction);selectGameMode.call(this)}));
             el.addTeamBtn.addEventListener('click', () => { playSound(el.audio.interaction); addTeamInput(); });
             el.tenRoundsBtn.addEventListener('click', () => startSinglePlayerGame('10rounds'));
@@ -907,7 +899,6 @@
             switchScreen('start');
         });
         
-        // --- ADDED: CUSTOM SCROLL REDIRECTION LOGIC ---
         const gameContainerForScroll = document.querySelector('.game-container');
         let lastTouchY = 0;
 
@@ -939,7 +930,6 @@
                 }
             }
         }, { passive: false });
-        // --- END OF CUSTOM SCROLL LOGIC ---
     </script>
     <script>
       window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };

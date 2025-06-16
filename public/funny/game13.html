@@ -365,16 +365,18 @@
     </script>
     
     <div class="game-container">
-        <!-- START: Navigation Buttons -->
-      <a href="#" onclick="history.back(); return false;" id="home-menu-btn" class="icon-btn" aria-label="Back to the previous page">
+        <!-- START: EDITED Navigation Buttons -->
+        <!-- This button shows on the main menu and goes back to the games list -->
+        <a href="#" onclick="history.back(); return false;" id="back-to-games-btn" class="icon-btn" aria-label="Back to Games List" title="Back to Games List">
             <i class="fas fa-home"></i>
         </a>
+        <!-- This button shows during gameplay and goes back to this game's main menu -->
         <button id="back-to-menu-btn" class="icon-btn" aria-label="Back to Main Menu" title="Back to Main Menu" style="display: none;">
             <i class="fas fa-arrow-left"></i>
         </button>
-        <!-- END: Navigation Buttons -->
+        <!-- END: EDITED Navigation Buttons -->
 
-        <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
+        <button id="settings-btn" class="icon-btn" aria-label="Open Settings" title="Settings">
             <i class="fas fa-cog"></i>
         </button>
 
@@ -641,12 +643,16 @@
         function switchScreen(screenId) {
             Object.values(screens).forEach(screen => screen.classList.remove('active-screen', 'active'));
             screens[screenId].classList.add('active-screen', 'active');
-            backToGamesBtn.style.display = (screenId === 'start') ? 'flex' : 'none';
-            backToMenuBtn.style.display = (screenId === 'game' || screenId === 'team') ? 'flex' : 'none';
+            
+            // Correctly show/hide the top-left navigation buttons based on the current screen
+            if (backToGamesBtn) backToGamesBtn.style.display = (screenId === 'start') ? 'flex' : 'none';
+            if (backToMenuBtn) backToMenuBtn.style.display = (screenId === 'game' || screenId === 'team') ? 'flex' : 'none';
+            
             if (treatYourselfElement) treatYourselfElement.style.display = (screenId === 'win') ? 'flex' : 'none';
         }
 
         function showTeamSetupScreen() { playSound(allSfx[1]); switchScreen("team"); }
+        
         function goToMainMenu() {
              playSound(allSfx[1]);
              if (treatYourselfElement) treatYourselfElement.style.display = 'none';

@@ -33,7 +33,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         
-        /* --- MODIFIED: Custom Scrolling Body --- */
         body {
             font-family: var(--font-body);
             color: var(--text-light);
@@ -73,7 +72,6 @@
             100% { transform: translateY(0px) rotate(calc(var(--initial-rotate, 0deg) - 8deg)); }
         }
         
-        /* --- MODIFIED: Main Game Container (for scrolling) --- */
         .game-container {
             max-width: 900px;
             width: 100%;
@@ -86,7 +84,7 @@
             text-align: center;
             position: relative;
             z-index: 2;
-            max-height: calc(var(--app-height, 100vh) - 40px); /* Make container scrollable */
+            max-height: calc(var(--app-height, 100vh) - 40px);
             overflow-y: auto;
         }
 
@@ -250,7 +248,6 @@
         #highscore-btn { top: 20px; right: 85px; background-color: var(--blyza-sunny-yellow); }
         #back-to-games-btn, #back-to-menu-btn { top: 20px; left: 20px; }
         
-        /* --- ADDED: Modal Styling --- */
         .modal {
             position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.6); 
@@ -313,9 +310,15 @@
             .final-score-display, #team-names-grid { grid-template-columns: 1fr; }
             .options-container { grid-template-columns: 1fr; }
             .icon-btn { width: 48px; height: 48px; }
-            #settings-btn { top: 12px; right: 12px; }
-            #highscore-btn { top: 12px; right: 70px; }
-            #back-to-games-btn, #back-to-menu-btn { top: 12px; left: 12px; }
+
+            /* --- FIXED: Mobile Button Alignment --- */
+            #settings-btn, #highscore-btn, #back-to-games-btn, #back-to-menu-btn {
+                top: 15px;
+            }
+            #settings-btn { right: 15px; }
+            #highscore-btn { right: 75px; }
+            #back-to-games-btn, #back-to-menu-btn { left: 15px; }
+
             .feedback-popup { font-size: 2rem; padding: 20px 30px; width: 90%; }
             .modal-content { padding: 20px; }
             .game-over-buttons-container { flex-direction: column; align-items: center; }
@@ -342,7 +345,6 @@
         <div class="bg-game-element bg-flag-3"><i class="fas fa-flag-checkered"></i></div>
     </div>
     
-    <!-- ADDED: This script MUST run first for fullscreen layout -->
     <script>
         function setAppHeight() {
             document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
@@ -352,16 +354,17 @@
     </script>
     
     <div class="game-container">
-       <a href="#" onclick="history.back(); return false;" id="home-menu-btn" class="icon-btn" aria-label="Back to the previous page">
-            <i class="fas fa-home"></i>
+       <!-- FIXED: Button IDs and Icons updated for clarity and to fix JS bug -->
+       <a href="#" onclick="history.back(); return false;" id="back-to-games-btn" class="icon-btn" aria-label="Back to Games List" title="Back to Games List">
+            <i class="fas fa-arrow-left"></i>
         </a>
         <button id="back-to-menu-btn" class="icon-btn" aria-label="Back to Main Menu" title="Back to Main Menu" style="display: none;">
-            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-home"></i>
         </button>
-        <button id="highscore-btn" class="icon-btn" aria-label="Show High Score">
+        <button id="highscore-btn" class="icon-btn" aria-label="Show High Score" title="Show High Score">
             <i class="fas fa-star"></i>
         </button>
-        <button id="settings-btn" class="icon-btn" aria-label="Open Settings">
+        <button id="settings-btn" class="icon-btn" aria-label="Open Settings" title="Settings">
             <i class="fas fa-cog"></i>
         </button>
 
@@ -426,7 +429,6 @@
         </div>
     </div>
 
-    <!-- ADDED: Audio Consent Modal -->
     <div id="audio-consent-modal" class="modal">
         <div class="modal-content">
             <h2>Enable Audio?</h2>
@@ -448,7 +450,6 @@
     </div>
     <div id="feedback-popup" class="feedback-popup"> <span id="feedback-message-text-el"></span> </div>
 
-    <!-- Audio Elements -->
     <audio id="background-game-music" loop src="https://static.wixstatic.com/mp3/9ce3e5_380adfaea802407b9a4cebc67f12a216.mp3"></audio>
     <audio id="start-game-sound" src="https://static.wixstatic.com/mp3/9ce3e5_1b9151238aec4e29ab14f1526e9c1334.mp3"></audio>
     <audio id="interaction-sound" src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav"></audio>
@@ -523,14 +524,13 @@
             feedbackPopup: document.getElementById('feedback-popup'),
             feedbackMessageText: document.getElementById('feedback-message-text-el'),
             audio: { bgm: document.getElementById('background-game-music'), start: document.getElementById('start-game-sound'), interaction: document.getElementById('interaction-sound'), correct: document.getElementById('correct-answer-sound'), wrong: document.getElementById('wrong-answer-sound'), win: document.getElementById('win-game-sound'), curtain: document.getElementById('curtain-sound'), },
-            backToGamesBtn: document.getElementById('back-to-games-btn'),
+            backToGamesBtn: document.getElementById('back-to-games-btn'), // This will now find the element
             backToMenuBtn: document.getElementById('back-to-menu-btn'),
             audioConsentModal: document.getElementById('audio-consent-modal'),
             audioConsentYesBtn: document.getElementById('audio-consent-yes-btn'),
             audioConsentNoBtn: document.getElementById('audio-consent-no-btn')
         };
-
-        // --- MODIFIED: Robust Audio Functions ---
+        
         const playSound = (audio) => { if (gameConfig.sfxEnabled && audio && audioContextStarted) { audio.pause(); audio.currentTime = 0; audio.play().catch(e => {}); } };
         const playSoundWithCallback = (audio, cb) => {
             if (gameConfig.sfxEnabled && audio && audioContextStarted) {
@@ -579,7 +579,6 @@
         const saveHighScore = (score) => { if (score > infiniteHighScore) { infiniteHighScore = score; localStorage.setItem('gtf_infinite_highscore', score); return true; } return false; };
         const showHighScore = () => { playSound(el.audio.interaction); showFeedback(`Infinite High Score: ${infiniteHighScore}`, 'win-feedback', 3000); };
         
-        // --- ADDED: Functions to handle visibility and bfcache ---
         function handleVisibilityChange() {
             if (!audioContextStarted) return;
             if (document.hidden) {
@@ -600,9 +599,9 @@
             Object.values(el.screens).forEach(s => s.classList.remove('active'));
             el.screens[screenId].classList.add('active');
             const onStartScreen = screenId === 'start';
-            el.backToGamesBtn.style.display = onStartScreen ? 'flex' : 'none';
-            el.backToMenuBtn.style.display = (screenId === 'game') ? 'flex' : 'none';
-            el.highscoreBtn.style.display = onStartScreen ? 'flex' : 'none';
+            if (el.backToGamesBtn) el.backToGamesBtn.style.display = onStartScreen ? 'flex' : 'none';
+            if (el.backToMenuBtn) el.backToMenuBtn.style.display = (screenId === 'game') ? 'flex' : 'none';
+            if (el.highscoreBtn) el.highscoreBtn.style.display = onStartScreen ? 'flex' : 'none';
         };
 
         const selectGameMode = (e) => {
@@ -629,7 +628,7 @@
         };
         
         const startGame = () => {
-            initAudio(); // Ensure audio context is unlocked
+            initAudio(); 
             Object.assign(gameState, { currentTeamIndex: 0, puzzlesPlayed: 0, remainingFlags: [...flagData], usedFlags: [] });
             gameState.teams.forEach(t => t.score = 0);
             shuffleArray(gameState.remainingFlags);
@@ -824,7 +823,6 @@
         
         const playAgain = () => { playSoundWithCallback(el.audio.start, startGame); };
 
-        // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
             loadHighScore();
             const savedVol = localStorage.getItem('musicVolume');
@@ -865,7 +863,7 @@
             gameConfig.musicVolume = e.target.value; 
             el.audio.bgm.volume = gameConfig.musicVolume; 
             localStorage.setItem('musicVolume', gameConfig.musicVolume); 
-            if (gameConfig.musicVolume > 0 && !document.hidden && audioContextStarted) el.audio.bgm.play();
+            if (gameConfig.musicVolume > 0 && !document.hidden && audioContextStarted) el.audio.bgm.play().catch(()=>{});
             else el.audio.bgm.pause();
         });
         el.sfxToggleBtn.addEventListener('click', () => { 
@@ -883,10 +881,9 @@
         el.playAgainGameBtn.addEventListener('click', playAgain);
         el.mainMenuNavBtn.addEventListener('click', goToMainMenu);
         el.visitStoreBtn.addEventListener('click', () => { playSound(el.audio.interaction); window.location.href = '/store'; });
-        el.backToMenuBtn.addEventListener('click', goToMainMenu);
-        el.highscoreBtn.addEventListener('click', showHighScore);
+        if(el.backToMenuBtn) el.backToMenuBtn.addEventListener('click', goToMainMenu);
+        if(el.highscoreBtn) el.highscoreBtn.addEventListener('click', showHighScore);
         
-        // --- ADDED: CUSTOM SCROLL REDIRECTION LOGIC ---
         const gameContainerForScroll = document.querySelector('.game-container');
         let lastTouchY = 0;
 
@@ -918,7 +915,6 @@
                 }
             }
         }, { passive: false });
-        // --- END OF CUSTOM SCROLL LOGIC ---
     </script>
     <script>
       window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };
