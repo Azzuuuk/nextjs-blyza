@@ -11,80 +11,80 @@ import { Analytics } from '@vercel/analytics/react';
 const products = [
   { 
     id: 1, 
-    name: '🍕 50% Off Pizza Hut', 
-    description: 'Get half off any large pizza!', 
-    discountCode: 'PIZZA50', 
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/sco/thumb/d/d2/Pizza_Hut_logo.svg/217px-Pizza_Hut_logo.svg.png',
+    name: '👕👚 20% Off ASOS', 
+    description: 'Get 20% off your first order from ASOS!', 
+    discountCode: 'http://bit.ly/3TylIMH', 
+    logoUrl: 'https://static.wixstatic.com/media/9ce3e5_2f723e743da5432ca8a2dacabc1ca5a6~mv2.png',
     brandInfo: {
-        name: 'Pizza Hut',
-        website: 'https://www.pizzahut.com/',
-        description: 'An American multinational restaurant chain and international franchise founded in 1958 in Wichita, Kansas by Dan and Frank Carney. It provides pizza and other Italian-American dishes, including pasta, side dishes and desserts.',
-        imageUrl: 'https://images.ctfassets.net/s50uvj7xp08c/5w3yL32aLygY21O22t6Duy/137afe39c3a388836511409395f168f6/Pizz_Hut_logo_variant_2.png'
+        name: 'ASOS',
+        website: 'https://www.asos.com/',
+        description: 'ASOS is a global online fashion and beauty powerhouse targeting fashion-forward 20-somethings. It curates products from over 850 popular brands while also producing its own extensive range of in-house labels like ASOS DESIGN. The brand is particularly renowned for its commitment to inclusivity, offering a wide array of sizes through its ASOS Curve, Tall, Petite, and Maternity lines, making it a digital destination for discovering the latest trends at an accessible price point.',
+        imageUrl: 'https://static.wixstatic.com/media/9ce3e5_2f723e743da5432ca8a2dacabc1ca5a6~mv2.png'
     }
   },
   { 
     id: 2, 
-    name: '👟 10% Off Nike Shoes', 
-    description: 'Valid on all new collections.', 
-    discountCode: 'NIKE10', 
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/170px-Logo_NIKE.svg.png',
+    name: '🔒🌐 73% Off NordVPN', 
+    description: '73% off NordVPN + up to 10GB free eSIM data from Saily', 
+    discountCode: 'https://bit.ly/448iWmg', 
+    logoUrl: 'https://static.wixstatic.com/media/9ce3e5_81024d4b65444bc1b34168c24ae59fa2~mv2.png',
     brandInfo: {
-        name: 'Nike, Inc.',
-        website: 'https://www.nike.com/',
-        description: 'An American multinational corporation that is engaged in the design, development, manufacturing, and worldwide marketing and sales of footwear, apparel, equipment, accessories, and services.',
-        imageUrl: 'https://cdn.britannica.com/19/213119-050-C81C789D/Nike-logo.jpg'
+        name: 'NordVPN',
+        website: 'https://nordvpn.com/',
+        description: 'NordVPN is a top-tier virtual private network (VPN) service designed for robust security and high-speed performance. It secures users online activity by routing their internet traffic through an encrypted tunnel, making it safe to use public Wi-Fi and protecting personal data from hackers and trackers. With a massive network of servers worldwide, NordVPN also allows users to bypass geo-restrictions granting access to global streaming content while maintaining a strict no-logs policy to ensure complete user privacy.', 
+        imageUrl: 'https://static.wixstatic.com/media/9ce3e5_81024d4b65444bc1b34168c24ae59fa2~mv2.png'
     }
   },
   { 
     id: 3, 
-    name: '☕ Buy 1 Get 1 Free at Starbucks', 
-    description: 'Any drink, any size!', 
-    discountCode: 'STARBOGO', 
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/184px-Starbucks_Corporation_Logo_2011.svg.png',
+    name: '🏋🏽🔥 10$ off Gymshark', 
+    description: 'Get 10$ off your first order from Gymshark!', 
+    discountCode: 'https://bit.ly/44bNuDL', 
+    logoUrl: 'https://cdn.gymshark.com/images/branding/gs-icon-text.svg',
     brandInfo: {
-        name: 'Starbucks Corporation',
-        website: 'https://www.starbucks.com/',
-        description: 'An American multinational chain of coffeehouses and roastery reserves headquartered in Seattle, Washington. As the world\'s largest coffeehouse chain, Starbucks is seen to be the main representation of the United States\' second wave of coffee culture.',
-        imageUrl: 'https://content-prod-live.cert.starbucks.com/binary/v2/asset/137-79116.jpg'
+        name: 'Gymshark', 
+        website: 'https://www.gymshark.com/',
+        description: 'Gymshark is a UK-based fitness apparel brand that has become a global phenomenon, particularly among young gym-goers and the "conditioning" community. The company revolutionized fitness marketing by shunning traditional advertising in favor of building a massive, loyal following through social media and a dedicated team of "Gymshark Athletes." Known for its form-fitting, high-performance apparel like its iconic seamless leggings, the brand creates clothing designed to enhance physique and support intense training, embodying the culture of modern fitness and dedication to personal progress.',
+        imageUrl: 'https://cdn.gymshark.com/images/branding/gs-icon-text.svg'
     }
   },
   { 
     id: 4, 
-    name: '🎮 15% Off Steam Game', 
-    description: 'Discount on any game purchase over $20.', 
-    discountCode: 'STEAM15', 
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/240px-Steam_icon_logo.svg.png',
+    name: '🎥💻 18$ Off D5 Render', 
+    description: 'Get 18$ off your yearly subscription from D5 Render!', 
+    discountCode: 'https://bit.ly/4jZDrra', 
+    logoUrl: 'https://static.wixstatic.com/media/9ce3e5_6f6d99d4f4074a1d87d4a8fda9415b59~mv2.webp',
     brandInfo: {
-        name: 'Steam',
-        website: 'https://store.steampowered.com/',
-        description: 'A video game digital distribution service by Valve. It was launched as a standalone software client in September 2003 as a way for Valve to provide automatic updates for their games, and expanded to include games from third-party publishers.',
-        imageUrl: 'https://store.cloudflare.steamstatic.com/public/shared/images/header/logo_steam.svg?t=962016'
+        name: 'D5 Render',
+        website: 'https://www.d5render.com/',
+        description: 'D5 Render is a powerful, real-time rendering software that leverages cutting-edge ray tracing technology, primarily accelerated by NVIDIAs RTX graphics cards. It is specifically designed for professionals in architecture, interior design, and landscape visualization, offering an intuitive workflow to transform 3D models into photorealistic images, videos, and virtual reality experiences. Unlike traditional renderers, D5 bridges the gap between ultra-fast speed and high-fidelity quality, allowing designers to see their creative decisions reflected in a life-like environment instantly.',
+        imageUrl: 'https://static.wixstatic.com/media/9ce3e5_6f6d99d4f4074a1d87d4a8fda9415b59~mv2.webp'
     }
   },
   { 
     id: 5, 
-    name: '🎬 Free Month of Netflix', 
-    description: 'Valid for new or returning subscribers.', 
-    discountCode: 'NETFLIXFREE', 
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/190px-Netflix_2015_logo.svg.png',
+    name: '💸📱 Free rewards with WISE!', 
+    description: 'Get a Wise card or your first International transfer, up to 500 EUR for FREE!', 
+    discountCode: 'https://bit.ly/4kTdcnL', 
+    logoUrl: 'https://static.wixstatic.com/media/9ce3e5_91d4369c4555495b82d49f2a400657ea~mv2.png',
     brandInfo: {
-        name: 'Netflix, Inc.',
-        website: 'https://www.netflix.com/',
-        description: 'An American subscription video on-demand over-the-top streaming service. The service primarily distributes films and television series produced by the media company of the same name from various genres, and it is available internationally.',
-        imageUrl: 'https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIP5TMV75/1855503803108c723415c234857b952a/Netflix-Brand-Logo.png'
+        name: 'WISE',
+        website: 'https://wise.com/',
+        description: 'Wise, formerly known as TransferWise, is a fintech company that revolutionized international money transfers. It was founded to challenge the hidden fees and poor exchange rates offered by traditional banks, operating on a principle of complete transparency. Wise core innovation is using the real mid-market exchange rate—the one you see on Google—for all transactions and charging a small, upfront fee. Beyond simple transfers, Wise has expanded into a comprehensive international banking alternative, offering a multi-currency account to hold and exchange dozens of currencies and a debit card for spending abroad without hidden charges.',
+        imageUrl: 'https://static.wixstatic.com/media/9ce3e5_91d4369c4555495b82d49f2a400657ea~mv2.png'
     }
   },
   { 
     id: 6, 
-    name: '📱 Free 5GB Roaming Data', 
-    description: 'Valid for new or returning subscribers.', 
-    discountCode: '5FREEE', 
-    logoUrl: 'https://1000logos.net/wp-content/uploads/2024/06/Verizon-Logo.png',
+    name: '🛍️🛒 100€ off Temu!', 
+    description: 'Get a 100€ coupon bundle for Temu!', 
+    discountCode: 'https://bit.ly/3GbkMLd', 
+    logoUrl: 'https://static.wixstatic.com/media/9ce3e5_07bad846661c4db18f6d069a56154e96~mv2.png',
     brandInfo: {
-        name: 'Verizon Communications',
-        website: 'https://www.verizon.com/',
-        description: 'An American multinational telecommunications conglomerate and a corporate component of the Dow Jones Industrial Average. The company is based at 1095 Avenue of the Americas in Midtown Manhattan, New York City, but is incorporated in Delaware.',
-        imageUrl: 'https://www.verizon.com/content/dam/verizon/personal/images/logo/verizon-logo.png'
+        name: 'Temu',
+        website: 'https://www.temu.com/',
+        description: 'Temu is a rapidly growing online marketplace, owned by Chinese e-commerce giant PDD Holdings, that has gone viral for its slogan "Shop like a Billionaire." The platforms main appeal is its astonishingly low prices on an enormous catalog of consumer goods, ranging from fashion and home decor to electronics and tools. It achieves this by connecting Western consumers directly with manufacturers and suppliers, cutting out middlemen. Temu is also known for its highly gamified shopping experience, using frequent flash sales, countdown timers, and referral bonuses to drive user engagement and rapid sales.',
+        imageUrl: 'https://static.wixstatic.com/media/9ce3e5_07bad846661c4db18f6d069a56154e96~mv2.png'
     }
   },
 ];
@@ -442,19 +442,19 @@ export default function StorePage() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontFamily: blyzaTheme.fonts.heading, fontSize: '3rem', color: blyzaTheme.colors.yellow, margin: '5px 0' }}>
                     <i className="fas fa-coins" style={{ fontSize: '2.5rem' }}></i>
                     <span>0</span>
-                </div>
+                </div>      
                 <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>Feature coming soon!</p>
             </div>
             <div style={{ textAlign: 'center' }}>
                 <h3 style={{fontFamily: blyzaTheme.fonts.heading, marginBottom: '15px' }}>Need Help?</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', fontSize: '1rem' }}>
-                    <a href="mailto:support@blyza.com" className='contact-link'>
+                    <a href="mailto: contact@playblyza.com" className='contact-link'>
                         <i className="fas fa-envelope" style={{ marginRight: '8px' }}></i>
-                        support@blyza.com
+                        contact@playblyza.com
                     </a>
-                    <a href="https://twitter.com/BlyzaGames" target="_blank" rel="noopener noreferrer" className='contact-link'>
-                        <i className="fab fa-twitter" style={{ marginRight: '8px' }}></i>
-                        @BlyzaGames
+                    <a href="https://instagram.com/playblyza" target="_blank" rel="noopener noreferrer" className='contact-link'>
+                        <i className="fab fa-instagram" style={{ marginRight: '8px' }}></i>
+                        @PlayBlyza
                     </a>
                 </div>
             </div>
@@ -497,7 +497,7 @@ export default function StorePage() {
             <h1 style={{ fontFamily: blyzaTheme.fonts.logo, fontSize: 'clamp(2.8rem, 6vw, 4rem)', color: blyzaTheme.colors.textLight, WebkitTextStroke: `3.5px ${blyzaTheme.colors.blackStroke}`, textStroke: `2px ${blyzaTheme.colors.blackStroke}`, textShadow: `3px 3px 0px rgba(0,0,0,0.25)`, marginBottom: '0.25em', lineHeight: 1.1 }}>
               Blyza Store 🛍 
             </h1>
-            <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: blyzaTheme.colors.yellow, fontWeight: 800, maxWidth: '550px', margin: '0 auto', textShadow: '0 0 8px rgba(255, 255, 0, 0.7)', }}>
+            <p style={{ fontSize: 'clamp(2rem, 3vw, 1.2rem)', color: blyzaTheme.colors.yellow, fontWeight: 2000, maxWidth: '550px', margin: '0 auto', textShadow: '0 0 8px rgba(4, 4, 4, 0.7)', }}>
                 Awesome rewards, just for playing!
             </p>
         </header>

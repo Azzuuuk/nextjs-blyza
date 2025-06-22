@@ -382,11 +382,14 @@
             </div>
             <div class="gameplay-area">
                 <div class="question-display-area" id="question-display-text">Press Start Timer...</div>
-                <div class="timer-display-area" id="timer-display-text">5</div>
+                <div class="timer-display-area" id="timer-display-text">5.00</div>
             </div>
             <div class="button-controls-area">
                  <button id="start-timer-reveal-btn" class="btn-secondary">
                      <i class="fas fa-play-circle"></i> Start Timer & Reveal
+                 </button>
+                 <button id="completed-early-btn" class="btn-info" style="display: none;">
+                    <i class="fas fa-check-double"></i> Completed!
                  </button>
                  <div class="result-buttons-container" id="result-buttons-div">
                     <button class="btn-success" id="pass-result-btn">
@@ -462,7 +465,7 @@
 
     <script>
         const gameConfig = { sfxEnabled: true, musicVolume: 0.2, winningScore: 5, timerDuration: 5 };
-        const gameState = { team1: { name: "Team 1", score: 0 }, team2: { name: "Team 2", score: 0 }, currentQuestion: "", questionTextToReveal: "", currentTeam: 1, timerInterval: null, timeLeft: gameConfig.timerDuration, usedQuestions: [] };
+        const gameState = { team1: { name: "Team 1", score: 0 }, team2: { name: "Team 2", score: 0 }, currentQuestion: "", questionTextToReveal: "", currentTeam: 1, timerInterval: null, timerEndTime: 0, timeLeft: gameConfig.timerDuration, usedQuestions: [] };
         const categories = [ "friends that are not funny", "people you wouldn't trust", "objects you can swallow", "things you can't do in a church", "things men have that women don't", "people you can knock out", "types of diseases", "people you find unattractive", "people you find attractive", "presidents", "capital cities", "countries in Europe", "countries in Asia", "of your favourite websites", "types of milk", "different crimes", "items in your bathroom", "ethnicities", "halloween cosplays", "things that you rub", "things smaller than your nose", "F1 teams", "currencies", "different Apple products", "sports without a ball", "Airlines", "different phobias", "mario characters", "female celebrities", "male celebrities", "designer brands", "types of trees", "animated characters", "football teams", "brands of water", "brands of chocolates", "types of cheese", "things you can't live without", "south american countries", "different seas", "periodic elements", "characters from the show Friends", "animals you could beat up", "flavours of milkshake", "types of pasta", "members of one direction", "mobile games", "different planets", "states in the USA", "things that are yellow", "female musicians", "male musicians", "types of milk", "types of seasoning", "band instruments", "things that are purple", "things that are soft", "types of fish", "types of haircuts", "types of coffee drinks", "monuments", "pre downloaded phone apps", "types of jewellery", "different languages", "things you wear under your clothes", "things in a cinema", "things you do before sleeping", "animals sounds", "things that green", "things you wouldn't want to find in your house" ];
         
         const screens = { start: document.getElementById("start-screen"), teamSetup: document.getElementById("team-setup-screen"), game: document.getElementById("game-screen"), win: document.getElementById("win-screen") };
@@ -477,6 +480,7 @@
         const passResultBtnEl = document.getElementById("pass-result-btn");
         const failResultBtnEl = document.getElementById("fail-result-btn");
         const startTimerRevealBtnEl = document.getElementById("start-timer-reveal-btn");
+        const completedEarlyBtnEl = document.getElementById("completed-early-btn"); // New button element
         const questionDisplayTextEl = document.getElementById("question-display-text");
         const timerDisplayTextEl = document.getElementById("timer-display-text");
         const resultButtonsDivEl = document.getElementById("result-buttons-div");
@@ -598,6 +602,7 @@
         playAgainGameBtnEl.addEventListener("click", () => { playSoundWithCallback(allSfx[0], resetGame); });
         mainMenuNavBtnEl.addEventListener("click", () => { playSound(allSfx[1]); goToMainMenu(); });
         visitStoreBtnEl.addEventListener("click", () => { playSound(allSfx[1]); window.location.href = '/store'; });
+        completedEarlyBtnEl.addEventListener("click", () => { playSound(allSfx[1]); handleCompletedEarly(); }); // New event listener
 
         settingsBtnEl.addEventListener('click', () => { playSound(allSfx[1]); settingsModalEl.style.display = 'flex'; });
         closeModalBtnEl.addEventListener('click', () => { playSound(allSfx[1]); settingsModalEl.style.display = 'none'; });
@@ -641,10 +646,11 @@
             gameState.questionTextToReveal = `Name 3 ${randomCategory}...`;
             questionDisplayTextEl.innerHTML = `<span class="question-hidden-text">Press Start Timer...</span>`;
             gameState.timeLeft = gameConfig.timerDuration;
-            timerDisplayTextEl.textContent = gameState.timeLeft;
+            timerDisplayTextEl.textContent = gameState.timeLeft.toFixed(2);
             timerDisplayTextEl.style.color = 'var(--text-light)';
             startTimerRevealBtnEl.style.display = "inline-flex";
             startTimerRevealBtnEl.disabled = false;
+            completedEarlyBtnEl.style.display = "none"; // Hide completed button
             resultButtonsDivEl.style.display = "none";
             clearInterval(gameState.timerInterval);
             gameState.timerInterval = null;
@@ -655,26 +661,40 @@
             playSound(allSfx[2]);
             playSound(allSfx[3]); // timer tick
             startTimerRevealBtnEl.style.display = "none";
+            completedEarlyBtnEl.style.display = "inline-flex"; // Show completed button
             questionDisplayTextEl.textContent = gameState.questionTextToReveal;
-            gameState.timeLeft = gameConfig.timerDuration;
-            timerDisplayTextEl.textContent = gameState.timeLeft;
+            
+            gameState.timerEndTime = Date.now() + gameConfig.timerDuration * 1000;
+            
             timerDisplayTextEl.style.color = 'var(--blyza-quickfire-red)';
-            gameState.timerInterval = setInterval(updateTimer, 1000);
+            gameState.timerInterval = setInterval(updateTimer, 16); // ~60fps for smooth update
         }
 
         function updateTimer() {
-            gameState.timeLeft--;
-            timerDisplayTextEl.textContent = gameState.timeLeft;
+            const remainingMs = gameState.timerEndTime - Date.now();
+            gameState.timeLeft = Math.max(0, remainingMs / 1000);
+            timerDisplayTextEl.textContent = gameState.timeLeft.toFixed(2);
+
             if (gameState.timeLeft <= 0) {
                 stopSound(allSfx[3]);
                 clearInterval(gameState.timerInterval);
                 gameState.timerInterval = null;
-                timerDisplayTextEl.textContent = 0;
+                timerDisplayTextEl.textContent = "0.00";
                 playSound(allSfx[4]);
                 showTimeUpAnimation();
                 resultButtonsDivEl.style.display = "flex";
+                completedEarlyBtnEl.style.display = "none"; // Hide completed button
                 startTimerRevealBtnEl.disabled = true;
             }
+        }
+        
+        function handleCompletedEarly() {
+            stopSound(allSfx[3]);
+            clearInterval(gameState.timerInterval);
+            gameState.timerInterval = null;
+            resultButtonsDivEl.style.display = "flex";
+            completedEarlyBtnEl.style.display = "none"; // Hide self
+            startTimerRevealBtnEl.disabled = true;
         }
 
         function showTimeUpAnimation() {
@@ -689,6 +709,7 @@
              clearInterval(gameState.timerInterval);
              gameState.timerInterval = null;
              resultButtonsDivEl.style.display = "none";
+             completedEarlyBtnEl.style.display = "none"; // Ensure it's hidden
             if (passed) {
                 if (gameState.currentTeam === 1) gameState.team1.score++; else gameState.team2.score++;
             } else {

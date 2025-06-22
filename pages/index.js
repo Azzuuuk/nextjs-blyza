@@ -14,7 +14,6 @@ export default function GamesListPage() {
   <meta name="robots" content="index, follow" />
 
 
- <meta name='impact-site-verification' value='3739dacf-1165-45af-8389-3e63761bbc63' />
 
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
