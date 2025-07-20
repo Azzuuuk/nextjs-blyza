@@ -152,6 +152,18 @@
         .btn-danger, #reveal-imposter-btn { background-color: var(--blyza-quickfire-red); color: var(--text-light); box-shadow: var(--shadow-chunky); }
         .btn-info, #visit-store-btn { background-color: #4ECDC4; color: var(--text-dark); box-shadow: var(--shadow-chunky); }
         
+        /* NEW: Styles for the mode selection buttons */
+        .game-mode-selection { display: flex; justify-content: center; gap: 20px; margin: 30px 0; flex-wrap: wrap; }
+        .mode-option {
+            background: var(--text-light); padding: 20px; border-radius: var(--border-radius-game);
+            cursor: pointer; transition: all 0.3s ease; border: 3px solid var(--black-stroke);
+            box-shadow: var(--shadow-chunky); flex: 1; min-width: 250px; max-width: 300px;
+        }
+        .mode-option:hover { transform: translateY(-5px) scale(1.02); box-shadow: 6px 6px 0 var(--blyza-orange-primary); }
+        .mode-option i { font-size: 2.5rem; margin-bottom: 10px; color: var(--blyza-orange-primary); transition: all 0.3s ease; }
+        .mode-option h3 { margin-bottom: 8px; font-size: 1.3rem; }
+        .mode-option p { color: var(--text-medium); font-size: 0.9rem; }
+
         /* --- Role Card --- */
         .role-card { perspective: 1000px; width: 280px; height: 350px; margin: 15px auto; }
         .role-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
@@ -323,7 +335,8 @@
     </script>
 
     <div class="game-container">
-       <a href="#" onclick="history.back(); return false;" id="home-menu-btn" class="icon-btn" aria-label="Back to the previous page">
+        <!-- MODIFIED: The home button now links directly to your main site. -->
+       <a href="https://www.playblyza.com/" id="home-menu-btn" class="icon-btn" aria-label="Back to Blyza Home">
             <i class="fas fa-home"></i>
         </a>
         <button id="back-btn" class="icon-btn" aria-label="Go Back">
@@ -333,8 +346,27 @@
             <i class="fas fa-cog"></i>
         </button>
 
-        <!-- Start Screen -->
-        <div id="start-screen" class="screen active">
+        <!-- NEW: Mode Selection Screen -->
+        <div id="mode-selection-screen" class="screen active">
+            <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
+            <h1>Find The Imposter</h1>
+            <p class="instructions" style="border-style: solid; border-width: 2px;">Choose how you want to play!</p>
+            <div class="game-mode-selection">
+                <div id="local-play-btn" class="mode-option">
+                    <i class="fas fa-couch"></i>
+                    <h3>Local Play</h3>
+                    <p>Play with friends on the same device.</p>
+                </div>
+                <div id="online-play-btn" class="mode-option">
+                    <i class="fas fa-globe"></i>
+                    <h3>Online Multiplayer</h3>
+                    <p>Play with friends on different devices.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start Screen (Now hidden by default) -->
+        <div id="start-screen" class="screen">
             <img class="brand-logo brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot">
             <h1>Find The Imposter</h1>
             <div class="instructions">
@@ -488,10 +520,23 @@
         let feedbackTimeout;
         
         // --- DOM ELEMENT SELECTION ---
-        const screens = { start: document.getElementById('start-screen'), role: document.getElementById('role-screen'), discussion: document.getElementById('discussion-screen'), voting: document.getElementById('voting-screen'), results: document.getElementById('results-screen') };
+        // MODIFIED: Added mode-selection-screen to the list of screens
+        const screens = { 
+            modeSelection: document.getElementById('mode-selection-screen'),
+            start: document.getElementById('start-screen'), 
+            role: document.getElementById('role-screen'), 
+            discussion: document.getElementById('discussion-screen'), 
+            voting: document.getElementById('voting-screen'), 
+            results: document.getElementById('results-screen') 
+        };
+
         const homeMenuBtn = document.getElementById('home-menu-btn'), backBtn = document.getElementById('back-btn'), playerNamesList = document.getElementById('player-names-list'), addPlayerBtn = document.getElementById('add-player-btn'), startGameBtn = document.getElementById('start-game-btn'), currentPlayerInfo = document.getElementById('current-player-info'), roleCard = document.getElementById('role-card'), playerRoleDisplay = document.getElementById('player-role'), playerQuestionDisplay = document.getElementById('player-question'), nextPlayerBtn = document.getElementById('next-player-btn'), crewQuestionDisplay = document.getElementById('crew-question-display'), playerListDisplay = document.getElementById('player-list-display'), startVotingBtn = document.getElementById('start-voting-btn'), votingOptionsDisplay = document.getElementById('voting-options-display'), revealImposterBtn = document.getElementById('reveal-imposter-btn'), votingInstructionText = document.getElementById('voting-instruction-text'), resultTitleText = document.getElementById('result-title-text'), imposterAvatarDisplay = document.getElementById('imposter-avatar-display'), imposterNameRevealText = document.getElementById('imposter-name-reveal-text'), imposterQuestionRevealText = document.getElementById('imposter-question-reveal-text'), resultMessageText = document.getElementById('result-message-text'), mostVotedPlayerText = document.getElementById('most-voted-player-text'), actualImposterText = document.getElementById('actual-imposter-text'), playAgainBtn = document.getElementById('play-again-btn'), newGameBtn = document.getElementById('new-game-btn'), visitStoreBtn = document.getElementById('visit-store-btn'), settingsBtn = document.getElementById('settings-btn'), settingsModal = document.getElementById('settings-modal'), closeModalBtn = document.getElementById('close-modal-btn'), bgmVolumeSlider = document.getElementById('bgm-volume-slider'), sfxToggleBtn = document.getElementById('sfx-toggle-btn'), backgroundMusic = document.getElementById('background-game-music'), feedbackPopup = document.getElementById('feedback-popup'), feedbackMessageText = document.getElementById('feedback-message-text-el');
         const allSfx = [document.getElementById('start-game-sound'), document.getElementById('interaction-sound'), document.getElementById('card-flip-sound'), document.getElementById('vote-cast-sound'), document.getElementById('imposter-reveal-correct-sound'), document.getElementById('imposter-reveal-incorrect-sound'), document.getElementById('confetti-sound')];
         const audioConsentModal = document.getElementById('audio-consent-modal'), audioConsentYesBtn = document.getElementById('audio-consent-yes-btn'), audioConsentNoBtn = document.getElementById('audio-consent-no-btn');
+        
+        // NEW: Selectors for the new mode buttons
+        const localPlayBtn = document.getElementById('local-play-btn');
+        const onlinePlayBtn = document.getElementById('online-play-btn');
 
         // --- AUDIO & UI FEEDBACK FUNCTIONS ---
         function initAudio() {
@@ -524,7 +569,17 @@
         }
         
         // --- GAME LOGIC FUNCTIONS ---
-        function switchScreen(id) { Object.values(screens).forEach(s => s.classList.remove('active')); screens[id].classList.add('active'); const isStart = id === 'start'; homeMenuBtn.style.display = isStart ? 'flex' : 'none'; backBtn.style.display = isStart ? 'none' : 'flex'; }
+        // MODIFIED: switchScreen now also handles the home/back buttons.
+        function switchScreen(id) { 
+            Object.values(screens).forEach(s => s.classList.remove('active')); 
+            if(screens[id]) screens[id].classList.add('active'); 
+            const isModeSelect = id === 'modeSelection'; 
+            const isLocalStart = id === 'start';
+            homeMenuBtn.style.display = isModeSelect ? 'flex' : 'none'; 
+            backBtn.style.display = isModeSelect ? 'none' : 'flex'; 
+        }
+
+        // --- All local game functions remain unchanged below this point ---
         function createPlayerInput(num) { const w = document.createElement('div'); w.className = 'player-input-wrapper'; const i = document.createElement('input'); i.type = 'text'; i.className = 'player-name'; i.placeholder = `Player ${num}`; w.appendChild(i); if (num > gameState.minPlayers) { const r = document.createElement('button'); r.className='remove-player-btn'; r.innerHTML='<i class="fas fa-times"></i>'; r.onclick = ()=>{playSound(allSfx[1]); w.remove(); updateButtons();}; w.appendChild(r); } return w; }
         function addPlayerInput() { if (playerNamesList.children.length >= gameState.maxPlayers) return showFeedback(`Maximum of ${gameState.maxPlayers} players!`, 'info'); playSound(allSfx[1]); playerNamesList.appendChild(createPlayerInput(playerNamesList.children.length + 1)); updateButtons(); }
         function updateButtons() { const count = playerNamesList.children.length; addPlayerBtn.disabled = count >= gameState.maxPlayers; startGameBtn.disabled = count < gameState.minPlayers; playerNamesList.querySelectorAll('.remove-player-btn').forEach(b => b.disabled = count <= gameState.minPlayers); }
@@ -538,7 +593,8 @@
         function handleVote(e) { playSound(allSfx[3]); document.querySelectorAll('#voting-options-display .selected').forEach(s => s.classList.remove('selected')); e.currentTarget.classList.add('selected'); gameState.selectedVote = e.currentTarget.dataset.playerName; revealImposterBtn.disabled = false; votingInstructionText.textContent = `You are voting for ${gameState.selectedVote}.`; }
         function revealImposter() { if (!gameState.selectedVote) return showFeedback('Please select a player!', 'incorrect'); const mostVoted = gameState.selectedVote; const imposter = gameState.players[gameState.imposterIndex]; const correct = mostVoted === imposter; playSound(correct ? allSfx[4] : allSfx[5]); showFeedback(correct ? 'Imposter Found!' : 'Wrong Guess!', correct ? 'correct' : 'incorrect', 3000); if (correct) triggerConfetti(); resultTitleText.textContent = correct ? 'Imposter Found!' : 'Wrong Guess!'; resultTitleText.style.color = `var(--blyza-${correct?'keppel-accent':'quickfire-red'})`; imposterAvatarDisplay.textContent = imposter[0].toUpperCase(); imposterNameRevealText.innerHTML = `Imposter: <strong style="color:var(--blyza-quickfire-red)">${imposter}</strong>`; imposterQuestionRevealText.textContent = `Imposter's Question: ${gameState.imposterQuestion}`; resultMessageText.textContent = correct ? `The group correctly identified ${imposter}!` : `The group voted for ${mostVoted}, but the imposter was ${imposter}!`; resultMessageText.className = correct ? 'result-correct' : 'result-incorrect'; mostVotedPlayerText.innerHTML = `${mostVoted} <strong style="color:var(--blyza-${correct?'keppel-accent':'quickfire-red'})">(${correct?'Correct':'Incorrect'})</strong>`; actualImposterText.innerHTML = `<strong style="color:var(--blyza-quickfire-red)">${imposter}</strong>`; switchScreen('results'); }
         function playAgain() { playSoundWithCallback(allSfx[0], () => {selectNewQuestion(); gameState.imposterIndex = Math.floor(Math.random() * gameState.players.length); gameState.currentPlayerIndex = 0; gameState.selectedVote = null; currentPlayerInfo.innerHTML = `Pass to <strong>${gameState.players[0]}</strong>`; roleCard.classList.remove('flipped'); nextPlayerBtn.disabled = true; switchScreen('role');}); }
-        function newGame() { playSound(allSfx[1]); playerNamesList.innerHTML = ''; for(let i=0; i<gameState.minPlayers; i++) playerNamesList.appendChild(createPlayerInput(i + 1)); updateButtons(); switchScreen('start'); }
+        // MODIFIED: newGame now resets to the mode selection screen.
+        function newGame() { playSound(allSfx[1]); playerNamesList.innerHTML = ''; for(let i=0; i<gameState.minPlayers; i++) playerNamesList.appendChild(createPlayerInput(i + 1)); updateButtons(); switchScreen('modeSelection'); }
         
         // --- INITIAL SETUP AND EVENT BINDING ---
         document.addEventListener('DOMContentLoaded', () => { 
@@ -552,6 +608,18 @@
             document.addEventListener('visibilitychange', handleVisibilityChange);
             window.addEventListener('pageshow', handlePageShow);
             
+            // NEW: Event listeners for the new mode selection buttons
+            localPlayBtn.addEventListener('click', () => {
+                playSound(allSfx[1]);
+                initAudio();
+                switchScreen('start');
+            });
+            onlinePlayBtn.addEventListener('click', () => {
+                playSound(allSfx[1]);
+                window.location.href = 'https://blyzatest.vercel.app/games/find-the-imposter';
+            });
+
+            // OLD event listeners
             settingsBtn.addEventListener('click', () => { playSound(allSfx[1]); settingsModal.style.display = 'flex'; });
             closeModalBtn.addEventListener('click', () => { playSound(allSfx[1]); settingsModal.style.display = 'none'; });
             bgmVolumeSlider.addEventListener('input', (e) => { musicVolume = parseFloat(e.target.value); backgroundMusic.volume = musicVolume; localStorage.setItem('musicVolume', musicVolume); if (musicVolume > 0 && !document.hidden && audioContextStarted) backgroundMusic.play().catch(e=>{}); else backgroundMusic.pause(); });
@@ -572,7 +640,7 @@
             visitStoreBtn.addEventListener('click', () => { playSound(allSfx[1]); window.location.href = '/store'; });
             backBtn.addEventListener('click', newGame);
             
-            newGame();
+            newGame(); // Call newGame to set the initial screen to mode selection
         });
 
         // --- CUSTOM SCROLL REDIRECTION LOGIC ---
