@@ -6,6 +6,7 @@ import { auth } from '/firebaseconfig';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useRouter } from 'next/router';
 import { Analytics } from '@vercel/analytics/react';
+import Script from 'next/script'; // Import the Script component for Google Analytics
 
 // Product data with added brandInfo for the new modal
 const products = [
@@ -89,7 +90,6 @@ const products = [
   },
 ];
 
-// --- BRAND IDENTITY STYLES (from games.html) ---
 const blyzaTheme = {
     colors: {
         primary: '#FF8833',
@@ -188,7 +188,6 @@ const dashboardIconStyle = {
     zIndex: 100,
 };
 
-// --- NEW Style for the info button on the card ---
 const infoButtonStyle = {
     position: 'absolute',
     top: '15px',
@@ -218,12 +217,8 @@ export default function StorePage() {
   const [musicVolume, setMusicVolume] = useState(0.2);
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
-  
-  // --- NEW State for the Brand Info Modal ---
   const [showBrandInfoModal, setShowBrandInfoModal] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
-
-  // --- NEW State for copy feedback ---
   const [copiedId, setCopiedId] = useState(null);
 
   const bgMusicRef = useRef(null);
@@ -236,15 +231,28 @@ export default function StorePage() {
       audioRef.current.play().catch(e => console.error("SFX play error:", e));
     }
   };
-
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) setUser(currentUser);
-      else router.push('/login');
+      setUser(currentUser);
       setLoading(false);
     });
     return () => unsubscribe();
-  }, [router]);
+  }, []);
+
+  useEffect(() => {
+    if (!router.isReady || !user) return;
+
+    const { claim } = router.query;
+    if (claim && !revealedCodes[claim]) {
+      handleReveal(claim);
+      
+      const { pathname, query } = router;
+      delete query.claim;
+      router.replace({ pathname, query }, undefined, { shallow: true });
+    }
+  }, [router.isReady, user, revealedCodes, router.query]);
+
 
   useEffect(() => {
     if (bgMusicRef.current) {
@@ -295,13 +303,24 @@ export default function StorePage() {
 
   const handleReveal = (id) => {
     playSound(purchaseSoundRef);
-    setRevealedCodes((prev) => ({ ...prev, [id]: true }));
+    setRevealedCodes((prev) => ({ ...prev, [String(id)]: true }));
     setFeedbackMessage('Prize Claimed!');
     setShowFeedback(true);
     triggerConfetti();
     setTimeout(() => setShowFeedback(false), 2500);
   };
   
+  const handleClaimClick = (product) => {
+    if (revealedCodes[product.id]) return;
+
+    if (user) {
+      handleReveal(product.id);
+    } else {
+      playSound(interactionSoundRef);
+      router.push(`/login?redirect=/store&claim=${product.id}`);
+    }
+  };
+
   const handleShowBrandInfo = (e, brandInfo) => {
     e.stopPropagation(); 
     playSound(interactionSoundRef);
@@ -309,7 +328,6 @@ export default function StorePage() {
     setShowBrandInfoModal(true);
   };
 
-  // --- NEW handler for copying the discount code ---
   const handleCopyCode = async (code, id) => {
     playSound(interactionSoundRef);
     if (!navigator.clipboard) {
@@ -318,8 +336,8 @@ export default function StorePage() {
     }
     try {
         await navigator.clipboard.writeText(code);
-        setCopiedId(id); // Trigger feedback
-        setTimeout(() => setCopiedId(null), 2000); // Reset feedback after 2 seconds
+        setCopiedId(id);
+        setTimeout(() => setCopiedId(null), 2000);
     } catch (err) {
         console.error('Failed to copy code: ', err);
     }
@@ -350,10 +368,22 @@ export default function StorePage() {
       </div>
     );
   }
-  if (!user) return null;
 
   return (
     <>
+      <Script 
+        src="https://www.googletagmanager.com/gtag/js?id=G-N5PBKM0DNQ" 
+        strategy="afterInteractive" 
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-N5PBKM0DNQ');
+        `}
+      </Script>
+
       <Head>
         <title>Blyza Store | Game Center</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -398,7 +428,6 @@ export default function StorePage() {
       <audio ref={interactionSoundRef} src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" />
       <audio ref={purchaseSoundRef} src="https://static.wixstatic.com/mp3/9ce3e5_15e6f508ee7f4840a781873003e33347.wav" />
 
-      {/* --- Floating background elements --- */}
       <div style={{ position: 'fixed', top:0, left:0, width:'100%', height:'100%', zIndex:0, pointerEvents: 'none' }}>
         <i className="fas fa-gift bg-store-element" style={{ fontSize: 130, top: '15%', right: '10%', '--initial-rotate': '20deg', animationDuration: '16s' }}></i>
         <i className="fas fa-tags bg-store-element" style={{ fontSize: 150, top: '10%', left: '5%', '--initial-rotate': '-15deg', animationDuration: '22s' }}></i>
@@ -406,15 +435,15 @@ export default function StorePage() {
         <i className="fas fa-star bg-store-element" style={{ fontSize: 130, top: '65%', left: '8%', '--initial-rotate': '10deg', animationDuration: '18s' }}></i>
       </div>
       
-      {/* --- Page Buttons --- */}
        <button style={settingsIconStyle} onClick={() => { playSound(interactionSoundRef); setShowSettingsModal(true);}} aria-label="Open Settings">
             <i className="fas fa-cog"></i>
        </button>
-       <button style={dashboardIconStyle} onClick={() => { playSound(interactionSoundRef); setShowDashboardModal(true);}} aria-label="Open Dashboard">
-            <i className="fas fa-wallet"></i>
-       </button>
+       {user && (
+            <button style={dashboardIconStyle} onClick={() => { playSound(interactionSoundRef); setShowDashboardModal(true);}} aria-label="Open Dashboard">
+                <i className="fas fa-wallet"></i>
+            </button>
+       )}
 
-      {/* --- Modals --- */}
       {showSettingsModal && (
         <div style={{ position: 'fixed', zIndex: 2000, left: 0, top: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: blyzaTheme.fonts.body }}>
           <div style={{ backgroundColor: blyzaTheme.colors.darkerGreyBg, margin: 'auto', padding: '25px', border: blyzaTheme.borders.stroke, borderRadius: blyzaTheme.borders.radius, width: '90%', maxWidth: '450px', boxShadow: `8px 8px 0px rgba(0,0,0,0.4)`, position: 'relative', color: blyzaTheme.colors.textLight }}>
@@ -448,9 +477,9 @@ export default function StorePage() {
             <div style={{ textAlign: 'center' }}>
                 <h3 style={{fontFamily: blyzaTheme.fonts.heading, marginBottom: '15px' }}>Need Help?</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', fontSize: '1rem' }}>
-                    <a href="mailto: contact@playblyza.com" className='contact-link'>
+                    <a href="mailto: azaan@joinblyza.com" className='contact-link'>
                         <i className="fas fa-envelope" style={{ marginRight: '8px' }}></i>
-                        contact@playblyza.com
+                        azaan@joinblyza.com
                     </a>
                     <a href="https://instagram.com/playblyza" target="_blank" rel="noopener noreferrer" className='contact-link'>
                         <i className="fab fa-instagram" style={{ marginRight: '8px' }}></i>
@@ -508,7 +537,7 @@ export default function StorePage() {
                 style={cardStyle} 
                 onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-8px) scale(1.03)'; e.currentTarget.style.boxShadow = blyzaTheme.shadows.chunkyYellow; e.currentTarget.style.borderColor = blyzaTheme.colors.primary; }} 
                 onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = blyzaTheme.shadows.chunky; e.currentTarget.style.borderColor = blyzaTheme.colors.blackStroke; }}
-                onClick={() => revealedCodes[product.id] ? null : handleReveal(product.id)}
+                onClick={() => handleClaimClick(product)}
             >
               <button 
                 style={infoButtonStyle}
@@ -535,7 +564,6 @@ export default function StorePage() {
                     <i className="fas fa-gift" style={{ marginRight: '8px' }}></i> Claim Prize
                   </button>
                 ) : (
-                  // --- MODIFIED CODE BLOCK FOR COPY FUNCTIONALITY ---
                   <div
                     style={{ 
                         marginTop: '15px', padding: '10px 15px', borderRadius: '10px', 
@@ -581,9 +609,11 @@ export default function StorePage() {
             <button onClick={handleBack} style={{...retroButtonBaseStyle, backgroundColor: blyzaTheme.colors.secondary, color: blyzaTheme.colors.textLight }}>
                 <i className="fas fa-arrow-left"></i> Back to Games
             </button>
-            <button onClick={handleLogout} style={{...retroButtonBaseStyle, backgroundColor: blyzaTheme.colors.red, color: blyzaTheme.colors.textLight }}>
-              <i className="fas fa-sign-out-alt"></i> Logout
-            </button>
+            {user && (
+                <button onClick={handleLogout} style={{...retroButtonBaseStyle, backgroundColor: blyzaTheme.colors.red, color: blyzaTheme.colors.textLight }}>
+                <i className="fas fa-sign-out-alt"></i> Logout
+                </button>
+            )}
         </div>
 
       </div>

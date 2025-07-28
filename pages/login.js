@@ -64,6 +64,17 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // --- NEW: Helper function to handle dynamic redirects after login ---
+  const getRedirectUrl = () => {
+    const { redirect, ...restQuery } = router.query;
+    // Default to '/store' if no redirect path is specified in the URL
+    const redirectPath = redirect || '/store';
+    // Rebuild the query string from any other params (like 'claim')
+    const queryParams = new URLSearchParams(restQuery).toString();
+    // Combine them for the final redirect URL
+    return queryParams ? `${redirectPath}?${queryParams}` : redirectPath;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -74,7 +85,8 @@ export default function LoginPage() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      router.push('/store');
+      // --- MODIFIED: Redirect dynamically based on URL query params ---
+      router.push(getRedirectUrl());
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
       console.error("Email/Password Auth Error:", err);
@@ -88,7 +100,8 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signInWithGooglePopup();
-      router.push('/store');
+      // --- MODIFIED: Redirect dynamically based on URL query params ---
+      router.push(getRedirectUrl());
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
       console.error("Google Sign-in Error:", err);
