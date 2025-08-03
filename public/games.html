@@ -217,7 +217,10 @@
         position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
         background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
         display: none; justify-content: center; align-items: center;
+        animation: fadeIn 0.3s ease;
     }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
     .modal-content {
         background-color: var(--darker-grey-bg); margin: auto; padding: 25px;
         border: 3px solid var(--black-stroke); border-radius: var(--border-radius-game);
@@ -261,9 +264,9 @@
     .favorites-list .play-count { font-family: var(--font-logo); font-size: 1.3rem; color: var(--blyza-sunny-yellow); }
     .no-favorites-message { text-align: center; color: var(--text-medium); font-weight: 500; }
 
-    /* --- NEW --- Welcome/Cookie Modal --- */
+    /* --- Welcome/Cookie Modal --- */
     #welcome-modal-overlay {
-        z-index: 3000; /* Highest z-index to be on top of everything */
+        z-index: 3000;
         backdrop-filter: blur(8px);
     }
     .welcome-modal-content {
@@ -292,6 +295,53 @@
     #accept-cookies-btn:hover {
         box-shadow: 2px 2px 0px var(--black-stroke);
     }
+    
+    /* --- NEW: Onboarding Modal --- */
+    #onboarding-modal-overlay {
+        z-index: 2999; /* Just below the cookie modal */
+    }
+    .onboarding-modal-content {
+        max-width: 500px;
+        text-align: center;
+        background: var(--bg-dark-start);
+        border-color: var(--blyza-neon-pink);
+    }
+    .onboarding-text {
+        font-size: 1.1rem;
+        color: var(--text-light);
+        margin-bottom: 30px;
+        line-height: 1.7;
+        font-weight: 500;
+    }
+    .onboarding-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+    #play-popular-btn {
+        background-color: var(--blyza-neon-pink);
+        color: var(--text-light);
+        box-shadow: 4px 4px 0px var(--black-stroke);
+        width: 100%;
+        justify-content: center;
+    }
+    #play-popular-btn:hover { box-shadow: 2px 2px 0px var(--black-stroke); }
+    
+    .btn-retro-secondary {
+        background: transparent;
+        color: var(--text-light);
+        border-color: var(--text-medium);
+        box-shadow: none;
+        font-size: 0.9rem;
+    }
+    .btn-retro-secondary:hover {
+        background: var(--text-medium);
+        color: var(--text-dark);
+        transform: none;
+        box-shadow: none;
+    }
+
 
     @media (max-width: 767.98px) {
         .page-header { padding: 80px 15px 30px; }
@@ -599,15 +649,28 @@
         </div>
     </div>
 
-    <!-- NEW: Welcome Modal (for first-time users) -->
+    <!-- Welcome Modal (for first-time users) -->
     <div id="welcome-modal-overlay" class="modal">
         <div class="modal-content welcome-modal-content">
             <img class="brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="max-height: 100px; margin-bottom: 20px;">
             <h2>Welcome to Blyza!</h2>
-            <p class="welcome-text">Enjoy free party games, get exclusive rewards! To give you the best experience and remember your settings & favorite games, we use your browser's local storage. By continuing, you agree to this.</p>
-            <button id="accept-cookies-btn" class="btn-retro-floating">Accept cookies and dive in! <i class="fas fa-rocket"></i></button>
+            <p class="welcome-text">We use your browser's local storage to save your settings and remember your favorite games. By clicking "Accept", you agree to this.</p>
+            <button id="accept-cookies-btn" class="btn-retro-floating">Accept & Continue <i class="fas fa-rocket"></i></button>
         </div>
     </div>
+    
+    <!-- NEW Onboarding Modal -->
+    <div id="onboarding-modal-overlay" class="modal">
+        <div class="modal-content onboarding-modal-content">
+            <h2>Ready to Play?</h2>
+            <p class="onboarding-text">Can't decide where to start? Try our most popular game to get a feel for Blyza!</p>
+            <div class="onboarding-buttons">
+                <button id="play-popular-btn" class="btn-retro-floating">Yes, take me to the game! <i class="fas fa-dice"></i></button>
+                <button id="browse-menu-btn" class="btn-retro-floating btn-retro-secondary">No, I'll browse the menu</button>
+            </div>
+        </div>
+    </div>
+
 
     <audio id="background-music" loop><source src="https://static.wixstatic.com/mp3/9ce3e5_973dcdec546a44b594013ec040a9eb20.mp3" type="audio/mpeg"></audio>
     <audio id="category-select-sound"><source src="https://static.wixstatic.com/mp3/9ce3e5_fc326aa1760c485dbac083ec55c2bfcb.wav" type="audio/wav"></audio>
@@ -637,9 +700,12 @@
         const favoritesCloseBtn = document.getElementById('favorites-close-btn');
         const favoritesList = document.getElementById('favorites-list');
 
-        // NEW: Welcome Modal Elements
+        // Welcome & Onboarding Modal Elements
         const welcomeModalOverlay = document.getElementById('welcome-modal-overlay');
         const acceptCookiesBtn = document.getElementById('accept-cookies-btn');
+        const onboardingModalOverlay = document.getElementById('onboarding-modal-overlay');
+        const playPopularBtn = document.getElementById('play-popular-btn');
+        const browseMenuBtn = document.getElementById('browse-menu-btn');
 
 
         // --- Core Functions ---
@@ -799,6 +865,7 @@
             updateSfxButton();
         };
 
+        // --- Onboarding Flow Logic ---
         const consentAccepted = localStorage.getItem('blyzaConsentAccepted');
 
         if (!consentAccepted) {
@@ -813,22 +880,41 @@
                     localStorage.setItem('blyzaConsentAccepted', 'true');
                     welcomeModalOverlay.style.display = 'none';
                     
-                    // Now that user has consented, we can try to play music on their first real interaction
-                    document.body.addEventListener('click', () => {
-                        if (backgroundMusic && backgroundMusic.paused) {
-                            backgroundMusic.play().catch(e => console.error("Autoplay blocked:", e));
-                        }
-                    }, { once: true });
+                    // Immediately show the onboarding modal
+                    if (onboardingModalOverlay) {
+                        onboardingModalOverlay.style.display = 'flex';
+                    }
                 });
             }
-        } else {
-            // Returning user: set up music to play on first click immediately.
-            document.body.addEventListener('click', () => {
-                if (backgroundMusic && backgroundMusic.paused) {
-                    backgroundMusic.play().catch(e => console.error("Autoplay blocked:", e));
-                }
-            }, { once: true });
+
+            if (playPopularBtn) {
+                playPopularBtn.addEventListener('click', () => {
+                    // **IMPORTANT**: Change the href to your most popular game's link!
+                    const mostPopularGame = document.querySelector('.game-title a[href="/games/game2"]');
+                    if (mostPopularGame) {
+                        mostPopularGame.click();
+                    } else {
+                        onboardingModalOverlay.style.display = 'none'; // Failsafe
+                    }
+                });
+            }
+            
+            if (browseMenuBtn) {
+                browseMenuBtn.addEventListener('click', () => {
+                    playSound(categorySelectSound);
+                    onboardingModalOverlay.style.display = 'none';
+                });
+            }
+
         }
+
+        // Always set up music to play on the first user interaction post-load
+        document.body.addEventListener('click', () => {
+            if (backgroundMusic && backgroundMusic.paused) {
+                backgroundMusic.play().catch(e => console.error("Autoplay blocked:", e));
+            }
+        }, { once: true });
+
 
         // Run the main page initialization regardless of consent modal
         initializePage();
