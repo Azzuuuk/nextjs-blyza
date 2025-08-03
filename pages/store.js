@@ -220,6 +220,7 @@ export default function StorePage() {
   const [showBrandInfoModal, setShowBrandInfoModal] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
+  const [blyzaBucks, setBlyzaBucks] = useState(0); // <-- NEW: State for Blyza Bucks
 
   const bgMusicRef = useRef(null);
   const interactionSoundRef = useRef(null);
@@ -239,6 +240,30 @@ export default function StorePage() {
     });
     return () => unsubscribe();
   }, []);
+
+  // NEW: useEffect to load Blyza Bucks from localStorage on component mount
+  useEffect(() => {
+    const loadBucks = () => {
+        const storedBucks = localStorage.getItem('blyzaBucksCount');
+        setBlyzaBucks(storedBucks ? parseInt(storedBucks, 10) : 0);
+    };
+    loadBucks();
+
+    // Listen for storage changes from other tabs
+    const handleStorageChange = (event) => {
+        if (event.key === 'blyzaBucksCount') {
+            setBlyzaBucks(event.newValue ? parseInt(event.newValue, 10) : 0);
+        }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Cleanup listener on component unmount
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+    };
+}, []);
+
 
   useEffect(() => {
     if (!router.isReady || !user) return;
@@ -470,9 +495,10 @@ export default function StorePage() {
                 <p style={{ margin: 0, fontFamily: blyzaTheme.fonts.heading, fontSize: '1rem', textTransform: 'uppercase' }}>Blyza Bucks</p>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontFamily: blyzaTheme.fonts.heading, fontSize: '3rem', color: blyzaTheme.colors.yellow, margin: '5px 0' }}>
                     <i className="fas fa-coins" style={{ fontSize: '2.5rem' }}></i>
-                    <span>0</span>
+                    {/* UPDATED: Display Blyza Bucks from state */}
+                    <span>{blyzaBucks.toLocaleString()}</span>
                 </div>      
-                <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>Feature coming soon!</p>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>Earn more by playing games!</p>
             </div>
             <div style={{ textAlign: 'center' }}>
                 <h3 style={{fontFamily: blyzaTheme.fonts.heading, marginBottom: '15px' }}>Need Help?</h3>

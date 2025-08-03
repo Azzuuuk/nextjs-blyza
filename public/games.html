@@ -265,82 +265,45 @@
     .no-favorites-message { text-align: center; color: var(--text-medium); font-weight: 500; }
 
     /* --- Welcome/Cookie Modal --- */
-    #welcome-modal-overlay {
-        z-index: 3000;
-        backdrop-filter: blur(8px);
-    }
-    .welcome-modal-content {
-        max-width: 500px;
-        text-align: center;
-        background: var(--bg-dark-start);
-        border-color: var(--blyza-sunny-yellow);
-    }
-    .welcome-text {
-        font-size: 1rem;
-        color: var(--text-light);
-        margin-bottom: 30px;
-        line-height: 1.7;
-        font-weight: 500;
-    }
-    #accept-cookies-btn {
-        background-color: var(--blyza-keppel-accent);
-        color: var(--text-light);
-        box-shadow: 4px 4px 0px var(--black-stroke);
-        border-radius: 8px;
-        width: 80%;
-        margin: 0 auto;
-        justify-content: center;
-        font-size: 1.3rem;
-    }
-    #accept-cookies-btn:hover {
-        box-shadow: 2px 2px 0px var(--black-stroke);
-    }
+    #welcome-modal-overlay { z-index: 3000; backdrop-filter: blur(8px); }
+    .welcome-modal-content { max-width: 500px; text-align: center; background: var(--bg-dark-start); border-color: var(--blyza-sunny-yellow); }
+    .welcome-text { font-size: 1rem; color: var(--text-light); margin-bottom: 30px; line-height: 1.7; font-weight: 500; }
+    #accept-cookies-btn { background-color: var(--blyza-keppel-accent); color: var(--text-light); box-shadow: 4px 4px 0px var(--black-stroke); border-radius: 8px; width: 80%; margin: 0 auto; justify-content: center; font-size: 1.3rem; }
+    #accept-cookies-btn:hover { box-shadow: 2px 2px 0px var(--black-stroke); }
     
-    /* --- NEW: Onboarding Modal --- */
-    #onboarding-modal-overlay {
-        z-index: 2999; /* Just below the cookie modal */
-    }
-    .onboarding-modal-content {
-        max-width: 500px;
-        text-align: center;
-        background: var(--bg-dark-start);
-        border-color: var(--blyza-neon-pink);
-    }
-    .onboarding-text {
-        font-size: 1.1rem;
-        color: var(--text-light);
-        margin-bottom: 30px;
-        line-height: 1.7;
-        font-weight: 500;
-    }
-    .onboarding-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        align-items: center;
-    }
-    #play-popular-btn {
-        background-color: var(--blyza-neon-pink);
-        color: var(--text-light);
-        box-shadow: 4px 4px 0px var(--black-stroke);
-        width: 100%;
-        justify-content: center;
-    }
+    /* --- Onboarding Modal --- */
+    #onboarding-modal-overlay { z-index: 2999; }
+    .onboarding-modal-content { max-width: 500px; text-align: center; background: var(--bg-dark-start); border-color: var(--blyza-neon-pink); }
+    .onboarding-text { font-size: 1.1rem; color: var(--text-light); margin-bottom: 30px; line-height: 1.7; font-weight: 500; }
+    .onboarding-buttons { display: flex; flex-direction: column; gap: 15px; align-items: center; }
+    #play-popular-btn { background-color: var(--blyza-neon-pink); color: var(--text-light); box-shadow: 4px 4px 0px var(--black-stroke); width: 100%; justify-content: center; }
     #play-popular-btn:hover { box-shadow: 2px 2px 0px var(--black-stroke); }
+    .btn-retro-secondary { background: transparent; color: var(--text-light); border-color: var(--text-medium); box-shadow: none; font-size: 0.9rem; }
+    .btn-retro-secondary:hover { background: var(--text-medium); color: var(--text-dark); transform: none; box-shadow: none; }
+
+    /* --- Blyza Bucks Button & Modal --- */
+    .bucks-btn { background-color: var(--blyza-keppel-accent); color: var(--text-light); box-shadow: 4px 4px 0px var(--black-stroke); border-radius: 50%; width: 55px; height: 55px; padding: 0; justify-content: center; position: relative; }
+    .bucks-btn:hover { box-shadow: 2px 2px 0px var(--black-stroke); }
+    #blyza-bucks-count { position: absolute; top: -5px; right: -5px; background-color: var(--blyza-sunny-yellow); color: var(--text-dark); border-radius: 50px; min-width: 24px; height: 24px; padding: 0 5px; font-size: 0.8rem; font-family: var(--font-heading-alt); display: flex; align-items: center; justify-content: center; border: 2px solid var(--black-stroke); }
+    #bucks-modal .modal-content { border-color: var(--blyza-keppel-accent); max-width: 500px; padding: 30px; }
+    #bucks-modal h2 .fas { color: var(--blyza-keppel-accent); margin-right: 10px; }
+
+    .wallet-display { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 15px; text-align: center; margin-bottom: 30px; border: 2px dashed var(--blyza-keppel-accent); }
+    .wallet-display p { font-size: 1rem; color: var(--text-medium); margin: 0 0 5px 0; }
+    .wallet-display .bucks-amount { font-family: var(--font-logo); font-size: 2.5rem; color: var(--blyza-sunny-yellow); text-shadow: 0 0 10px var(--blyza-sunny-yellow); }
     
-    .btn-retro-secondary {
-        background: transparent;
-        color: var(--text-light);
-        border-color: var(--text-medium);
-        box-shadow: none;
-        font-size: 0.9rem;
-    }
-    .btn-retro-secondary:hover {
-        background: var(--text-medium);
-        color: var(--text-dark);
-        transform: none;
-        box-shadow: none;
-    }
+    .leaderboard { margin-top: 20px; }
+    .leaderboard h3 { font-family: var(--font-heading-alt); font-size: 1.2rem; color: var(--blyza-neon-pink); text-align: center; margin-bottom: 15px; }
+    .leaderboard ol { list-style: none; padding: 0; }
+    .leaderboard li { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; }
+    .leaderboard li:nth-child(1) { background: rgba(255,223,0,0.2); border: 1px solid var(--blyza-sunny-yellow); } /* Gold */
+    .leaderboard li:nth-child(2) { background: rgba(192,192,192,0.2); border: 1px solid #c0c0c0; } /* Silver */
+    .leaderboard li:nth-child(3) { background: rgba(205, 127, 50, 0.2); border: 1px solid #cd7f32; } /* Bronze */
+    .leaderboard .player-name { font-weight: 700; }
+    .leaderboard .player-score { font-family: var(--font-logo); color: var(--blyza-keppel-accent); font-size: 1.2rem; }
+    .leaderboard .player-score .fas { font-size: 0.9rem; }
+
+    #bucks-modal .info-text { text-align: center; font-size: 0.9rem; color: var(--text-medium); margin-top: 30px; }
 
 
     @media (max-width: 767.98px) {
@@ -349,7 +312,7 @@
         .store-btn-container { top: 15px; right: 15px; }
         .top-left-buttons-container { top: 15px; left: 15px; }
         .btn-retro-floating { font-size: 1rem; padding: 0.6em 1.2em; }
-        .settings-btn, .favorites-btn { width: 48px; height: 48px; }
+        .settings-btn, .favorites-btn, .bucks-btn { width: 48px; height: 48px; }
         .bg-game-element { display: none; }
         #surprise-me-btn { font-size: 0.9rem; padding: 10px 15px; }
     }
@@ -379,6 +342,10 @@
             </button>
             <button id="favorites-open-btn" class="favorites-btn btn-retro-floating" aria-label="Open My Favourite Games">
                 <i class="fas fa-heart"></i>
+            </button>
+            <button id="bucks-open-btn" class="bucks-btn btn-retro-floating" aria-label="Open Blyza Bucks">
+                <i class="fas fa-coins"></i>
+                <span id="blyza-bucks-count">0</span>
             </button>
         </div>
     
@@ -648,8 +615,47 @@
             <ul id="favorites-list" class="favorites-list"></ul>
         </div>
     </div>
+    
+    <div id="bucks-modal" class="modal">
+        <div class="modal-content">
+            <span id="bucks-close-btn" class="close-modal-btn">×</span>
+            <h2><i class="fas fa-coins"></i>Blyza Bucks</h2>
 
-    <!-- Welcome Modal (for first-time users) -->
+            <div class="wallet-display">
+                <p>Your Wallet</p>
+                <div id="modal-bucks-amount" class="bucks-amount">0</div>
+            </div>
+
+            <div class="leaderboard">
+                <h3>Richest Blyza Players</h3>
+                <ol>
+                    <li>
+                        <span class="player-name"><i class="fas fa-crown" style="color: gold;"></i> Scrash</span>
+                        <span class="player-score">98,550 <i class="fas fa-coins"></i></span>
+                    </li>
+                    <li>
+                        <span class="player-name">Tabetubtv</span>
+                        <span class="player-score">90,000 <i class="fas fa-coins"></i></span>
+                    </li>
+                    <li>
+                        <span class="player-name">Waseem</span>
+                        <span class="player-score">24,000 <i class="fas fa-coins"></i></span>
+                    </li>
+                    <li>
+                        <span class="player-name">Sinisi_Escobar</span>
+                        <span class="player-score">22,690 <i class="fas fa-coins"></i></span>
+                    </li>
+                     <li>
+                        <span class="player-name">BucksBunny</span>
+                        <span class="player-score">9,150 <i class="fas fa-coins"></i></span>
+                    </li>
+                </ol>
+            </div>
+
+            <p class="info-text">This is the demo version. Soon, you'll use Bucks for real-life discounts, vouchers, and game customizations!</p>
+        </div>
+    </div>
+
     <div id="welcome-modal-overlay" class="modal">
         <div class="modal-content welcome-modal-content">
             <img class="brand-logo-prominent" src="https://static.wixstatic.com/shapes/9ce3e5_4f0149a89dd841859da02f59247b5b6b.svg" alt="Blyza Mascot" style="max-height: 100px; margin-bottom: 20px;">
@@ -659,7 +665,6 @@
         </div>
     </div>
     
-    <!-- NEW Onboarding Modal -->
     <div id="onboarding-modal-overlay" class="modal">
         <div class="modal-content onboarding-modal-content">
             <h2>Ready to Play?</h2>
@@ -682,6 +687,7 @@
         // --- Configuration & Element Selection ---
         const gameConfig = { sfxEnabled: true, musicVolume: 0.3 };
         let playCounts = {};
+        let blyzaBucks = 0;
 
         const searchInput = document.querySelector('.search-input');
         const gameCards = document.querySelectorAll('.game-card-item');
@@ -700,12 +706,17 @@
         const favoritesCloseBtn = document.getElementById('favorites-close-btn');
         const favoritesList = document.getElementById('favorites-list');
 
-        // Welcome & Onboarding Modal Elements
         const welcomeModalOverlay = document.getElementById('welcome-modal-overlay');
         const acceptCookiesBtn = document.getElementById('accept-cookies-btn');
         const onboardingModalOverlay = document.getElementById('onboarding-modal-overlay');
         const playPopularBtn = document.getElementById('play-popular-btn');
         const browseMenuBtn = document.getElementById('browse-menu-btn');
+        
+        const bucksOpenBtn = document.getElementById('bucks-open-btn');
+        const bucksModal = document.getElementById('bucks-modal');
+        const bucksCloseBtn = document.getElementById('bucks-close-btn');
+        const bucksCountDisplay = document.getElementById('blyza-bucks-count');
+        const modalBucksAmount = document.getElementById('modal-bucks-amount'); // Wallet display in modal
 
 
         // --- Core Functions ---
@@ -713,9 +724,24 @@
             const storedCounts = localStorage.getItem('blyzaGamePlays');
             if (storedCounts) playCounts = JSON.parse(storedCounts);
         };
-
         const savePlayCounts = () => {
             localStorage.setItem('blyzaGamePlays', JSON.stringify(playCounts));
+        };
+        
+        const loadBlyzaBucks = () => {
+            const storedBucks = localStorage.getItem('blyzaBucksCount');
+            blyzaBucks = storedBucks ? parseInt(storedBucks, 10) : 0;
+        };
+        const saveBlyzaBucks = () => {
+            localStorage.setItem('blyzaBucksCount', blyzaBucks);
+        };
+        const updateBucksDisplay = () => {
+            if (bucksCountDisplay) {
+                bucksCountDisplay.textContent = blyzaBucks;
+            }
+            if (modalBucksAmount) {
+                modalBucksAmount.textContent = blyzaBucks.toLocaleString(); // Format with commas
+            }
         };
 
         const playSound = (audioElement) => {
@@ -736,6 +762,10 @@
                 if (targetUrl !== '/store') {
                     playCounts[targetUrl] = (playCounts[targetUrl] || 0) + 1;
                     savePlayCounts();
+                    
+                    blyzaBucks += 5;
+                    saveBlyzaBucks();
+                    updateBucksDisplay();
                 }
 
                 let navigated = false;
@@ -796,13 +826,20 @@
                     populateCallback();
                 }
             };
-            openBtn.addEventListener('click', () => toggleModal(modal.id === 'favorites-modal' ? populateFavoritesModal : null));
+            openBtn.addEventListener('click', () => {
+                // When opening bucks modal, always ensure the display is up-to-date
+                if (modal.id === 'bucks-modal') {
+                    updateBucksDisplay();
+                }
+                toggleModal(modal.id === 'favorites-modal' ? populateFavoritesModal : null);
+            });
             closeBtn.addEventListener('click', () => toggleModal(null));
             window.addEventListener('click', (e) => { if (e.target === modal) toggleModal(null); });
         };
 
         setupModal(settingsOpenBtn, settingsModal, settingsCloseBtn);
         setupModal(favoritesOpenBtn, favoritesModal, favoritesCloseBtn);
+        setupModal(bucksOpenBtn, bucksModal, bucksCloseBtn);
 
         if (surpriseMeBtn) {
             surpriseMeBtn.addEventListener('click', () => {
@@ -855,6 +892,7 @@
         // --- Initialization ---
         const initializePage = () => {
             loadPlayCounts();
+            loadBlyzaBucks();
             const savedVolume = localStorage.getItem('musicVolume');
             const savedSfxEnabled = localStorage.getItem('sfxEnabled');
             if (savedVolume !== null) gameConfig.musicVolume = parseFloat(savedVolume);
@@ -863,60 +901,43 @@
             if(backgroundMusic) backgroundMusic.volume = gameConfig.musicVolume;
             if(bgmVolumeSlider) bgmVolumeSlider.value = gameConfig.musicVolume;
             updateSfxButton();
+            updateBucksDisplay();
         };
 
         // --- Onboarding Flow Logic ---
         const consentAccepted = localStorage.getItem('blyzaConsentAccepted');
 
         if (!consentAccepted) {
-            // First time user: show the welcome modal
-            if (welcomeModalOverlay) {
-                welcomeModalOverlay.style.display = 'flex';
-            }
-
+            if (welcomeModalOverlay) welcomeModalOverlay.style.display = 'flex';
             if (acceptCookiesBtn) {
                 acceptCookiesBtn.addEventListener('click', () => {
                     playSound(itemSelectSound); 
                     localStorage.setItem('blyzaConsentAccepted', 'true');
                     welcomeModalOverlay.style.display = 'none';
-                    
-                    // Immediately show the onboarding modal
-                    if (onboardingModalOverlay) {
-                        onboardingModalOverlay.style.display = 'flex';
-                    }
+                    if (onboardingModalOverlay) onboardingModalOverlay.style.display = 'flex';
                 });
             }
-
             if (playPopularBtn) {
                 playPopularBtn.addEventListener('click', () => {
-                    // **IMPORTANT**: Change the href to your most popular game's link!
-                    const mostPopularGame = document.querySelector('.game-title a[href="/games/game2"]');
-                    if (mostPopularGame) {
-                        mostPopularGame.click();
-                    } else {
-                        onboardingModalOverlay.style.display = 'none'; // Failsafe
-                    }
+                    const mostPopularGame = document.querySelector('.game-title a[href="/games/game1"]');
+                    if (mostPopularGame) mostPopularGame.click();
+                    else onboardingModalOverlay.style.display = 'none';
                 });
             }
-            
             if (browseMenuBtn) {
                 browseMenuBtn.addEventListener('click', () => {
                     playSound(categorySelectSound);
                     onboardingModalOverlay.style.display = 'none';
                 });
             }
-
         }
 
-        // Always set up music to play on the first user interaction post-load
         document.body.addEventListener('click', () => {
             if (backgroundMusic && backgroundMusic.paused) {
-                backgroundMusic.play().catch(e => console.error("Autoplay blocked:", e));
+                backgroundMusic.play().catch(e => {});
             }
         }, { once: true });
 
-
-        // Run the main page initialization regardless of consent modal
         initializePage();
     });
     </script>
