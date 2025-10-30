@@ -1,7 +1,7 @@
-const Stripe = require("stripe");
-const { buffer } = require("micro");
-const { initializeApp, getApps } = require("firebase/app");
-const { getFirestore, doc, setDoc } = require("firebase/firestore");
+import Stripe from "stripe";
+import { buffer } from "micro";
+import { initializeApp, getApps } from "firebase/app";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 
 // Disable Next.js body parser - we need raw body for Stripe signature verification
 export const config = {
@@ -10,15 +10,14 @@ export const config = {
   },
 };
 
-// Firebase configuration (reusing your existing config)
+// Firebase configuration using environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyAm7bYgAGs26GmDyI3P1hnMTcTUXgXjJoM",
-  authDomain: "blyza-2767e.firebaseapp.com",
-  projectId: "blyza-2767e",
-  storageBucket: "blyza-2767e.firebasestorage.app",
-  messagingSenderId: "312532709432",
-  appId: "1:312532709432:web:6f1add8b846806258c76cd",
-  measurementId: "G-R0RBTD0DBB"
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
 };
 
 // Initialize Firebase app only once
@@ -32,6 +31,7 @@ const db = getFirestore();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
+  // Only accept POST requests
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
 
-    console.log("�� Checkout session completed:", session.id);
+    console.log("💳 Checkout session completed:", session.id);
 
     // Get Firebase UID from session metadata
     const uid = session.metadata?.uid;
@@ -100,6 +100,6 @@ export default async function handler(req, res) {
     }
   }
 
-  // Always return 200 to acknowledge receipt
+  // Always return 200 JSON to acknowledge receipt (no redirects)
   return res.status(200).json({ received: true });
 }

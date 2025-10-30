@@ -1,4 +1,4 @@
-const Stripe = require("stripe");
+import Stripe from "stripe";
 
 // Initialize Stripe with secret key (server-side only)
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -26,12 +26,12 @@ export default async function handler(req, res) {
       line_items: [
         {
           price_data: {
-            currency: "usd",
+            currency: "eur",
             product_data: {
-              name: "Blyza Premium (Ad-Free Access)",
-              description: "Ad-free experience + premium perks on PlayBlyza",
+              name: "Blyza Premium (Ad-Free)",
+              description: "Ad-free experience on PlayBlyza",
             },
-            unit_amount: 200, // $2.00 in cents
+            unit_amount: 200, // €2.00 in cents
           },
           quantity: 1,
         },
@@ -40,8 +40,8 @@ export default async function handler(req, res) {
       metadata: {
         uid: uid,
       },
-      success_url: process.env.STRIPE_SUCCESS_URL || "https://www.playblyza.com/premium/success",
-      cancel_url: process.env.STRIPE_CANCEL_URL || "https://www.playblyza.com/store",
+      success_url: "https://playblyza.com/store?upgrade=success",
+      cancel_url: "https://playblyza.com/store?upgrade=cancel",
     });
 
     console.log("✅ Checkout session created:", session.id);
