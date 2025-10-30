@@ -9,6 +9,8 @@ import { useRouter } from 'next/router';
 import { Analytics } from '@vercel/analytics/react';
 import Script from 'next/script'; // Import the Script component for Google Analytics
 import { subscribeStoreItems, subscribeUserPurchases, redeemItem, getUnlockedLink } from '../lib/store';
+import UpgradeButton from "@/components/UpgradeButton";
+
 
 // Sample items to display if Firestore is empty
 const sampleItems = [
@@ -595,6 +597,7 @@ export default function StorePage() {
     );
   }
 
+
   return (
     <>
       <Script 
@@ -757,6 +760,12 @@ export default function StorePage() {
                 Awesome rewards, just for playing!
             </p>
         </header>
+        
+<div className="premium-upgrade">
+  <h3>Upgrade to Premium</h3>
+  <p>Enjoy PlayBlyza ad-free and unlock premium perks!</p>
+  <UpgradeButton />
+</div>
 
         {/* Blyza Bucks Balance Display */}
         {user && (
