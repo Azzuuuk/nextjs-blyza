@@ -8,7 +8,6 @@ import { doc, onSnapshot, collection, query as fsQuery, where, getDocs } from 'f
 import { useRouter } from 'next/router';
 import { Analytics } from '@vercel/analytics/react';
 import Script from 'next/script';
-import UpgradeButton from '@/components/UpgradeButton';
 
 // Sample items...
 const sampleItems = [
@@ -211,6 +210,13 @@ export default function StorePage() {
   // *** NEW: this controls "are we in the browser yet?"
   const [mounted, setMounted] = useState(false);
 
+  // Helpers to safely coerce Firestore values to renderable primitives
+  const toStr = (v) => (typeof v === 'string' ? v : v == null ? '' : String(v));
+  const toNum = (v, d = 10) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : d;
+  };
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [revealedCodes, setRevealedCodes] = useState({});
@@ -237,6 +243,7 @@ export default function StorePage() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
 
   const playSound = (audioRef) => {
     if (sfxEnabled && audioRef && audioRef.current) {
@@ -282,20 +289,26 @@ export default function StorePage() {
   // subscribe to storeItems
   useEffect(() => {
     if (!mounted) return;
+    let unsubscribeItems = null;
+    let cancelled = false;
 
     // lazy import so we don't SSR import anything weird
     import('../lib/store').then(({ subscribeStoreItems }) => {
-      const unsubscribeItems = subscribeStoreItems(
+      if (cancelled) return;
+      unsubscribeItems = subscribeStoreItems(
         (items) => {
-          setStoreItems(items);
+          if (!cancelled) setStoreItems(items);
         },
         { includeAll: !!user }
       );
-
-      return () => {
-        unsubscribeItems && unsubscribeItems();
-      };
     });
+
+    return () => {
+      cancelled = true;
+      if (typeof unsubscribeItems === 'function') {
+        try { unsubscribeItems(); } catch {}
+      }
+    };
   }, [mounted, user]);
 
   // subscribe to userPurchases
@@ -306,18 +319,25 @@ export default function StorePage() {
       return;
     }
 
+    let unsubscribePurchases = null;
+    let cancelled = false;
+
     import('../lib/store').then(({ subscribeUserPurchases }) => {
-      const unsubscribePurchases = subscribeUserPurchases(
+      if (cancelled) return;
+      unsubscribePurchases = subscribeUserPurchases(
         user.uid,
         (purchases) => {
-          setUserPurchases(purchases);
+          if (!cancelled) setUserPurchases(purchases);
         }
       );
-
-      return () => {
-        unsubscribePurchases && unsubscribePurchases();
-      };
     });
+
+    return () => {
+      cancelled = true;
+      if (typeof unsubscribePurchases === 'function') {
+        try { unsubscribePurchases(); } catch {}
+      }
+    };
   }, [mounted, user]);
 
   // handle ?claim=
@@ -325,13 +345,17 @@ export default function StorePage() {
     if (!mounted) return;
     if (!router.isReady || !user) return;
 
-    const { claim } = router.query;
-    if (claim && !revealedCodes[claim]) {
-      handleReveal(claim);
+    const { claim, ...restQuery } = router.query || {};
+    const claimStr = claim != null ? String(claim) : '';
+    if (claimStr && !revealedCodes[claimStr]) {
+      handleReveal(claimStr);
 
-      const { pathname, query } = router;
-      delete query.claim;
-      router.replace({ pathname, query }, undefined, { shallow: true });
+      // Avoid mutating router.query directly; construct a new query without 'claim'
+      router.replace(
+        { pathname: router.pathname, query: restQuery },
+        undefined,
+        { shallow: true }
+      );
     }
   }, [mounted, router.isReady, user, revealedCodes, router.query]);
 
@@ -444,7 +468,7 @@ export default function StorePage() {
         triggerConfetti();
       } else if (result.status === 'notFound') {
         // fallback lookup by title:
-        const targetTitle = (item.title || item.name || '').trim();
+  const targetTitle = toStr(item.title || item.name).trim();
 
         // try local storeItems match
         const candidate = storeItems.find(
@@ -526,7 +550,7 @@ export default function StorePage() {
 
     try {
       const { getUnlockedLink } = await import('../lib/store');
-      const link = await getUnlockedLink(user.uid, itemId);
+          const link = await getUnlockedLink(user.uid, itemId);
       const absolute = ensureAbsoluteUrl(link);
       if (absolute) {
         window.open(absolute, '_blank', 'noopener,noreferrer');
@@ -675,7 +699,7 @@ export default function StorePage() {
       <Script id="google-analytics" strategy="afterInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
+          function gtag(){dataLayer.push(arguments);} 
           gtag('js', new Date());
           gtag('config', 'G-N5PBKM0DNQ');
         `}
@@ -1107,7 +1131,7 @@ export default function StorePage() {
                 }}
               >
                 <a
-                  href="mailto: azaan@joinblyza.com"
+                  href="mailto:azaan@joinblyza.com"
                   className="contact-link"
                 >
                   <i
@@ -1185,8 +1209,8 @@ export default function StorePage() {
               ×
             </span>
             <img
-              src={selectedBrand.imageUrl}
-              alt={`${selectedBrand.name} logo`}
+              src={toStr(selectedBrand?.imageUrl)}
+              alt={`${toStr(selectedBrand?.name)} logo`}
               style={{
                 display: 'block',
                 width: 'auto',
@@ -1206,7 +1230,7 @@ export default function StorePage() {
                 fontSize: '2rem',
               }}
             >
-              {selectedBrand.name}
+              {toStr(selectedBrand?.name)}
             </h2>
             <p
               style={{
@@ -1215,10 +1239,10 @@ export default function StorePage() {
                 lineHeight: '1.6',
               }}
             >
-              {selectedBrand.description}
+              {toStr(selectedBrand?.description)}
             </p>
             <a
-              href={selectedBrand.website}
+              href={toStr(selectedBrand?.website)}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -1318,10 +1342,8 @@ export default function StorePage() {
           </p>
         </header>
 
-        {/* *** PREMIUM UPGRADE BLOCK 
-             We only show the Upgrade button if mounted (browser) and user is signed in.
-             You can style this later however you want. */}
-        {user && (
+        {/* *** PREMIUM UPGRADE BLOCK *** */}
+        {user && mounted && (
           <div
             className="premium-upgrade"
             style={{
@@ -1355,9 +1377,38 @@ export default function StorePage() {
             >
               Enjoy PlayBlyza with no ads + future perks.
             </p>
-
-            {/* Only render the button on client, to avoid SSR auth issues */}
-            {mounted && <UpgradeButton />}
+            <button
+              onClick={async () => {
+                try {
+                  const res = await fetch("/api/create-checkout-session", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ uid: user.uid }),
+                  });
+                  const data = await res.json();
+                  if (data.url) {
+                    window.location.href = data.url;
+                  } else {
+                    alert("Something went wrong!");
+                  }
+                } catch (err) {
+                  console.error("Error starting checkout:", err);
+                  alert("Error starting checkout.");
+                }
+              }}
+              style={{
+                background: "#FF8833",
+                color: "#fff",
+                border: "none",
+                padding: "12px 24px",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontWeight: "600",
+                fontSize: "16px",
+              }}
+            >
+              🎉 Go Ad-Free (Upgrade)
+            </button>
           </div>
         )}
 
@@ -1473,17 +1524,20 @@ export default function StorePage() {
             maxWidth: '1200px',
           }}
         >
-          {(user
-            ? storeItems
-            : storeItems.length > 0
-            ? storeItems
-            : sampleItems
-          ).map((item) => {
+          {(user ? storeItems : (storeItems.length > 0 ? storeItems : sampleItems)).map((raw) => {
+            const item = {
+              id: toStr(raw.id),
+              title: toStr(raw.title || raw.name),
+              name: toStr(raw.name),
+              description: toStr(raw.description),
+              image: toStr(raw.image || raw.logoUrl),
+              cost: toNum(raw.cost, 10),
+              active: !!raw.active,
+            };
             const isRedeemed = userPurchases.some(
-              (p) => p.itemId === item.id
+              (p) => toStr(p.itemId) === item.id
             );
-            const canAfford =
-              blyzaBucks >= (item.cost || 10);
+            const canAfford = blyzaBucks >= item.cost;
             const isRedeeming = redeeming === item.id;
 
             return (
@@ -1537,11 +1591,7 @@ export default function StorePage() {
 
                 <div>
                   <img
-                    src={
-                      item.image ||
-                      item.logoUrl ||
-                      'https://via.placeholder.com/100x100?text=Item'
-                    }
+                    src={item.image || 'https://via.placeholder.com/100x100?text=Item'}
                     alt={`${item.title || item.name} Logo`}
                     style={logoStyle}
                   />
@@ -1584,7 +1634,7 @@ export default function StorePage() {
                       className="fas fa-coins"
                       style={{ marginRight: '6px' }}
                     ></i>
-                    {item.cost || 10} Blyza Bucks
+                    {item.cost} Blyza Bucks
                   </div>
 
                   {!user ? (
@@ -1705,7 +1755,7 @@ export default function StorePage() {
         </div>
       </div>
 
-      <Analytics />
+  <Analytics />
     </>
   );
 }
