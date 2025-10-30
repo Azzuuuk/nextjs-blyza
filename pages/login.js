@@ -6,6 +6,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'fire
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { signInWithGooglePopup } from '../lib/authUtils'; // Import the new Google sign-in function
+import { ensureUserDoc, requireUsernameOrRedirect } from '../lib/user'; // Import new user utilities
 
 // --- BRAND IDENTITY STYLES (from games.html & store.js) ---
 const blyzaTheme = {
@@ -75,18 +76,40 @@ export default function LoginPage() {
     return queryParams ? `${redirectPath}?${queryParams}` : redirectPath;
   };
 
+  // --- NEW: Check if user needs username setup ---
+  const checkUserSetupAndRedirect = async (user) => {
+    try {
+      // Ensure user document exists with defaults
+      await ensureUserDoc(user.uid);
+      
+      // Check if username is set, redirect if needed
+      const hasUsername = await requireUsernameOrRedirect(user.uid, router);
+      
+      if (hasUsername) {
+        // User has username, proceed with normal redirect
+        router.push(getRedirectUrl());
+      }
+      // If no username, requireUsernameOrRedirect already handled the redirect
+    } catch (error) {
+      console.error('Error during user setup check:', error);
+      // On error, assume they need username setup
+      router.push('/choose-username');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
+      let result;
       if (isSignUp) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        result = await createUserWithEmailAndPassword(auth, email, password);
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        result = await signInWithEmailAndPassword(auth, email, password);
       }
-      // --- MODIFIED: Redirect dynamically based on URL query params ---
-      router.push(getRedirectUrl());
+      // --- MODIFIED: Check username setup before redirecting ---
+      await checkUserSetupAndRedirect(result.user);
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
       console.error("Email/Password Auth Error:", err);
@@ -99,9 +122,9 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      await signInWithGooglePopup();
-      // --- MODIFIED: Redirect dynamically based on URL query params ---
-      router.push(getRedirectUrl());
+      const result = await signInWithGooglePopup();
+      // --- MODIFIED: Check username setup before redirecting ---
+      await checkUserSetupAndRedirect(result.user);
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
       console.error("Google Sign-in Error:", err);

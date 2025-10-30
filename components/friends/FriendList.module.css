@@ -1,0 +1,80 @@
+/* FriendList.module.css */
+.friendList {
+  background: linear-gradient(145deg, #fdfefe, #e9ecef);
+  border-radius: 12px;
+  border: 3px solid #2C3A47;
+  box-shadow: 4px 4px 0px #1A1A1A;
+  padding: 1.5rem;
+  color: #2C3A47;
+}
+
+.friendList h3 {
+  font-family: "Bungee", cursive;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #FF8833;
+}
+
+.friendList h3 i {
+  color: #00BFA6;
+}
+
+.count {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1rem;
+  color: #cb7ae1;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #535c68;
+}
+
+.loading i {
+  font-size: 2rem;
+  color: #cb7ae1;
+  margin-bottom: 1rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 2rem;
+  color: #535c68;
+  border: 2px dashed #cb7ae1;
+  border-radius: 12px;
+}
+
+.emptyState i {
+  font-size: 2rem;
+  color: #cb7ae1;
+  margin-bottom: 1rem;
+}
+
+.emptyState p {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.emptyState small {
+  color: #95a5a6;
+}
+
+.friendsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .friendsGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

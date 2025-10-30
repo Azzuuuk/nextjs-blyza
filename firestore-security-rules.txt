@@ -1,0 +1,102 @@
+// Firestore Security Rules
+// Copy and paste this into your Firebase Console > Firestore Database > Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection rules
+    match /users/{userId} {
+      // Allow users to read their own profile and public fields of other users
+      allow read: if request.auth != null && 
+        (request.auth.uid == userId || 
+         resource.data.keys().hasAny(['username', 'profilePicture', 'blyzaBucks', 'badges', 'mostPlayedGames', 'achievements', 'lastSeen', 'gamesPlayed']));
+      
+      // Allow users to write only their own profile
+      allow write: if request.auth != null && request.auth.uid == userId;
+      
+      // Friends subcollection rules
+      match /friends/{friendId} {
+        // Allow reading your own friends and friends where you're the target
+        allow read: if request.auth != null && 
+          (request.auth.uid == userId || request.auth.uid == resource.data.friendUid);
+        
+        // Allow creating friend requests (pending) or reciprocal friendship documents (accepted)
+        allow create: if request.auth != null && (
+          (request.auth.uid == request.resource.data.friendUid && request.resource.data.status == 'pending') ||
+          (request.resource.data.status == 'accepted' && request.resource.data.friendUid == request.auth.uid)
+        );
+        
+        // Allow updating friend requests only if you're the recipient and it's changing from pending to accepted
+        allow update: if request.auth != null && 
+          request.auth.uid == userId &&
+          resource.data.status == 'pending' &&
+          request.resource.data.status == 'accepted' &&
+          resource.data.friendUid == request.resource.data.friendUid;
+        
+        // Allow deleting friend requests/friendships if you're either party
+        allow delete: if request.auth != null && 
+          (request.auth.uid == userId || request.auth.uid == resource.data.friendUid);
+      }
+      
+      // User purchases subcollection
+      match /purchases/{itemId} {
+        // Users can only read/write their own purchases
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    // Usernames collection for uniqueness enforcement
+    match /usernames/{username} {
+      // Allow reading to check availability
+      allow read: if request.auth != null;
+      // Allow creating only for the user claiming the username
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.uid;
+      // No updates or deletes to preserve username history
+      allow update, delete: if false;
+    }
+    
+    // NEW: Wallet collection for Blyza Bucks management
+    match /wallet/{userId} {
+      // Users can only read their own wallet
+      allow read: if request.auth != null && request.auth.uid == userId;
+      // Only server can write wallet updates (via transactions)
+      allow write: if false;
+    }
+    
+    // Store items catalog (public read of active items; broader read for signed-in users; server-managed writes)
+    match /storeItems/{itemId} {
+      // Anyone can read active items; authenticated users can read all for validation/UX
+      allow read: if resource.data.active == true || request.auth != null;
+      // Only server/admin processes manage the catalog
+      allow write: if false;
+    }
+    
+    // Store item secrets for unlocked content
+    match /storeItemSecrets/{itemId} {
+      // Allow read only if the signed-in user has an unlocked purchase for this item
+      allow read: if request.auth != null &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)/purchases/$(itemId)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)/purchases/$(itemId)).data.unlocked == true;
+      // Secrets are write-protected from clients
+      allow write: if false;
+    }
+    
+    // Game stats (existing - unchanged)
+    match /gameStats/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Deny all other requests
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// Updated security considerations:
+// 1. Store items are publicly readable but server-managed for consistency
+// 2. User purchases are stored as subcollections under users for privacy
+// 3. Blyza Bucks are stored in user profiles and managed via transactions
+// 4. Secret content access is controlled via itemSecrets collection
+// 5. All operations maintain user data isolation and access control

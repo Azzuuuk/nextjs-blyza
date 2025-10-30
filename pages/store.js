@@ -2,11 +2,65 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Head from 'next/head';
-import { auth } from '/firebaseconfig'; 
+import { auth, db } from '../firebaseconfig'; 
 import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { doc, onSnapshot, collection, query as fsQuery, where, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import { Analytics } from '@vercel/analytics/react';
 import Script from 'next/script'; // Import the Script component for Google Analytics
+import { subscribeStoreItems, subscribeUserPurchases, redeemItem, getUnlockedLink } from '../lib/store';
+
+// Sample items to display if Firestore is empty
+const sampleItems = [
+  { 
+    id: 'asos-discount', 
+    title: '👕👚 20% Off ASOS', 
+    description: 'Get 20% off your first order from ASOS!', 
+    cost: 10,
+    image: 'https://static.wixstatic.com/media/9ce3e5_2f723e743da5432ca8a2dacabc1ca5a6~mv2.png',
+    active: true
+  },
+  { 
+    id: 'nordvpn-discount', 
+    title: '🔒🌐 73% Off NordVPN', 
+    description: '73% off NordVPN + up to 10GB free eSIM data from Saily', 
+    cost: 10,
+    image: 'https://static.wixstatic.com/media/9ce3e5_81024d4b65444bc1b34168c24ae59fa2~mv2.png',
+    active: true
+  },
+  { 
+    id: 'gymshark-discount', 
+    title: '🏋🏽🔥 10$ off Gymshark', 
+    description: 'Get 10$ off your first order from Gymshark!', 
+    cost: 10,
+    image: 'https://cdn.gymshark.com/images/branding/gs-icon-text.svg',
+    active: true
+  },
+  { 
+    id: 'nike-discount', 
+    title: '👟 15% Off Nike', 
+    description: 'Save 15% on your next Nike purchase!', 
+    cost: 10,
+    image: 'https://via.placeholder.com/100x100/000000/FFFFFF?text=NIKE',
+    active: true
+  },
+  { 
+    id: 'spotify-discount', 
+    title: '🎵 2 Months Free Spotify', 
+    description: 'Get 2 months of Spotify Premium for free!', 
+    cost: 10,
+    image: 'https://via.placeholder.com/100x100/1DB954/FFFFFF?text=SPOTIFY',
+    active: true
+  },
+  { 
+    id: 'amazon-discount', 
+    title: '📦 $10 Amazon Credit', 
+    description: 'Receive $10 credit for your Amazon account!', 
+    cost: 10,
+    image: 'https://via.placeholder.com/100x100/FF9900/FFFFFF?text=AMAZON',
+    active: true
+  }
+];
 
 // Product data with added brandInfo for the new modal
 const products = [
@@ -221,6 +275,11 @@ export default function StorePage() {
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
   const [blyzaBucks, setBlyzaBucks] = useState(0); // <-- NEW: State for Blyza Bucks
+  
+  // NEW: Store redemption state
+  const [storeItems, setStoreItems] = useState([]);
+  const [userPurchases, setUserPurchases] = useState([]);
+  const [redeeming, setRedeeming] = useState(null); // itemId being redeemed
 
   const bgMusicRef = useRef(null);
   const interactionSoundRef = useRef(null);
@@ -241,28 +300,52 @@ export default function StorePage() {
     return () => unsubscribe();
   }, []);
 
-  // NEW: useEffect to load Blyza Bucks from localStorage on component mount
+  // NEW: useEffect to subscribe to real-time Blyza Bucks from user profile
   useEffect(() => {
-    const loadBucks = () => {
-        const storedBucks = localStorage.getItem('blyzaBucksCount');
-        setBlyzaBucks(storedBucks ? parseInt(storedBucks, 10) : 0);
-    };
-    loadBucks();
+    if (!user) {
+      setBlyzaBucks(0);
+      return;
+    }
 
-    // Listen for storage changes from other tabs
-    const handleStorageChange = (event) => {
-        if (event.key === 'blyzaBucksCount') {
-            setBlyzaBucks(event.newValue ? parseInt(event.newValue, 10) : 0);
-        }
-    };
+    // Subscribe to user profile for Blyza Bucks
+    const unsubscribeUser = onSnapshot(doc(db, 'users', user.uid), (doc) => {
+      if (doc.exists()) {
+        const userData = doc.data();
+        setBlyzaBucks(userData.blyzaBucks || 0);
+      }
+    });
 
-    window.addEventListener('storage', handleStorageChange);
-
-    // Cleanup listener on component unmount
     return () => {
-        window.removeEventListener('storage', handleStorageChange);
+      unsubscribeUser();
     };
-}, []);
+  }, [user]);
+
+  // NEW: Subscribe to store items catalog
+  useEffect(() => {
+    const unsubscribeItems = subscribeStoreItems((items) => {
+      setStoreItems(items);
+    }, { includeAll: !!user });
+
+    return () => {
+      unsubscribeItems();
+    };
+  }, [user]);
+
+  // NEW: Subscribe to user purchases
+  useEffect(() => {
+    if (!user) {
+      setUserPurchases([]);
+      return;
+    }
+
+    const unsubscribePurchases = subscribeUserPurchases(user.uid, (purchases) => {
+      setUserPurchases(purchases);
+    });
+
+    return () => {
+      unsubscribePurchases();
+    };
+  }, [user]);
 
 
   useEffect(() => {
@@ -335,6 +418,124 @@ export default function StorePage() {
     setTimeout(() => setShowFeedback(false), 2500);
   };
   
+  // NEW: Handle store item redemption
+  const handleRedeemItem = async (item) => {
+    if (!user || redeeming === item.id) return;
+
+    const itemId = item.id;
+    console.log('🔄 Starting redemption for item:', itemId, 'title:', item.title || item.name);
+    console.log('💰 Current Blyza Bucks:', blyzaBucks);
+    console.log('👤 User UID:', user.uid);
+
+    setRedeeming(itemId);
+    playSound(interactionSoundRef);
+
+    try {
+      console.log('📞 Calling redeemItem function...');
+      const result = await redeemItem(user.uid, itemId);
+      console.log('📋 Redemption result:', result);
+      
+      if (result.status === 'ok') {
+        setFeedbackMessage(result.message);
+        playSound(purchaseSoundRef);
+        triggerConfetti();
+      } else if (result.status === 'notFound') {
+        // Retry by matching against Firestore-loaded items by title/name if IDs differ from sample
+        const targetTitle = (item.title || item.name || '').trim();
+        const candidate = storeItems.find(si => (si.title || si.name || '').trim() === targetTitle);
+        if (candidate && candidate.id !== itemId) {
+          console.warn('🔁 Retrying redemption with Firestore ID:', candidate.id, 'for title:', targetTitle);
+          const retry = await redeemItem(user.uid, candidate.id);
+          console.log('📋 Redemption retry result:', retry);
+          if (retry.status === 'ok') {
+            setFeedbackMessage(retry.message);
+            playSound(purchaseSoundRef);
+            triggerConfetti();
+          } else {
+            setFeedbackMessage(retry.message || 'Item not available.');
+            console.warn('❌ Redemption retry failed:', retry);
+          }
+        } else if (!candidate) {
+          // As a last resort, look up Firestore by title to find the real ID
+          try {
+            console.warn('🔎 No local Firestore match; querying Firestore by title:', targetTitle);
+            const q = fsQuery(collection(db, 'storeItems'), where('title', '==', targetTitle));
+            const snap = await getDocs(q);
+            if (!snap.empty) {
+              const realId = snap.docs[0].id;
+              console.warn('🔁 Retrying redemption with Firestore ID from lookup:', realId);
+              const retry2 = await redeemItem(user.uid, realId);
+              console.log('📋 Redemption retry2 result:', retry2);
+              if (retry2.status === 'ok') {
+                setFeedbackMessage(retry2.message);
+                playSound(purchaseSoundRef);
+                triggerConfetti();
+              } else {
+                setFeedbackMessage(retry2.message || 'Item not available.');
+                console.warn('❌ Redemption retry2 failed:', retry2);
+              }
+            } else {
+              setFeedbackMessage('Item not available.');
+              console.warn('❌ No Firestore item found by title');
+            }
+          } catch (e) {
+            console.error('💥 Firestore title lookup failed:', e);
+            setFeedbackMessage('Unable to locate item. Please try again.');
+          }
+        } else {
+          setFeedbackMessage(result.message || 'Item not available.');
+          console.warn('❌ Redemption failed (no Firestore match by title):', result);
+        }
+      } else {
+        setFeedbackMessage(result.message);
+        console.warn('❌ Redemption failed:', result);
+      }
+      
+      setShowFeedback(true);
+      setTimeout(() => setShowFeedback(false), 3000);
+      
+    } catch (error) {
+      console.error('💥 Redemption error:', error);
+      setFeedbackMessage('Failed to redeem item. Please try again.');
+      setShowFeedback(true);
+      setTimeout(() => setShowFeedback(false), 3000);
+    } finally {
+      setRedeeming(null);
+    }
+  };
+
+  // NEW: Handle viewing unlocked content
+  const handleViewUnlocked = async (itemId) => {
+    if (!user) return;
+
+    playSound(interactionSoundRef);
+
+    const ensureAbsoluteUrl = (raw) => {
+      if (!raw) return null;
+      const url = String(raw).trim();
+      if (/^https?:\/\//i.test(url)) return url;
+      // Prepend https:// if protocol is missing
+      return `https://${url.replace(/^\/+/, '')}`;
+    };
+
+    try {
+      const link = await getUnlockedLink(user.uid, itemId);
+      const absolute = ensureAbsoluteUrl(link);
+      if (absolute) {
+        window.open(absolute, '_blank', 'noopener,noreferrer');
+      } else {
+        setFeedbackMessage('Unable to access content. Please try again.');
+        setShowFeedback(true);
+        setTimeout(() => setShowFeedback(false), 2500);
+      }
+    } catch (error) {
+      console.error('Error viewing unlocked content:', error);
+      setFeedbackMessage('Error accessing content. Please try again.');
+      setShowFeedback(true);
+      setTimeout(() => setShowFeedback(false), 2500);
+    }
+  };
+
   const handleClaimClick = (product) => {
     if (revealedCodes[product.id]) return;
 
@@ -557,78 +758,175 @@ export default function StorePage() {
             </p>
         </header>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2.5em', width: '100%', maxWidth: '1200px' }}>
-          {products.map((product) => (
-            <div key={product.id} 
-                style={cardStyle} 
-                onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-8px) scale(1.03)'; e.currentTarget.style.boxShadow = blyzaTheme.shadows.chunkyYellow; e.currentTarget.style.borderColor = blyzaTheme.colors.primary; }} 
-                onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = blyzaTheme.shadows.chunky; e.currentTarget.style.borderColor = blyzaTheme.colors.blackStroke; }}
-                onClick={() => handleClaimClick(product)}
+        {/* Blyza Bucks Balance Display */}
+        {user && (
+          <div style={{ 
+            textAlign: 'center', 
+            marginBottom: '30px',
+            padding: '20px',
+            background: 'linear-gradient(135deg, rgba(0, 191, 166, 0.1), rgba(255, 193, 7, 0.1))',
+            borderRadius: '15px',
+            border: `2px solid ${blyzaTheme.colors.accent}`,
+            maxWidth: '400px',
+            margin: '0 auto 30px auto'
+          }}>
+            <h3 style={{ color: blyzaTheme.colors.textLight, marginBottom: '10px', fontFamily: blyzaTheme.fonts.heading }}>
+              Your Blyza Bucks
+            </h3>
+            <div style={{ 
+              fontSize: '2.5rem', 
+              fontWeight: 'bold', 
+              color: blyzaTheme.colors.yellow,
+              fontFamily: blyzaTheme.fonts.heading,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px'
+            }}>
+              <i className="fas fa-coins"></i>
+              {blyzaBucks.toLocaleString()}
+            </div>
+          </div>
+        )}
+
+        {/* Sign-in message for unauthenticated users */}
+        {!user && (
+          <div style={{ 
+            textAlign: 'center', 
+            marginBottom: '30px',
+            padding: '30px',
+            background: 'rgba(255, 193, 7, 0.1)',
+            borderRadius: '15px',
+            border: `2px solid ${blyzaTheme.colors.yellow}`,
+            maxWidth: '500px',
+            margin: '0 auto 30px auto'
+          }}>
+            <h3 style={{ color: blyzaTheme.colors.yellow, marginBottom: '10px', fontFamily: blyzaTheme.fonts.heading }}>
+              Please sign in to view and redeem rewards.
+            </h3>
+            <button 
+              onClick={() => router.push('/login?redirect=/store')}
+              style={{
+                ...retroButtonBaseStyle,
+                backgroundColor: blyzaTheme.colors.primary,
+                color: blyzaTheme.colors.textLight
+              }}
             >
-              <button 
-                style={infoButtonStyle}
-                onMouseOver={e => e.currentTarget.style.backgroundColor = blyzaTheme.colors.primary}
-                onMouseOut={e => e.currentTarget.style.backgroundColor = 'rgba(44, 58, 71, 0.7)'}
-                onClick={(e) => handleShowBrandInfo(e, product.brandInfo)} 
-                aria-label={`More info about ${product.brandInfo.name}`}
+              <i className="fas fa-sign-in-alt" style={{ marginRight: '8px' }}></i>
+              Sign In / Create Account
+            </button>
+          </div>
+        )}
+
+        {/* Choose which items to render: for logged-in users, never fall back to samples */}
+        {user && storeItems.length === 0 && (
+          <div style={{ 
+            textAlign: 'center', 
+            marginBottom: '30px',
+            padding: '20px',
+            background: 'rgba(0,0,0,0.05)',
+            borderRadius: '12px',
+            border: `2px solid ${blyzaTheme.colors.blackStroke}`,
+            color: blyzaTheme.colors.textDark
+          }}>
+            No items available right now.
+          </div>
+        )}
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2.5em', width: '100%', maxWidth: '1200px' }}>
+          {(user ? storeItems : (storeItems.length > 0 ? storeItems : sampleItems)).map((item) => {
+            const isRedeemed = userPurchases.some(p => p.itemId === item.id);
+            const canAfford = blyzaBucks >= (item.cost || 10);
+            const isRedeeming = redeeming === item.id;
+            
+            return (
+              <div key={item.id} 
+                  style={cardStyle} 
+                  onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-8px) scale(1.03)'; e.currentTarget.style.boxShadow = blyzaTheme.shadows.chunkyYellow; e.currentTarget.style.borderColor = blyzaTheme.colors.primary; }} 
+                  onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = blyzaTheme.shadows.chunky; e.currentTarget.style.borderColor = blyzaTheme.colors.blackStroke; }}
+                  onClick={!user ? undefined : (isRedeemed ? () => handleViewUnlocked(item.id) : (canAfford && !isRedeeming ? () => handleRedeemItem(item) : undefined))}
               >
-                <i className="fas fa-info" style={{fontSize: '1rem'}}></i>
-              </button>
-              
-              <div>
-                 <img src={product.logoUrl} alt={`${product.name} Logo`} style={logoStyle} />
-                 <h2 style={{ color: blyzaTheme.colors.textDark, fontSize: '1.5rem', marginBottom: '0.5em', fontFamily: blyzaTheme.fonts.heading, lineHeight: '1.3' }}>
-                  {product.name}
-                </h2>
-                <p style={{ color: blyzaTheme.colors.textMedium, marginBottom: '1em', fontSize: '0.95rem', flexGrow: 1 }}>
-                    {product.description}
-                </p>
-              </div>
-              <div style={{ marginTop: 'auto' }}>
-                {!revealedCodes[product.id] ? (
-                  <button style={{ ...retroButtonBaseStyle, backgroundColor: blyzaTheme.colors.primary, color: blyzaTheme.colors.textLight, width: '100%', pointerEvents: 'none' }}>
-                    <i className="fas fa-gift" style={{ marginRight: '8px' }}></i> Claim Prize
-                  </button>
-                ) : (
-                  <div
-                    style={{ 
-                        marginTop: '15px', padding: '10px 15px', borderRadius: '10px', 
-                        background: `rgba(0, 191, 166, 0.1)`, 
-                        border: `2px solid ${blyzaTheme.colors.accent}`,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        transition: 'background-color 0.2s ease'
-                    }}
-                    onClick={() => handleCopyCode(product.discountCode, product.id)}
-                    onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgba(0, 191, 166, 0.2)'}
-                    onMouseOut={e => e.currentTarget.style.backgroundColor = 'rgba(0, 191, 166, 0.1)'}
-                    title="Click to copy code"
-                  >
-                    <div>
-                        <p style={{ fontWeight: 'bold', fontSize: '0.8rem', color: blyzaTheme.colors.accent, margin: 0, textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <i className="fas fa-check-circle"></i> CODE:
-                        </p>
-                        <span style={{ fontFamily: 'monospace', fontSize: '1.2rem', color: blyzaTheme.colors.textDark, display: 'block', wordBreak: 'break-all', textAlign: 'left' }}>
-                            {product.discountCode}
-                        </span>
-                    </div>
-                    <div style={{textAlign: 'right', minWidth: '70px'}}>
-                        {copiedId === product.id ? (
-                            <span style={{ color: blyzaTheme.colors.accent, fontWeight: 'bold', fontSize: '0.9rem' }}>
-                                <i className="fas fa-check" style={{ marginRight: '5px' }}></i>
-                                Copied!
-                            </span>
-                        ) : (
-                            <i className="far fa-copy" style={{ fontSize: '1.2rem', color: blyzaTheme.colors.textMedium }}></i>
-                        )}
-                    </div>
+                {isRedeemed && user && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    background: blyzaTheme.colors.accent,
+                    color: blyzaTheme.colors.textDark,
+                    padding: '4px 8px',
+                    borderRadius: '6px',
+                    fontSize: '0.7rem',
+                    fontWeight: 'bold',
+                    zIndex: 10
+                  }}>
+                    UNLOCKED
                   </div>
                 )}
-               </div>
-            </div>
-          ))}
+                
+                <div>
+                   <img src={item.image || item.logoUrl || 'https://via.placeholder.com/100x100?text=Item'} alt={`${item.title || item.name} Logo`} style={logoStyle} />
+                   <h2 style={{ color: blyzaTheme.colors.textDark, fontSize: '1.5rem', marginBottom: '0.5em', fontFamily: blyzaTheme.fonts.heading, lineHeight: '1.3' }}>
+                    {item.title || item.name}
+                  </h2>
+                  <p style={{ color: blyzaTheme.colors.textMedium, marginBottom: '1em', fontSize: '0.95rem', flexGrow: 1 }}>
+                      {item.description}
+                  </p>
+                </div>
+                <div style={{ marginTop: 'auto' }}>
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    marginBottom: '10px',
+                    fontSize: '1.2rem',
+                    fontWeight: 'bold',
+                    color: blyzaTheme.colors.yellow
+                  }}>
+                    <i className="fas fa-coins" style={{ marginRight: '6px' }}></i>
+                    {item.cost || 10} Blyza Bucks
+                  </div>
+                  {!user ? (
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); router.push(`/login?redirect=/store`); }}
+                      style={{ 
+                        ...retroButtonBaseStyle, 
+                        backgroundColor: blyzaTheme.colors.greyBg, 
+                        color: blyzaTheme.colors.textMedium, 
+                        width: '100%',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <i className="fas fa-lock" style={{ marginRight: '8px' }}></i> 
+                      Sign In to Redeem
+                    </button>
+                  ) : isRedeemed ? (
+                    <button style={{ 
+                      ...retroButtonBaseStyle, 
+                      backgroundColor: blyzaTheme.colors.accent, 
+                      color: blyzaTheme.colors.textDark, 
+                      width: '100%' 
+                    }}>
+                      <i className="fas fa-eye" style={{ marginRight: '8px' }}></i> 
+                      View
+                    </button>
+                  ) : (
+                    <button style={{ 
+                      ...retroButtonBaseStyle, 
+                      backgroundColor: canAfford ? blyzaTheme.colors.primary : blyzaTheme.colors.greyBg, 
+                      color: canAfford ? blyzaTheme.colors.textLight : blyzaTheme.colors.textMedium, 
+                      width: '100%',
+                      cursor: canAfford ? 'pointer' : 'not-allowed',
+                      opacity: canAfford ? 1 : 0.6,
+                      pointerEvents: canAfford ? 'auto' : 'none'
+                    }}>
+                      <i className="fas fa-gift" style={{ marginRight: '8px' }}></i> 
+                      {isRedeeming ? 'Redeeming...' : canAfford ? 'Redeem' : 'Insufficient Funds'}
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         <div style={{ display: 'flex', gap: '15px', marginTop: '50px' }}>

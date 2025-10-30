@@ -1,0 +1,242 @@
+/* styles/ChooseUsername.module.css */
+.page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #FF8833 0%, #cb7ae1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.container {
+  width: 100%;
+  max-width: 500px;
+}
+
+.formCard {
+  background: linear-gradient(145deg, #fdfefe, #e9ecef);
+  border-radius: 16px;
+  border: 3px solid #1A1A1A;
+  box-shadow: 8px 8px 0px #1A1A1A;
+  padding: 2rem;
+  color: #2C3A47;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+}
+
+.header h1 {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 2rem;
+  color: #FF8833;
+  -webkit-text-stroke: 1px #1A1A1A;
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  color: #535c68;
+  font-weight: 500;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputGroup label {
+  font-family: "Bungee", cursive;
+  font-size: 0.9rem;
+  color: #2C3A47;
+  text-transform: uppercase;
+}
+
+.inputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.prefix {
+  position: absolute;
+  left: 1rem;
+  font-family: "Bungee", cursive;
+  color: #cb7ae1;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 2rem;
+  border: 3px solid #1A1A1A;
+  border-radius: 12px;
+  background: #FDFEFE;
+  color: #2C3A47;
+  font-size: 1.1rem;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #FF8833;
+  box-shadow: 0 0 0 3px #FFDF00;
+}
+
+.availabilityIcon {
+  position: absolute;
+  right: 1rem;
+  font-size: 1.2rem;
+}
+
+.availability {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.availability.available {
+  background: rgba(0, 191, 166, 0.1);
+  color: #00BFA6;
+  border: 1px solid #00BFA6;
+}
+
+.availability.unavailable {
+  background: rgba(234, 32, 39, 0.1);
+  color: #EA2027;
+  border: 1px solid #EA2027;
+}
+
+.error {
+  background: rgba(234, 32, 39, 0.1);
+  border: 2px solid #EA2027;
+  border-radius: 8px;
+  padding: 1rem;
+  color: #EA2027;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rules {
+  background: rgba(255, 136, 51, 0.1);
+  border: 2px dashed #FF8833;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.rules h4 {
+  font-family: "Bungee", cursive;
+  font-size: 0.9rem;
+  color: #FF8833;
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+}
+
+.rules ul {
+  list-style: none;
+  padding: 0;
+}
+
+.rules li {
+  font-size: 0.9rem;
+  color: #535c68;
+  margin-bottom: 0.4rem;
+  padding-left: 1.2rem;
+  position: relative;
+}
+
+.rules li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #FF8833;
+  font-weight: bold;
+}
+
+.submitBtn {
+  font-family: "Bungee", cursive;
+  background: #00BFA6;
+  color: #FDFEFE;
+  border: 3px solid #1A1A1A;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+}
+
+.submitBtn:hover {
+  background: #FF8833;
+  transform: translateY(-3px);
+  box-shadow: 4px 4px 0px #1A1A1A;
+}
+
+.submitBtn:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.loading {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FF8833 0%, #cb7ae1 100%);
+  color: #FDFEFE;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.loading i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.loading p {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .page {
+    padding: 1rem;
+  }
+  
+  .formCard {
+    padding: 1.5rem;
+  }
+  
+  .header h1 {
+    font-size: 1.8rem;
+  }
+}

@@ -1,13 +1,11 @@
-export default function GamesListPage() {
+import GameIframe from '../../components/GameIframe';
+
+export default function Game4Page() {
   return (
-    <iframe
-      src="/funny/game4.html"
-      style={{
-        width: '100vw',
-        height: '100vh',
-        border: 'none'
-      }}
-      title="Games List"
+    <GameIframe 
+      gameId="game4" 
+      gameHtml="game4.html" 
+      title="Game 4" 
     />
   );
 }
