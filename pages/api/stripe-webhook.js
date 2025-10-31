@@ -3,14 +3,13 @@ import { buffer } from "micro";
 import { initializeApp, getApps } from "firebase/app";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 
-// Disable Next.js body parser - we need raw body for Stripe signature verification
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: false, // Stripe needs raw body
   },
 };
 
-// Firebase configuration using environment variables
+// --- Firebase init using env vars ---
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -20,35 +19,35 @@ const firebaseConfig = {
   appId: process.env.FIREBASE_APP_ID,
 };
 
-// Initialize Firebase app only once
 if (!getApps().length) {
   initializeApp(firebaseConfig);
 }
 
 const db = getFirestore();
 
-// Initialize Stripe with secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// --- Stripe init ---
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2022-11-15", // lock it so it's stable
+});
 
 export default async function handler(req, res) {
-  // Only accept POST requests
   if (req.method !== "POST") {
+    console.error("Webhook hit with non-POST");
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   let event;
 
   try {
-    // Get raw request body for signature verification
+    // 1. Verify signature
     const rawBody = await buffer(req);
     const signature = req.headers["stripe-signature"];
 
     if (!signature) {
-      console.error("❌ Missing Stripe signature header");
-      return res.status(400).json({ error: "Missing signature" });
+      console.error("❌ Missing stripe-signature header");
+      return res.status(400).json({ error: "Missing Stripe signature" });
     }
 
-    // Verify webhook signature
     event = stripe.webhooks.constructEvent(
       rawBody,
       signature,
@@ -58,27 +57,29 @@ export default async function handler(req, res) {
     console.log("✅ Webhook verified:", event.type);
 
   } catch (err) {
-    console.error("❌ Webhook signature verification failed:", err.message);
+    console.error("❌ Signature verification failed:", err.message);
     return res.status(400).json({ error: `Webhook Error: ${err.message}` });
   }
 
-  // Handle checkout.session.completed event
+  // 2. Handle only the event we care about
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
-
-    console.log("💳 Checkout session completed:", session.id);
-
-    // Get Firebase UID from session metadata
     const uid = session.metadata?.uid;
 
+    console.log("💳 checkout.session.completed for session:", session.id);
+    console.log("👤 uid from metadata:", uid);
+
     if (!uid) {
-      console.error("❌ Missing uid in session metadata! Session ID:", session.id);
-      // Still return 200 to acknowledge receipt, but log the error
-      return res.status(200).json({ received: true, error: "Missing uid in metadata" });
+      console.error("❌ No uid in session.metadata, cannot mark premium");
+      // we still 200 so Stripe stops retrying
+      return res.status(200).json({
+        received: true,
+        updatedPremium: false,
+        reason: "missing uid",
+      });
     }
 
     try {
-      // Update user document in Firestore
       const userRef = doc(db, "users", uid);
 
       await setDoc(
@@ -88,18 +89,32 @@ export default async function handler(req, res) {
           premiumSince: Date.now(),
           plan: "premium",
         },
-        { merge: true } // Merge to preserve existing fields like blyzaBucks
+        { merge: true }
       );
 
-      console.log("✅ Successfully upgraded user to premium:", uid);
+      console.log("✅ Firestore updated. User is now premium:", uid);
 
+      return res.status(200).json({
+        received: true,
+        updatedPremium: true,
+        uid,
+      });
     } catch (firestoreErr) {
-      console.error("❌ Failed to update Firestore for uid:", uid, firestoreErr);
-      // Still return 200 to Stripe (we received the webhook)
-      // but log the Firestore error for debugging
+      console.error("❌ Firestore update failed:", firestoreErr);
+
+      // We STILL return 200 so Stripe stops retrying,
+      // but now we tell ourselves what failed:
+      return res.status(200).json({
+        received: true,
+        updatedPremium: false,
+        uid,
+        error: "firestore write failed",
+        details: firestoreErr.message || String(firestoreErr),
+      });
     }
   }
 
-  // Always return 200 JSON to acknowledge receipt (no redirects)
-  return res.status(200).json({ received: true });
+  // 3. Ignore other events, but respond OK
+  console.log("ℹ️ Unhandled event type:", event.type);
+  return res.status(200).json({ received: true, handled: false });
 }
